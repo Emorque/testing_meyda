@@ -24,28 +24,28 @@
 }
 
 .aPillar {
-    animation: panDownA 2s linear;
+    animation: panDownA 2.1s linear;
     /* left: 0; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
 
 
 }
 
 .dPillar {
-    animation: panDownB 2s linear;
+    animation: panDownB 2.1s linear;
     /* left: 100px; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
 
 
 }
 
 .jPillar {
-    animation: panDownC 2s linear;
+    animation: panDownC 2.1s linear;
     /* left: 200px; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
 
 
 }
 
 .lPillar {
-    animation: panDownD 2s linear;
+    animation: panDownD 2.1s linear;
     /* left: 00px; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
 
 

@@ -1,6 +1,6 @@
 "use client";
 
-import Meyda from 'meyda';
+import Meyda, { MeydaAudioFeature, MeydaFeaturesObject } from 'meyda';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 // import * as THREE from 'three';
 // import { js } from 'three/tsl';
@@ -61,7 +61,7 @@ export function AudioFile() {
 
 
     // const [chromaArray, setChromaArray] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0]);
-    const [amplitudeSpectrum, setAmplitudeSpectrum] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+    const [amplitudeSpectrum, setAmplitudeSpectrum] = useState<Float32Array<ArrayBufferLike>>(new Float32Array(0));
     // const [powerSpectrum, setPowerSpectrum] = useState<number[]>([]);
 
     const [aActive, setAActive] = useState<boolean>(false);
@@ -118,13 +118,15 @@ export function AudioFile() {
               source: source,
               bufferSize: 512,
               featureExtractors: ["rms", "chroma", "amplitudeSpectrum", "spectralFlatness", "spectralKurtosis","mfcc","perceptualSharpness", "loudness", "perceptualSpread", "powerSpectrum"],
-              callback: (features: any) => {
+              callback: (features: MeydaFeaturesObject) => {
                 // console.log(features.chroma);
                 // setLevel(features.rms);
                 // setChromaArray(features.chroma);
                 // setPowerSpectrum(features.powerSpectrum);
                 // setChromaArray(features.mfcc)
-                setAmplitudeSpectrum(features.loudness.specific);
+                if (features.loudness.specific) {
+                  setAmplitudeSpectrum(features.loudness.specific);
+                }
                 // callABtn()
                 // const avgAmplitude = spectrumRange.reduce((sum, idx) => sum + amplitudeSpectrum[idx], 0) / spectrumRange.length;
                 // console.log(features.powerSpectrum.subarray(0,2))
