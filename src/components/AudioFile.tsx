@@ -2,8 +2,8 @@
 
 import Meyda from 'meyda';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
-import { js } from 'three/tsl';
+// import * as THREE from 'three';
+// import { js } from 'three/tsl';
 
 
 import "./audiofile.css"
@@ -22,8 +22,8 @@ export function AudioFile() {
     const jPillar = useRef<HTMLDivElement>(null);
     const lPillar = useRef<HTMLDivElement>(null);
 
-    const musicSource = useRef<MediaElementAudioSourceNode>(null);
-    const [level, setLevel] = useState<number>(0);
+    // const musicSource = useRef<MediaElementAudioSourceNode>(null);
+    // const [level, setLevel] = useState<number>(0);
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -60,19 +60,19 @@ export function AudioFile() {
     const [lList, setLList] = useState<number[]>([]);
 
 
-    const [chromaArray, setChromaArray] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0]);
+    // const [chromaArray, setChromaArray] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0]);
     const [amplitudeSpectrum, setAmplitudeSpectrum] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
-    const [powerSpectrum, setPowerSpectrum] = useState<number[]>([]);
+    // const [powerSpectrum, setPowerSpectrum] = useState<number[]>([]);
 
     const [aActive, setAActive] = useState<boolean>(false);
     const [dActive, setDActive] = useState<boolean>(false);
     const [jActive, setJActive] = useState<boolean>(false);
     const [lActive, setLActive] = useState<boolean>(false);
 
-    const [aSuccess, setASuccess] = useState<string | null>(null);
-    const [dSuccess, setDSuccess] = useState<string | null>(null);
-    const [jSuccess, setJSuccess] = useState<string | null>(null);
-    const [lSuccess, setLSuccess] = useState<string | null>(null);
+    // const [aSuccess, setASuccess] = useState<string | null>(null);
+    // const [dSuccess, setDSuccess] = useState<string | null>(null);
+    // const [jSuccess, setJSuccess] = useState<string | null>(null);
+    // const [lSuccess, setLSuccess] = useState<string | null>(null);
 
     const [score, setScore] = useState<number>(0);
 
@@ -83,22 +83,22 @@ export function AudioFile() {
         updateContext();
     }
 
-    const styleOne = {
-      backgroundColor: aActive? "green": "red",
-      padding: 10
-    }
-    const styleTwo = {
-      backgroundColor: dActive? "green": "red",
-      padding: 10
-    }
-    const styleThree = {
-      backgroundColor: jActive? "green": "red",
-      padding: 10
-    }
-    const styleFour = {
-      backgroundColor: lActive? "green": "red",
-      padding: 10
-    }
+    // const styleOne = {
+    //   backgroundColor: aActive? "green": "red",
+    //   padding: 10
+    // }
+    // const styleTwo = {
+    //   backgroundColor: dActive? "green": "red",
+    //   padding: 10
+    // }
+    // const styleThree = {
+    //   backgroundColor: jActive? "green": "red",
+    //   padding: 10
+    // }
+    // const styleFour = {
+    //   backgroundColor: lActive? "green": "red",
+    //   padding: 10
+    // }
 
     function updateContext() {
         const audioContext = new AudioContext;
@@ -156,13 +156,13 @@ export function AudioFile() {
     useEffect(() => {
       // Button states with a timeout for each key
       const buttonStates = [
-        { key: 'a', state: aActive, successState: aSuccess, setState: setAActive, setSuccess: setASuccess, pillar: aPillar, pillarClass: "aPillar", list : aList, setList : setAList },
-        { key: 'd', state: dActive, successState: dSuccess, setState: setDActive, setSuccess: setDSuccess, pillar: dPillar, pillarClass: "dPillar", list : dList, setList : setDList   },
-        { key: 'j', state: jActive, successState: jSuccess, setState: setJActive, setSuccess: setJSuccess, pillar: jPillar, pillarClass: "jPillar", list : jList, setList : setJList   },
-        { key: 'l', state: lActive, successState: lSuccess, setState: setLActive, setSuccess: setLSuccess, pillar: lPillar, pillarClass: "lPillar", list : lList, setList : setLList   },
+        { key: 'a', state: aActive, setState: setAActive, pillar: aPillar, pillarClass: "aPillar", setList : setAList },
+        { key: 'd', state: dActive, setState: setDActive, pillar: dPillar, pillarClass: "dPillar", setList : setDList   },
+        { key: 'j', state: jActive, setState: setJActive, pillar: jPillar, pillarClass: "jPillar", setList : setJList   },
+        { key: 'l', state: lActive, setState: setLActive, pillar: lPillar, pillarClass: "lPillar", setList : setLList   },
       ];
     
-      buttonStates.forEach(({ key, state, successState, setState, setSuccess, pillar, pillarClass, list, setList }) => {
+      buttonStates.forEach(({ key, state, setState, pillar, pillarClass, setList }) => {
         // If the button state is already set, skip the update
         if (state) return;
     
@@ -195,7 +195,7 @@ export function AudioFile() {
           setState(false);
         }
       });
-    }, [amplitudeSpectrum, aActive, dActive, jActive, lActive, aSuccess, dSuccess, jSuccess, lSuccess]);
+    }, [amplitudeSpectrum, aActive, dActive, jActive, lActive]);
 
     useEffect(() => {
       console.log("AList", aList);
