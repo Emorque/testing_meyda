@@ -1,6 +1,6 @@
 "use client";
 
-import Meyda, { MeydaAudioFeature, MeydaFeaturesObject } from 'meyda';
+import Meyda, { MeydaFeaturesObject } from 'meyda';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 // import * as THREE from 'three';
 // import { js } from 'three/tsl';
