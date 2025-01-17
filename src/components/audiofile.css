@@ -16,7 +16,6 @@
 }
 
 .newEle {
-    background-color: bisque;
     position: absolute;
     top: 0;
     left: 0;
@@ -26,22 +25,30 @@
 
 .aPillar {
     animation: panDownA 2s linear;
-    /* left: 0; */
-}
+    /* left: 0; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
 
-.bPillar {
-    animation: panDownB 2s linear;
-    /* left: 100px; */
-}
 
-.cPillar {
-    animation: panDownC 2s linear;
-    /* left: 200px; */
 }
 
 .dPillar {
+    animation: panDownB 2s linear;
+    /* left: 100px; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+
+
+}
+
+.jPillar {
+    animation: panDownC 2s linear;
+    /* left: 200px; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+
+
+}
+
+.lPillar {
     animation: panDownD 2s linear;
-    /* left: 00px; */
+    /* left: 00px; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+
+
 }
 
 @keyframes panDownA {
@@ -52,6 +59,8 @@
     100% {
         background-color: rgb(5, 80, 17);
         transform: translate(0px, 800px);
+        display: none;
+
     }
 }
 
@@ -63,6 +72,8 @@
     100% {
         background-color: rgb(5, 80, 17);
         transform: translate(100px, 800px);
+        display: none;
+
     }
 }
 
@@ -74,6 +85,7 @@
     100% {
         background-color: rgb(5, 80, 17);
         transform: translate(200px, 800px);
+        display: none;
     }
 }
 
@@ -85,5 +97,64 @@
     100% {
         background-color: rgb(5, 80, 17);
         transform: translate(300px, 800px);
+        display: none;
+
+    }
+}
+
+.message {
+    position: absolute;
+    bottom: 0;
+}
+
+.success {
+    background-color: green;
+    animation: successAnime 500ms ease;
+    animation-iteration-count: 1;    
+    animation-fill-mode: forwards; 
+}
+
+.miss {
+    background-color: red;
+    animation: missAnime 500ms ease;
+    animation-iteration-count: 1;    
+    animation-fill-mode: forwards; 
+}
+
+.messageA {
+    left: 0;
+}
+
+.messageD {
+    left: 100;
+}
+
+.messageJ {
+    left: 200;
+}
+
+.messageL {
+    left: 300;
+}
+
+@keyframes successAnime {
+    0% {
+        color: white;
+        transform: translate(0,0px);
+    }
+    100% {
+        color: black;
+        transform: translate(-20px, -10px);
+    }
+}
+
+@keyframes missAnime {
+    0% {
+        color: white;
+        transform: translate(0,0px);
+    }
+    100% {
+        color: black;
+        transform: translate(-20px, -10px);
     }
 }

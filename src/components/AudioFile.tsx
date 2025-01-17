@@ -5,13 +5,12 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { js } from 'three/tsl';
 
+
 import "./audiofile.css"
 
-function TempP() {
-  return (
-    <h1>TESTING</h1>
-  )
-}
+// function stopWatch() {
+
+// }
 
 export function AudioFile() {    
     const [audioURL, setAudioURL] = useState<string | null>(null)
@@ -19,12 +18,47 @@ export function AudioFile() {
     const audioRefSetting = useRef<HTMLAudioElement>(null);
 
     const aPillar = useRef<HTMLDivElement>(null);
-    const bPillar = useRef<HTMLDivElement>(null);
-    const cPillar = useRef<HTMLDivElement>(null);
     const dPillar = useRef<HTMLDivElement>(null);
+    const jPillar = useRef<HTMLDivElement>(null);
+    const lPillar = useRef<HTMLDivElement>(null);
 
     const musicSource = useRef<MediaElementAudioSourceNode>(null);
     const [level, setLevel] = useState<number>(0);
+
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    // stopwatch
+    const [stopwatchActive, setStopwatchActive] = useState<boolean>(false);
+    const [stPaused, setStPaused] = useState<boolean>(true);
+    const [time, setTime] = useState<number>(0);
+
+    useEffect(() => {
+
+      if (stopwatchActive && !stPaused) {
+        intervalRef.current = setInterval(() => {
+          setTime((time) => time + 10);
+          console.log(time);
+
+        }, 10)}
+      else {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null
+        };
+      }
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null
+        };
+      }
+      }, [stopwatchActive, stPaused]);
+
+    const [aList, setAList] = useState<number[]>([]);
+    const [dList, setDList] = useState<number[]>([]);
+    const [jList, setJList] = useState<number[]>([]);
+    const [lList, setLList] = useState<number[]>([]);
+
 
     const [chromaArray, setChromaArray] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0]);
     const [amplitudeSpectrum, setAmplitudeSpectrum] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -41,11 +75,6 @@ export function AudioFile() {
     const [lSuccess, setLSuccess] = useState<string | null>(null);
 
     const [score, setScore] = useState<number>(0);
-
-    const [range1, setRange1] = useState<number>(0);
-    const [range2, setRange2] = useState<number>(0);
-    const [range3, setRange3] = useState<number>(0);
-    const [range4, setRange4] = useState<number>(0);
 
     const audioChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -75,8 +104,11 @@ export function AudioFile() {
         const audioContext = new AudioContext;
 
         if (audioRefSetting.current) {
+            const gainNode = audioContext.createGain();
             const source = audioContext.createMediaElementSource(audioRefSetting.current); 
-            source.connect(audioContext.destination);
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            gainNode.gain.value = 0;
             if (typeof Meyda === "undefined") {
                 console.log("Meyda could not be found! Have you included it?");
                 return;
@@ -124,13 +156,13 @@ export function AudioFile() {
     useEffect(() => {
       // Button states with a timeout for each key
       const buttonStates = [
-        { key: 'a', state: aActive, successState: aSuccess, setState: setAActive, setSuccess: setASuccess, pillar: aPillar, pillarClass: "aPillar" },
-        { key: 'd', state: dActive, successState: dSuccess, setState: setDActive, setSuccess: setDSuccess, pillar: bPillar, pillarClass: "bPillar"  },
-        { key: 'j', state: jActive, successState: jSuccess, setState: setJActive, setSuccess: setJSuccess, pillar: cPillar, pillarClass: "cPillar"  },
-        { key: 'l', state: lActive, successState: lSuccess, setState: setLActive, setSuccess: setLSuccess, pillar: dPillar, pillarClass: "dPillar"  },
+        { key: 'a', state: aActive, successState: aSuccess, setState: setAActive, setSuccess: setASuccess, pillar: aPillar, pillarClass: "aPillar", list : aList, setList : setAList },
+        { key: 'd', state: dActive, successState: dSuccess, setState: setDActive, setSuccess: setDSuccess, pillar: dPillar, pillarClass: "dPillar", list : dList, setList : setDList   },
+        { key: 'j', state: jActive, successState: jSuccess, setState: setJActive, setSuccess: setJSuccess, pillar: jPillar, pillarClass: "jPillar", list : jList, setList : setJList   },
+        { key: 'l', state: lActive, successState: lSuccess, setState: setLActive, setSuccess: setLSuccess, pillar: lPillar, pillarClass: "lPillar", list : lList, setList : setLList   },
       ];
     
-      buttonStates.forEach(({ key, state, successState, setState, setSuccess, pillar, pillarClass }) => {
+      buttonStates.forEach(({ key, state, successState, setState, setSuccess, pillar, pillarClass, list, setList }) => {
         // If the button state is already set, skip the update
         if (state) return;
     
@@ -140,27 +172,24 @@ export function AudioFile() {
         if (avgAmplitude > 1.5) {
           // Set the button state to true when the amplitude exceeds the threshold
           setState(true);
-          // console.log(key + "made true");
+
+          setList(prevList => [...prevList, ((time + 2000)/1000)]);
+
           if (pillar.current) {
             const newEle = document.createElement('p');
             newEle.classList.add(pillarClass)
             newEle.classList.add("newEle")
             newEle.textContent= ""
             pillar.current.appendChild(newEle);
-            setTimeout(() => {
+            newEle.addEventListener("animationend", () => {
               pillar.current?.removeChild(newEle);
-            }, 2000)
+            })
           }
     
           // Handle the timeout for each button independently
           setTimeout(() => {
-            if (!successState || successState == "false") {
-              setScore((prevScore) => prevScore - 1); // Decrement the score independently for each key
-            }
-            // Reset the state and success after timeout
             setState(false);
-            // setSuccess(null);
-          }, 1000);
+          }, 750);
         }
         else {
           setState(false);
@@ -168,93 +197,315 @@ export function AudioFile() {
       });
     }, [amplitudeSpectrum, aActive, dActive, jActive, lActive, aSuccess, dSuccess, jSuccess, lSuccess]);
 
-    // const getPowerRangeForKey = (key: string): number[] => {
-    //   switch (key) {
-    //     case 'a':
-    //       return Array.from({ length: 64 }, (_, index) => index);
-    //     case 'd':
-    //       return Array.from({ length: 64 }, (_, index) => index + 64);
-    //     case 'j':
-    //       return Array.from({ length: 64 }, (_, index) => index + 128);
-    //     case 'l':
-    //       return Array.from({ length: 64 }, (_, index) => index + 192);
-    //     default:
-    //       return [];
-    //   }
-    // };
-    
-    // useEffect(() => {
-    //   // Button states with a timeout for each key
-    //   const buttonStates = [
-    //     { key: 'a', state: range1, successState: aSuccess, setState: setRange1, setSuccess: setASuccess },
-    //     { key: 'd', state: range2, successState: dSuccess, setState: setRange2, setSuccess: setDSuccess },
-    //     { key: 'j', state: range3, successState: jSuccess, setState: setRange3, setSuccess: setJSuccess },
-    //     { key: 'l', state: range1, successState: lSuccess, setState: setRange4, setSuccess: setLSuccess },
-    //   ];
-    
-    //   buttonStates.forEach(({ key, state, successState, setState, setSuccess }) => {
-    //     // If the button state is already set, skip the update
-    //     // if (state) return;
-    
-    //     const spectrumRange = getPowerRangeForKey(key);
-    //     const avgAmplitude = spectrumRange.reduce((sum, idx) => sum + powerSpectrum[idx], 0) / spectrumRange.length;
-        
-    //     // console.log(key, avgAmplitude)
-    //     setState(avgAmplitude);
-    //   });
-    // }, [powerSpectrum, range1, range2, range3, range4, aSuccess, dSuccess, jSuccess, lSuccess]);
+    useEffect(() => {
+      console.log("AList", aList);
+      if (aList.length > 0 && aList[0] + 0.15 < time/1000) {
+        setScore(score => score - 1);
+        setAList(aList => aList.slice(1));
 
 
+        const message = document.createElement('p');
+        message.classList.add("message")
+        message.classList.add("messageA");
+        message.classList.add("miss");
+        message.textContent= "missed";
+        if (aPillar.current) aPillar.current.appendChild(message);
+        setTimeout(() => {
+          if (aPillar.current) aPillar.current.removeChild(message);  
+        }, 500);
+      }
+    }, [aList, time])
+    
+    useEffect(() => {
+      console.log("DList", dList);
+      if (dList.length > 0 && dList[0] + 0.15 < time/1000) {
+        setScore(score => score - 1);
+        setDList(dList => dList.slice(1));
 
+        const message = document.createElement('p');
+        message.classList.add("message")
+        message.classList.add("messageD");
+        message.classList.add("miss");
+        message.textContent= "missed";
+        if (dPillar.current) dPillar.current.appendChild(message);
+        setTimeout(() => {
+          if (dPillar.current) dPillar.current.removeChild(message);  
+        }, 500);
+      }
+    }, [dList, time])
+
+    useEffect(() => {
+      console.log("JList", jList);
+      if (jList.length > 0 && jList[0] + 0.15 < time/1000) {
+        setScore(score => score - 1);
+        setJList(jList => jList.slice(1));
+
+        const message = document.createElement('p');
+        message.classList.add("message")
+        message.classList.add("messageJ");
+        message.classList.add("miss");
+        message.textContent= "missed";
+        if (jPillar.current) jPillar.current.appendChild(message);
+        setTimeout(() => {
+          if (jPillar.current) jPillar.current.removeChild(message);  
+        }, 500);
+      }
+    }, [jList, time])
+
+    useEffect(() => {
+      console.log("LList", lList);
+      if (lList.length > 0 && lList[0] + 0.15 < time/1000) {
+        setScore(score => score - 1);
+        setLList(lList => lList.slice(1));
+
+        const message = document.createElement('p');
+        message.classList.add("message")
+        message.classList.add("messageL");
+        message.classList.add("miss");
+        message.textContent= "missed";
+        if (lPillar.current) lPillar.current.appendChild(message);
+        setTimeout(() => {
+          if (lPillar.current) lPillar.current.removeChild(message);  
+        }, 500);
+      }
+    }, [lList, time])
 
     useEffect(() => {
       const handleKeyDown = (event: { key: string; }) => {
         // console.log(event.key);
         if (event.key === 'a' || event.key === 'A' ) {
           console.log('A key pressed!');
-          if (aActive) {
-            setASuccess("true");
-            setScore((prevScore) => prevScore + 1); // Decrement the score independently for each key
+          const message = document.createElement('p');
+          message.classList.add("message")
+          message.classList.add("messageA");
+
+          if (aList.length === 0) {
+            console.log("ex1", aList, time)
+            setScore(score => score - 1);
+            console.log("missed")
+
+            message.classList.add("miss");
+            message.textContent= "missed";
+            if (aPillar.current) aPillar.current.appendChild(message);
+            setTimeout(() => {
+              if (aPillar.current) aPillar.current.removeChild(message);  
+            }, 500);
           }
           else {
-            setASuccess("false");
-            setScore((prevScore) => prevScore - 1); // Decrement the score independently for each key
+            if ((time/1000) < aList[0] - 0.15) {
+              setScore(score => score - 1);
+              console.log("ex2", aList, (time/1000))
+              console.log("early")
+
+              message.classList.add("miss");
+              message.textContent= "early";
+              if (aPillar.current) aPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (aPillar.current) aPillar.current.removeChild(message);  
+              }, 500);
+            }
+
+            else if (aList[0] + 0.07 >= (time/1000) && (time/1000) > aList[0] - 0.07) {
+              setScore(score => score + 1);
+              setAList(aList => aList.slice(1));
+              console.log("ex3", aList, (time/1000))
+              console.log("perfect")
+              
+              message.classList.add("success");
+              message.textContent= "perfect";
+              if (aPillar.current) aPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (aPillar.current) aPillar.current.removeChild(message);  
+              }, 500);
+            }
+
+
+            else if (aList[0] + 0.15 >= (time/1000) && (time/1000) > aList[0] - 0.15) {
+              setScore(score => score + 1);
+              setAList(aList => aList.slice(1));
+              console.log("ex3", aList, (time/1000))
+              console.log("hit")
+              
+              message.classList.add("success");
+              message.textContent= "success";
+              if (aPillar.current) aPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (aPillar.current) aPillar.current.removeChild(message);  
+              }, 500);
+            }
           }
         }
 
         if (event.key === 'd' || event.key === 'D' ) {
           console.log('D key pressed!');
-          if (dActive) {
-            setDSuccess("true");
-            setScore((prevScore) => prevScore + 1); // Decrement the score independently for each key
+          const message = document.createElement('p');
+          message.classList.add("message")
+          message.classList.add("messageD");
+          if (dList.length === 0) {
+            console.log("ex1", dList, time)
+            setScore(score => score - 1);
+            console.log("missed")
+
+            message.classList.add("miss");
+            message.textContent= "missed";
+            if (dPillar.current) dPillar.current.appendChild(message);
+            setTimeout(() => {
+              if (dPillar.current) dPillar.current.removeChild(message);  
+            }, 500);
           }
           else {
-            setDSuccess("false");
-            setScore((prevScore) => prevScore - 1); // Decrement the score independently for each key
+            if ((time/1000) < dList[0] - 0.15) {
+              setScore(score => score - 1);
+              console.log("ex2", dList, (time/1000))
+              console.log("early")
+
+              message.classList.add("miss");
+              message.textContent= "early";
+              if (dPillar.current) dPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (dPillar.current) dPillar.current.removeChild(message);  
+              }, 500);
+            }
+            else if (dList[0] + 0.07 >= (time/1000) && (time/1000) > dList[0] - 0.07) {
+              setScore(score => score + 1);
+              setDList(dList => dList.slice(1));
+              console.log("ex3", dList, (time/1000))
+              console.log("hit")
+              message.classList.add("success");
+              message.textContent= "perfect";
+              if (dPillar.current) dPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (dPillar.current) dPillar.current.removeChild(message);  
+              }, 500);
+            }
+            else if (dList[0] + 0.15 >= (time/1000) && (time/1000) > dList[0] - 0.15) {
+              setScore(score => score + 1);
+              setDList(dList => dList.slice(1));
+              console.log("ex3", dList, (time/1000))
+              console.log("hit")
+              message.classList.add("success");
+              message.textContent= "success";
+              if (dPillar.current) dPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (dPillar.current) dPillar.current.removeChild(message);  
+              }, 500);
+            }
           }
         }
         
         if (event.key === 'j' || event.key === 'J' ) {
           console.log('J key pressed!');
-          if (jActive) {
-            setJSuccess("true");
-            // setScore((prevScore) => prevScore + 1); // Decrement the score independently for each key
+          const message = document.createElement('p');
+          message.classList.add("message")
+          message.classList.add("messageJ");
+
+          if (jList.length === 0) {
+            console.log("ex1", jList, time)
+            setScore(score => score - 1);
+            console.log("missed")
+
+            message.classList.add("miss");
+            message.textContent= "missed";
+            if (jPillar.current) jPillar.current.appendChild(message);
+            setTimeout(() => {
+              if (jPillar.current) jPillar.current.removeChild(message);  
+            }, 500);
           }
           else {
-            setJSuccess("false");
-            // setScore((prevScore) => prevScore - 1); // Decrement the score independently for each key
+            if ((time/1000) < jList[0] - 0.15) {
+              setScore(score => score - 1);
+              console.log("ex2", jList, (time/1000))
+              console.log("early")
+
+              message.classList.add("miss");
+              message.textContent= "early";
+              if (jPillar.current) jPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (jPillar.current) jPillar.current.removeChild(message);  
+              }, 500);
+            }
+            else if (jList[0] + 0.07 >= (time/1000) && (time/1000) > jList[0] - 0.07) {
+              setScore(score => score + 1);
+              setJList(jList => jList.slice(1));
+              console.log("ex3", jList, (time/1000))
+              console.log("hit")
+              message.classList.add("success");
+              message.textContent= "perfect";
+              if (jPillar.current) jPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (jPillar.current) jPillar.current.removeChild(message);  
+              }, 500);
+            }
+            else if (jList[0] + 0.15 >= (time/1000) && (time/1000) > jList[0] - 0.15) {
+              setScore(score => score + 1);
+              setJList(jList => jList.slice(1));
+              console.log("ex3", jList, (time/1000))
+              console.log("hit")
+              message.classList.add("success");
+              message.textContent= "success";
+              if (jPillar.current) jPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (jPillar.current) jPillar.current.removeChild(message);  
+              }, 500);
+            }
           }
         }
         
         if (event.key === 'l' || event.key === 'L' ) {
           console.log('L key pressed!');
-          if (lActive) {
-            setLSuccess("true");
-            // setScore((prevScore) => prevScore + 1); // Decrement the score independently for each key
+          const message = document.createElement('p');
+          message.classList.add("message")
+          message.classList.add("messageL");
+
+          if (lList.length === 0) {
+            console.log("ex1", lList, time)
+            setScore(score => score - 1);
+            console.log("missed")
+
+            message.classList.add("miss");
+            message.textContent= "missed";
+            if (lPillar.current) lPillar.current.appendChild(message);
+            setTimeout(() => {
+              if (lPillar.current) lPillar.current.removeChild(message);  
+            }, 500);
           }
           else {
-            setLSuccess("false");
-            // setScore((prevScore) => prevScore - 1); // Decrement the score independently for each key
+            if ((time/1000) < lList[0] - 0.15) {
+              setScore(score => score - 1);
+              console.log("ex2", lList, (time/1000))
+              console.log("early")
+
+              message.classList.add("miss");
+              message.textContent= "early";
+              if (lPillar.current) lPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (lPillar.current) lPillar.current.removeChild(message);  
+              }, 500);
+            }
+            else if (lList[0] + 0.07 >= (time/1000) && (time/1000) > lList[0] - 0.07) {
+              setScore(score => score + 1);
+              setLList(lList => lList.slice(1));
+              console.log("ex3", lList, (time/1000))
+              console.log("hit");
+              message.classList.add("success");
+              message.textContent= "perfect";
+              if (lPillar.current) lPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (lPillar.current) lPillar.current.removeChild(message);  
+              }, 500);
+            }
+            else if (lList[0] + 0.15 >= (time/1000) && (time/1000) > lList[0] - 0.15) {
+              setScore(score => score + 1);
+              setLList(lList => lList.slice(1));
+              console.log("ex3", lList, (time/1000))
+              console.log("hit");
+              message.classList.add("success");
+              message.textContent= "success";
+              if (lPillar.current) lPillar.current.appendChild(message);
+              setTimeout(() => {
+                if (lPillar.current) lPillar.current.removeChild(message);  
+              }, 500);
+            }
           }
         }
       };
@@ -265,19 +516,31 @@ export function AudioFile() {
       return () => {
         document.removeEventListener('keydown', handleKeyDown);
       };
-    }, [aActive, dActive, jActive, lActive, aSuccess, dSuccess, jSuccess, lSuccess]);
+    }, [aList, dList, jList, lList, time]);
 
     const toggleMusic = () => {
+      const liiii = document.querySelectorAll('.newEle');
+      console.log(liiii.length);
       if (audioRefListening.current && audioRefSetting.current) {
         // if ()
         // console.log("HI");
         if (audioRefListening.current.paused && audioRefSetting.current.paused) {
           audioRefListening.current.play();
           audioRefSetting.current.play();
+          setStopwatchActive(true);
+          setStPaused(false);
+          for (let i = 0; i < liiii.length; i++) {
+            (liiii[i] as HTMLParagraphElement).style.animationPlayState = "running";
+          }
         }
         else {
           audioRefListening.current.pause();
           audioRefSetting.current.pause();
+          setStopwatchActive(false);
+          setStPaused(true);
+          for (let i = 0; i < liiii.length; i++) {
+            (liiii[i] as HTMLParagraphElement).style.animationPlayState = "paused";
+          }
         }
       }
     }
@@ -285,8 +548,11 @@ export function AudioFile() {
     const setMusicStage = () => {
       if (audioRefListening.current && audioRefSetting.current) {
         audioRefSetting.current.play();
+        audioRefListening.current.pause();
+        setStopwatchActive(true);
+        setStPaused(false);
         setTimeout(() => {
-          if (audioRefSetting.current) audioRefSetting.current.pause();
+          if (audioRefListening.current)  audioRefListening.current.play();
         }, 2000)
       }
     }
@@ -295,10 +561,10 @@ export function AudioFile() {
         <>
             <input type="file" accept='audio/*' onChange={audioChange}/>
             <h1>Meyda Demo</h1>
-            <p>{level}</p>
-            <p>{score}</p>
+            {/* <p>{level}</p>
+            <p>{score}</p> */}
 
-            <div style={{display: "flex", gap: 20}}>
+            {/* <div style={{display: "flex", gap: 20}}>
               <div style={{display: "flex", flexDirection: "column"}}>
                 <p style={styleOne}>A</p>
                 <p>{aSuccess}</p>
@@ -318,13 +584,13 @@ export function AudioFile() {
                 <p style={styleFour}>L</p>
                 <p>{lSuccess}</p>
               </div>
-            </div>
+            </div> */}
+
+            {/* <p>{time/1000}</p> */}
 
             <audio src={audioURL ?? ""} controls={false} ref={audioRefListening} loop={false} />
             <audio src={audioURL ?? ""} controls={false} ref={audioRefSetting} loop={false} />
-            <button onClick={toggleMusic}>Play/Pause</button>
             <button onClick={setMusicStage}>Set Stage</button>
-
 
             {/* <p>{(chromaArray[0]>0.5)? 1111 : 2}</p>
             <p>{(chromaArray[1]>0.5)? 1111 : 2}</p>
@@ -342,87 +608,18 @@ export function AudioFile() {
 
             <div id='gamecontainer'>
               <div className='pilar' ref={aPillar}>hi</div>
-              <div className='pilar' ref={bPillar}>hi</div>
-              <div className='pilar' ref={cPillar}>hi</div>
               <div className='pilar' ref={dPillar}>hi</div>
+              <div className='pilar' ref={jPillar}>hi</div>
+              <div className='pilar' ref={lPillar}>hi</div>
             </div>
+            <p>{score}</p>
+            <button onClick={toggleMusic}>Play/Pause</button>
 
-
+{/* 
             <p>{range1}</p>
             <p>{range2}</p>
             <p>{range3}</p>
-            <p>{range4}</p>
-{/* 
-            <p>{chromaArray[0].toFixed(2)}</p>
-            <p>{chromaArray[1].toFixed(2)}</p>
-            <p>{chromaArray[2].toFixed(2)}</p>
-            <p>{chromaArray[3].toFixed(2)}</p>
-            <p>{chromaArray[4].toFixed(2)}</p>
-            <p>{chromaArray[5].toFixed(2)}</p>
-            <p>{chromaArray[6].toFixed(2)}</p>
-            <p>{chromaArray[7].toFixed(2)}</p>
-            <p>{chromaArray[8].toFixed(2)}</p>
-            <p>{chromaArray[9].toFixed(2)}</p>
-            <p>{chromaArray[10].toFixed(2)}</p>
-            <p>{chromaArray[11].toFixed(2)}</p>  */}
+            <p>{range4}</p> */}
         </>
     )
 }
-
-
-
-            {/* <p>{amplitudeSpectrum}</p> */}
-{/* 
-            <p>{chromaArray[1]}   {amplitudeSpectrum[0]}</p>
-            <p>{chromaArray[1]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[2]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[3]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[4]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[5]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[6]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[7]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[8]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[9]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[10]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[11]}   {amplitudeSpectrum[1]}</p>
-            <p>{chromaArray[12]}   {amplitudeSpectrum[1]}</p> */}
-
-
-    // const styleTwo = {
-    //   backgroundColor: ((amplitudeSpectrum[6] + amplitudeSpectrum[7] + amplitudeSpectrum[8] + amplitudeSpectrum[9] + amplitudeSpectrum[10] + amplitudeSpectrum[11]) / 6) > 1.5? "green": "red",
-    //   padding: 10
-    // }
-
-    // const styleThree = {
-    //   backgroundColor: ((amplitudeSpectrum[12] + amplitudeSpectrum[13] + amplitudeSpectrum[14] + amplitudeSpectrum[15] + amplitudeSpectrum[16] + amplitudeSpectrum[17]) / 6) > 1.5? "green": "red",
-    //   padding: 10
-    // }
-
-    // const styleFour = {
-    //   backgroundColor: ((amplitudeSpectrum[18] + amplitudeSpectrum[19] + amplitudeSpectrum[20] + amplitudeSpectrum[21] + amplitudeSpectrum[22] + amplitudeSpectrum[23]) / 6) > 1.5? "green": "red",
-    //   padding: 10
-    // }
-            
-            {/* <p style={styleOne}>{(amplitudeSpectrum[0] + amplitudeSpectrum[1] + amplitudeSpectrum[2] + amplitudeSpectrum[3] + amplitudeSpectrum[4] + amplitudeSpectrum[5]) / 6}</p>
-            <br/>
-            <p style={styleTwo}>{(amplitudeSpectrum[6] + amplitudeSpectrum[7] + amplitudeSpectrum[8] + amplitudeSpectrum[9] + amplitudeSpectrum[10] + amplitudeSpectrum[11]) / 6}</p>
-            <br/>
-            <p style={styleThree}>{(amplitudeSpectrum[12] + amplitudeSpectrum[13] + amplitudeSpectrum[14] + amplitudeSpectrum[15] + amplitudeSpectrum[16] + amplitudeSpectrum[17]) / 6}</p>
-            <br/>
-            <p style={styleFour}>{(amplitudeSpectrum[18] + amplitudeSpectrum[19] + amplitudeSpectrum[20] + amplitudeSpectrum[21] + amplitudeSpectrum[22] + amplitudeSpectrum[23]) / 6}</p>
-            <br/> */}
-
-            
-            {/* <p>{(amplitudeSpectrum[0] + amplitudeSpectrum[1] + amplitudeSpectrum[2] + amplitudeSpectrum[3] + amplitudeSpectrum[4] + amplitudeSpectrum[5]) / 6}</p> */}
-            {/* <p>{amplitudeSpectrum[1]}</p>
-            <p>{amplitudeSpectrum[2]}</p>
-            <p>{amplitudeSpectrum[3]}</p>
-            <p>{amplitudeSpectrum[4]}</p>
-            <p>{amplitudeSpectrum[5]}</p>
-            <p>{amplitudeSpectrum[6]}</p>
-            <p>{amplitudeSpectrum[7]}</p>
-            <p>{amplitudeSpectrum[8]}</p>
-            <p>{amplitudeSpectrum[9]}</p>
-            <p>{amplitudeSpectrum[10]}</p>
-            <p>{amplitudeSpectrum[11]}</p>
-            <p>{amplitudeSpectrum[12]}</p> */}
