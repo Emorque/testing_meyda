@@ -3,10 +3,14 @@
 import Meyda, { MeydaFeaturesObject } from 'meyda';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 // import * as THREE from 'three';
+// import { gsap } from "gsap";
+
 // import { js } from 'three/tsl';
 
 
 import "./audiofile.css"
+import { Canvas } from '@react-three/fiber';
+import { CanTemp } from './CanTemp';
 
 // function stopWatch() {
 
@@ -156,6 +160,7 @@ export function AudioFile() {
     };
     
     useEffect(() => {
+      console.log(time)
       // Button states with a timeout for each key
       const buttonStates = [
         { key: 'a', state: aActive, setState: setAActive, pillar: aPillar, pillarClass: "aPillar", setList : setAList },
@@ -171,7 +176,7 @@ export function AudioFile() {
         const spectrumRange = getAmplitudeRangeForKey(key);
         const avgAmplitude = spectrumRange.reduce((sum, idx) => sum + amplitudeSpectrum[idx], 0) / spectrumRange.length;
     
-        if (avgAmplitude > 1.5) {
+        if (avgAmplitude > 1.5 && (time % 50 === 0)) {
           // Set the button state to true when the amplitude exceeds the threshold
           setState(true);
 
@@ -197,7 +202,7 @@ export function AudioFile() {
           setState(false);
         }
       });
-    }, [amplitudeSpectrum, aActive, dActive, jActive, lActive]);
+    }, [amplitudeSpectrum, aActive, dActive, jActive, lActive, time]);
 
     useEffect(() => {
       console.log("AList", aList);
@@ -558,6 +563,7 @@ export function AudioFile() {
         }, 2000)
       }
     }
+    
 
     return (
         <>
@@ -588,7 +594,7 @@ export function AudioFile() {
               </div>
             </div> */}
 
-            {/* <p>{time/1000}</p> */}
+            <p>{time/1000}</p>
 
             <audio src={audioURL ?? ""} controls={false} ref={audioRefListening} loop={false} />
             <audio src={audioURL ?? ""} controls={false} ref={audioRefSetting} loop={false} />
@@ -617,6 +623,12 @@ export function AudioFile() {
             <p>{score}</p>
             <button onClick={toggleMusic}>Play/Pause</button>
 
+            <div style={{height: 500, width: 500, position: "relative"}}>
+              <Canvas>
+                <ambientLight />
+                <CanTemp/>
+              </Canvas>
+            </div>
 {/* 
             <p>{range1}</p>
             <p>{range2}</p>
