@@ -11,6 +11,10 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import "./audiofile.css"
 import { Canvas } from '@react-three/fiber';
 import { CanTemp } from './CanTemp';
+import { TopRight } from './TopRight';
+import { BottomLeft } from './BottomLeft';
+import { BottomRight } from './BottomRight';
+import { TopLeft } from './TopLeft';
 
 // function stopWatch() {
 
@@ -25,6 +29,9 @@ export function AudioFile() {
     const dPillar = useRef<HTMLDivElement>(null);
     const jPillar = useRef<HTMLDivElement>(null);
     const lPillar = useRef<HTMLDivElement>(null);
+
+    const [bottomLeftInstances, setBottomLeftInstances] = useState<number[]>([]);
+    // const []
 
     // const musicSource = useRef<MediaElementAudioSourceNode>(null);
     // const [level, setLevel] = useState<number>(0);
@@ -192,6 +199,9 @@ export function AudioFile() {
               pillar.current?.removeChild(newEle);
             })
           }
+          // if (key === 'a' && pillar.current) {
+          //   AddBottomLeft();
+          // }
     
           // Handle the timeout for each button independently
           setTimeout(() => {
@@ -515,6 +525,10 @@ export function AudioFile() {
             }
           }
         }
+
+        if (event.key === 'm' || event.key === 'M' ) {
+          AddBottomLeft();
+        }
       };
   
       document.addEventListener('keydown', handleKeyDown);
@@ -564,6 +578,14 @@ export function AudioFile() {
       }
     }
     
+    function AddBottomLeft() {
+      // Position stays the same, just add a new instance to the state
+      setBottomLeftInstances((prev) => [...prev, score]);
+    };
+
+    useEffect(() => {
+      console.log(bottomLeftInstances);
+    }, [bottomLeftInstances]);
 
     return (
         <>
@@ -623,10 +645,16 @@ export function AudioFile() {
             <p>{score}</p>
             <button onClick={toggleMusic}>Play/Pause</button>
 
-            <div style={{height: 500, width: 500, position: "relative"}}>
+            <div id='canvasContainer' style={{height: 500, width: 500, position: "relative"}}>
               <Canvas>
                 <ambientLight />
-                <CanTemp/>
+                <TopRight/>
+                {/* <BottomLeft/> */}
+                {bottomLeftInstances.map((index : number) => (
+                  <BottomLeft key={`bottomLeft-${index}`}/>
+                ))}
+                <BottomRight/>
+                <TopLeft/>
               </Canvas>
             </div>
 {/* 

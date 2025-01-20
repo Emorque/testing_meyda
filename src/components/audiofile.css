@@ -158,3 +158,25 @@
         transform: translate(-20px, -10px);
     }
 }
+
+#canvasContainer {
+    /* border: 1px solid white; */
+    /* border-radius: 45%;    */
+    /* animation: rotating 15s linear infinite; */
+}
+Canvas {
+    /* animation: rotating 15s linear infinite; */
+    transform-origin: center;
+    border: 1px solid white;
+    border-radius: 42%;
+    display: inline-block;
+}
+
+@keyframes rotating {
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
