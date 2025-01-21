@@ -8,6 +8,115 @@
     grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
+#gamecontainer-circle {
+    position: relative;
+    width: 80vw;
+    height: 80vw;
+    max-width: 400px;
+    max-height: 400px;
+    background-color: antiquewhite;
+    display: grid;
+    /* border: 6px solid white; */
+
+    /* grid-template-columns: 1fr 1fr 1fr 1fr; */
+    border-radius: 50%;
+    /* animation: flip 0.5s linear forwards;
+    animation-iteration-count: 1; */
+    transform: rotate(60deg);
+}
+
+@keyframes flip {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(180deg);
+    }
+}
+
+.click-Area {
+    position: absolute;
+    width: 80vw;
+    height: 80vw;
+    max-width: 400px;
+    max-height: 400px;
+    /* border-right: 6px solid transparent; */
+    /* border-bottom: 6px solid rgb(182, 34, 34); */
+    border-left: 6px solid transparent;
+    border-top: 6px solid transparent;
+    border-radius: 50%;
+    background-color: transparent;
+}
+
+.caA {
+    transform: rotate(135deg);
+    border-right: 6px solid rgba(34, 123, 182);
+    border-bottom: 6px solid rgb(34, 123, 182, 0.404);
+}
+.caD {
+    transform: rotate(-45deg);
+    border-right: 6px solid rgb(182, 34, 34, 0.404);
+    border-bottom: 6px solid rgb(182, 34, 34);
+}
+/* .caJ {
+    transform: rotate(225deg);
+    border-bottom: 6px solid rgb(69, 182, 34);
+}
+.caL {
+    transform: rotate(-45deg);
+    border-bottom: 6px solid rgb(221, 218, 25);
+} */
+
+.curve {
+    position: absolute;
+    width: 80vw;
+    height: 80vw;
+    max-width: 400px;
+    max-height: 400px;
+    border-right: 6px solid transparent;
+    border-left: 6px solid transparent;
+    border-top: 6px solid transparent;
+    border-radius: 50%;
+    background-color: transparent;
+    animation: circleAnime 2s linear;
+    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+
+}
+
+.aCurve {
+    border-right: 6px solid rgba(34, 123, 182, 0.877);
+    /* border-bottom: 6px solid rgb(34, 123, 182, 0.404); */
+    border-bottom: 6px solid transparent;
+}
+.dCurve {
+    /* border-right: 6px solid rgb(182, 34, 34, 0.404); */
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid rgba(182, 34, 34, 0.877);
+}
+
+/* .aCurve {
+    border-bottom: 6px solid rgb(34, 123, 182);
+}
+.dCurve {
+    border-bottom: 6px solid rgb(182, 34, 34);
+}
+.jCurve {
+    border-bottom: 6px solid rgb(69, 182, 34);
+}
+.lCurve {
+    border-bottom: 6px solid rgb(221, 218, 25);
+} */
+
+
+@keyframes circleAnime {
+    0% {
+        scale: 0;
+    }
+    100% {
+        scale: 0.95;
+    }
+}
+
 .pilar {
     background-color: aqua;
     border: 1px solid black;
@@ -60,7 +169,6 @@
         background-color: rgb(5, 80, 17);
         transform: translate(0px, 800px);
         display: none;
-
     }
 }
 
@@ -119,18 +227,19 @@
     animation: missAnime 500ms ease;
     animation-iteration-count: 1;    
     animation-fill-mode: forwards; 
+    /* transform: translateX(-100px); */
 }
 
-.messageA {
-    left: 0;
+.missed {
+    left: -100px;
 }
 
 .messageD {
-    left: 100;
+    left: -100px;
 }
 
-.messageJ {
-    left: 200;
+.early {
+    left: -200px;
 }
 
 .messageL {
@@ -164,6 +273,7 @@
     /* border-radius: 45%;    */
     /* animation: rotating 15s linear infinite; */
 }
+
 Canvas {
     /* animation: rotating 15s linear infinite; */
     transform-origin: center;
