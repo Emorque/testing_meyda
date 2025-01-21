@@ -63,11 +63,18 @@ export function AudioFile() {
     // const [lActive, setLActive] = useState<boolean>(false);
 
     const [score, setScore] = useState<number>(0);
+    const [hitCount, setHitCount] = useState<number>(0);
+    const [missCount, setMissCount] = useState<number>(0);
+    const [noteCount, setNoteCount] = useState<number>(0);
+
+    const [stageSet, setStageSet] = useState<boolean>(false);
+    const [musicSet, setMusicSet] = useState<boolean>(false);
 
     const audioChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
         setAudioURL(URL.createObjectURL(file));
+        setMusicSet(true);
         updateContext();
     }
 
@@ -141,27 +148,11 @@ export function AudioFile() {
         const spectrumRange = getAmplitudeRangeForKey(key);
         const avgAmplitude = spectrumRange.reduce((sum, idx) => sum + amplitudeSpectrum[idx], 0) / spectrumRange.length;
             
-        if (avgAmplitude > 1.5 && (time % 50 === 0)) {
+        if (avgAmplitude > 1.5) {
           if (key === 'a' || key === 'j') {
-            if (aSetThisFrame) {
-              setTimeout(() => {
-                if (circle.current) {
-                  const newEle = document.createElement('p');
-                  newEle.classList.add(circleClass)
-                  newEle.classList.add("curve")
-                  // newEle.style.cssText = curveStyle;
-                  newEle.textContent= ""
-                  circle.current.appendChild(newEle);
-                  newEle.addEventListener("animationend", () => {
-                    circle.current?.removeChild(newEle);
-                  })
-                }
-                setList(prevList => [...prevList, ((time + 2000) / 1000)]);
-              }, 200)
-              // aSetThisFrame = true; // Mark that 'a' or 'j' was activated in this frame
-            }
-            if (!dSetThisFrame && !aSetThisFrame) {
+            if (!aSetThisFrame) {
               setState(true);
+              setNoteCount(count => count + 1);
               setList(prevList => [...prevList, ((time + 2000) / 1000)]);
               aSetThisFrame = true; // Mark that 'a' or 'j' was activated in this frame
             }
@@ -170,12 +161,8 @@ export function AudioFile() {
             }
           } 
           else if (key === 'd' || key === 'l') {
-            if (dSetThisFrame) {
-              setState(true);
-              setList(prevList => [...prevList, ((time + 2000 + 500) / 1000)]);
-              // aSetThisFrame = true; // Mark that 'a' or 'j' was activated in this frame
-            }
-            if (!aSetThisFrame && !dSetThisFrame) {
+            if (!dSetThisFrame) {
+              setNoteCount(count => count + 1);
               setState(true);
               setList(prevList => [...prevList, ((time + 2000) / 1000)]);
               dSetThisFrame = true; // Mark that 'd' or 'l' was activated in this frame
@@ -197,9 +184,17 @@ export function AudioFile() {
             })
           }
           // Handle the timeout for each button independently
-          setTimeout(() => {
-            setState(false);
-          }, 750);
+          if (key === 'a' || key === 'j') {
+            setTimeout(() => {
+              setState(false);
+            }, 1000);
+          }
+          else if (key === 'd' || key === 'l') {
+            setTimeout(() => {
+              setState(false);
+            }, 750);
+          }
+
         }
       });
     }, [amplitudeSpectrum, aActive, dActive, time, dList, aList]);
@@ -208,6 +203,7 @@ export function AudioFile() {
       console.log("AList", aList);
       if (aList.length > 0 && aList[0] + 0.15 < time/1000) {
         setScore(score => score - 1);
+        setMissCount(count => count + 1);
         setAList(aList => aList.slice(1));
 
         const message = document.createElement('p');
@@ -224,8 +220,9 @@ export function AudioFile() {
     
     useEffect(() => {
       console.log("DList", dList);
-      if (dList.length > 0 && dList[0] + 0.15 < time/1000) {
+      if (dList.length > 0 && dList[0] + 0.20 < time/1000) {
         setScore(score => score - 1);
+        setMissCount(count => count + 1);
         setDList(dList => dList.slice(1));
 
         const message = document.createElement('p');
@@ -244,6 +241,7 @@ export function AudioFile() {
       console.log("JList", jList);
       if (jList.length > 0 && jList[0] + 0.15 < time/1000) {
         setScore(score => score - 1);
+        setMissCount(count => count + 1);
         setJList(jList => jList.slice(1));
 
         const message = document.createElement('p');
@@ -262,6 +260,7 @@ export function AudioFile() {
       console.log("LList", lList);
       if (lList.length > 0 && lList[0] + 0.15 < time/1000) {
         setScore(score => score - 1);
+        setMissCount(count => count + 1);
         setLList(lList => lList.slice(1));
 
         const message = document.createElement('p');
@@ -287,19 +286,19 @@ export function AudioFile() {
           if (rotated) {
             if (dList.length === 0) {
               console.log("ex1", dList, time)
-              setScore(score => score - 1);
               console.log("missed")
   
-              message.classList.add("miss");
-              message.textContent= "missed";
-              if (gameWrapper.current) gameWrapper.current.appendChild(message);
-              setTimeout(() => {
-                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-              }, 500);
+              // message.classList.add("miss");
+              // message.textContent= "missed";
+              // if (gameWrapper.current) gameWrapper.current.appendChild(message);
+              // setTimeout(() => {
+              //   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              // }, 500);
             }
             else {
               if ((time/1000) < dList[0] - 0.25) {
-                setScore(score => score - 1);
+                // setScore(score => score - 1);
+                // setMissCount(count => count - 1);
                 console.log("ex2", dList, (time/1000))
                 console.log("early")
   
@@ -313,6 +312,7 @@ export function AudioFile() {
               }
               else if (dList[0] + 0.15 >= (time/1000) && (time/1000) > dList[0] - 0.15) {
                 setScore(score => score + 5);
+                setHitCount(count => count + 1);
                 setDList(dList => dList.slice(1));
                 console.log("ex3", dList, (time/1000))
                 console.log("hit")
@@ -323,8 +323,9 @@ export function AudioFile() {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
                 }, 500);
               }
-              else if (dList[0] + 0.25 >= (time/1000) && (time/1000) > dList[0] - 0.25) {
+              else if (dList[0] + 0.20 >= (time/1000) && (time/1000) > dList[0] - 0.20) {
                 setScore(score => score + 3);
+                setHitCount(count => count + 1);
                 setDList(dList => dList.slice(1));
                 console.log("ex3", dList, (time/1000))
                 console.log("hit")
@@ -341,19 +342,21 @@ export function AudioFile() {
           else {
             if (aList.length === 0) {
               console.log("ex1", aList, time)
-              setScore(score => score - 1);
+              // setScore(score => score - 1);
+              // setMissCount(count => count - 1);
               console.log("missed")
   
-              message.classList.add("miss");
-              message.textContent= "missed";
-              if (gameWrapper.current) gameWrapper.current.appendChild(message);
-              setTimeout(() => {
-                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-              }, 500);
+              // message.classList.add("miss");
+              // message.textContent= "missed";
+              // if (gameWrapper.current) gameWrapper.current.appendChild(message);
+              // setTimeout(() => {
+              //   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              // }, 500);
             }
             else {
               if ((time/1000) < aList[0] - 0.25) {
-                setScore(score => score - 1);
+                // setScore(score => score - 1);
+                // setMissCount(count => count - 1);
                 console.log("ex2", aList, (time/1000))
                 console.log("early")
   
@@ -368,6 +371,7 @@ export function AudioFile() {
   
               else if (aList[0] + 0.15 >= (time/1000) && (time/1000) > aList[0] - 0.15) {
                 setScore(score => score + 5);
+                setHitCount(count => count + 1);
                 setAList(aList => aList.slice(1));
                 console.log("ex3", aList, (time/1000))
                 console.log("perfect")
@@ -381,8 +385,9 @@ export function AudioFile() {
               }
   
   
-              else if (aList[0] + 0.25 >= (time/1000) && (time/1000) > aList[0] - 0.25) {
+              else if (aList[0] + 0.20 >= (time/1000) && (time/1000) > aList[0] - 0.20) {
                 setScore(score => score + 3);
+                setHitCount(count => count + 1);
                 setAList(aList => aList.slice(1));
                 console.log("ex3", aList, (time/1000))
                 console.log("hit")
@@ -473,6 +478,7 @@ export function AudioFile() {
           else {
             if ((dList[0] + 0.15 >= (time/1000) && (time/1000) > dList[0] - 0.15) && (aList[0] + 0.15 >= (time/1000) && (time/1000) > aList[0] - 0.15) ){
               setScore(score => score + 3);
+              setHitCount(score => score + 2);
               setDList(dList => dList.slice(1));
               setAList(aList => aList.slice(1));
               message.classList.add("success");
@@ -482,17 +488,17 @@ export function AudioFile() {
                 if (gameWrapper.current) gameWrapper.current.removeChild(message);  
               }, 500);
             }
-            else if ((dList[0] + 0.25 >= (time/1000) && (time/1000) > dList[0] - 0.25) && (aList[0] + 0.25 >= (time/1000) && (time/1000) > aList[0] - 0.25) ) {
-              setScore(score => score + 2);
-              setDList(dList => dList.slice(1));
-              setAList(aList => aList.slice(1));
-              message.classList.add("success");
-              message.textContent= "success";
-              if (gameWrapper.current) gameWrapper.current.appendChild(message);
-              setTimeout(() => {
-                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-              }, 500);
-            }
+            // else if ((dList[0] + 0.25 >= (time/1000) && (time/1000) > dList[0] - 0.25) && (aList[0] + 0.25 >= (time/1000) && (time/1000) > aList[0] - 0.25) ) {
+            //   setScore(score => score + 2);
+            //   setDList(dList => dList.slice(1));
+            //   setAList(aList => aList.slice(1));
+            //   message.classList.add("success");
+            //   message.textContent= "success";
+            //   if (gameWrapper.current) gameWrapper.current.appendChild(message);
+            //   setTimeout(() => {
+            //     if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+            //   }, 500);
+            // }
           }
         }
         
@@ -505,6 +511,8 @@ export function AudioFile() {
           if (jList.length === 0) {
             console.log("ex1", jList, time)
             setScore(score => score - 1);
+            setMissCount(count => count - 1);
+            setHitCount(count => count + 1);
             console.log("missed")
 
             message.classList.add("miss");
@@ -629,12 +637,12 @@ export function AudioFile() {
     }
 
     const aStyle = {
-      opacity: rotated? "0.5" : "1",
+      opacity: rotated? "0.3" : "1",
       transition: 'opacity 0.2s linear'
     }
 
     const dStyle = {
-      opacity: rotated? "1" : "0.5",
+      opacity: rotated? "1" : "0.3",
       transition: 'opacity 0.2s linear'
     }
 
@@ -672,14 +680,24 @@ export function AudioFile() {
         setStPaused(false);
         setTimeout(() => {
           if (audioRefListening.current)  audioRefListening.current.play();
+          setStageSet(true);
         }, 2000)
       }
     }
 
     return (
         <>
-            <input type="file" accept='audio/*' onChange={audioChange}/>
             <h1>Meyda Demo</h1>
+            <div>
+              <p>Press &quot;A&quot; when the curve is just about to hit the edge on the current &quot;Active Area&quot;</p>
+              <br/>
+              <p>Press &quot;D&quot; when you want to hit both curves at once. <br/>Only works if one curve in each area are going to hit the edge near the same time</p>
+              <br/>
+              <p>Press &quot;K&quot; to rotate the circle <br/> The section that is highlighted is the &quot;Active Area&quot;</p>
+              <br/>
+              <p>Enter your music file below and Presss &quot;Set Stage&quot;</p>
+            </div>
+            <input type="file" accept='audio/*' onChange={audioChange}/>
             {/* <p>{level}</p>
             <p>{score}</p> */}
 
@@ -687,7 +705,7 @@ export function AudioFile() {
 
             <audio src={audioURL ?? ""} controls={false} ref={audioRefListening} loop={false} />
             <audio src={audioURL ?? ""} controls={false} ref={audioRefSetting} loop={false} />
-            <button onClick={setMusicStage}>Set Stage</button>
+            {musicSet && <button onClick={setMusicStage}>Set Stage</button>}
 
             {/* <div id='gamecontainer'>
               <div className='pilar' ref={aPillar}>hi</div>
@@ -706,12 +724,15 @@ export function AudioFile() {
 
               </div>
             </div>
-            <p>{score}</p>
-            <button onClick={toggleMusic}>Play/Pause</button>
-
-            <p>Press A when the curve is just about to hit the edge</p>
-            <p>Press D when you want to hit both curves at once. <br/>Only works if two curves are going to hit the edge near the same time</p>
-            <p>Press K to rotate the circle</p>
+            <div>
+              <p>Score: {score}</p>
+              <p>Hit Count: {hitCount}</p>
+              <p>Miss Count: {missCount}</p>
+              <p>Note Count: {noteCount}</p>
+            </div>
+            
+            {stageSet && <button onClick={toggleMusic}>Play/Pause</button>}
+            
 
             {/* <div id='canvasContainer' style={{height: 500, width: 500, position: "relative"}}>
               <Canvas>
