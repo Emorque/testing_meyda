@@ -1,13 +1,3 @@
-
-#gamecontainer {
-    position: relative;
-    width: 400px;
-    height: 800px;
-    background-color: antiquewhite;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-}
-
 #gamecontainer-circle {
     position: relative;
     width: 80vw;
@@ -16,12 +6,7 @@
     max-height: 400px;
     background-color: antiquewhite;
     display: grid;
-    /* border: 6px solid white; */
-
-    /* grid-template-columns: 1fr 1fr 1fr 1fr; */
     border-radius: 50%;
-    /* animation: flip 0.5s linear forwards;
-    animation-iteration-count: 1; */
     transform: rotate(60deg);
 }
 
@@ -40,8 +25,6 @@
     height: 80vw;
     max-width: 400px;
     max-height: 400px;
-    /* border-right: 6px solid transparent; */
-    /* border-bottom: 6px solid rgb(182, 34, 34); */
     border-left: 6px solid transparent;
     border-top: 6px solid transparent;
     border-radius: 50%;
@@ -58,14 +41,6 @@
     border-right: 6px solid rgb(182, 34, 34, 0.404);
     border-bottom: 6px solid rgba(182, 34, 34, 0.80);
 }
-/* .caJ {
-    transform: rotate(225deg);
-    border-bottom: 6px solid rgb(69, 182, 34);
-}
-.caL {
-    transform: rotate(-45deg);
-    border-bottom: 6px solid rgb(221, 218, 25);
-} */
 
 .curve {
     position: absolute;
@@ -85,28 +60,19 @@
 
 .aCurve {
     border-right: 6px solid rgba(25, 86, 128);
-    /* border-bottom: 6px solid rgb(34, 123, 182, 0.404); */
     border-bottom: 6px solid transparent;
 }
 .dCurve {
-    /* border-right: 6px solid rgb(182, 34, 34, 0.404); */
     border-right: 6px solid transparent;
     border-bottom: 6px solid rgba(182, 34, 34);
 }
 
-/* .aCurve {
-    border-bottom: 6px solid rgb(34, 123, 182);
+#button-container {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
-.dCurve {
-    border-bottom: 6px solid rgb(182, 34, 34);
-}
-.jCurve {
-    border-bottom: 6px solid rgb(69, 182, 34);
-}
-.lCurve {
-    border-bottom: 6px solid rgb(221, 218, 25);
-} */
-
 
 @keyframes circleAnime {
     0% {
@@ -117,176 +83,59 @@
     }
 }
 
-.pilar {
-    background-color: aqua;
-    border: 1px solid black;
-    width: 100%;
-    height: 100%;
-}
-
-.newEle {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 25%;
-    height: 10px;
-}
-
-.aPillar {
-    animation: panDownA 2s linear;
-    /* left: 0; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
-
-
-}
-
-.dPillar {
-    animation: panDownB 2s linear;
-    /* left: 100px; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
-
-
-}
-
-.jPillar {
-    animation: panDownC 2s linear;
-    /* left: 200px; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
-
-
-}
-
-.lPillar {
-    animation: panDownD 2s linear;
-    /* left: 00px; */    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
-
-
-}
-
-@keyframes panDownA {
-    0% {
-        background-color: aqua;
-        transform: translate(0px, 0px);
-    }
-    100% {
-        background-color: rgb(5, 80, 17);
-        transform: translate(0px, 800px);
-        display: none;
-    }
-}
-
-@keyframes panDownB {
-    0% {
-        background-color: aqua;
-        transform: translate(100px, 0px);
-    }
-    100% {
-        background-color: rgb(5, 80, 17);
-        transform: translate(100px, 800px);
-        display: none;
-
-    }
-}
-
-@keyframes panDownC {
-    0% {
-        background-color: aqua;
-        transform: translate(200px, 0px);
-    }
-    100% {
-        background-color: rgb(5, 80, 17);
-        transform: translate(200px, 800px);
-        display: none;
-    }
-}
-
-@keyframes panDownD {
-    0% {
-        background-color: aqua;
-        transform: translate(300px, 0px);
-    }
-    100% {
-        background-color: rgb(5, 80, 17);
-        transform: translate(300px, 800px);
-        display: none;
-
-    }
+.early {
+    left: -150px;
 }
 
 .message {
+    animation: messageAnime 500ms ease;
+    animation-iteration-count: 1;    
+    animation-fill-mode: forwards; 
     position: absolute;
-    bottom: 0;
+    padding: 5px;
 }
 
-.success {
-    background-color: green;
-    animation: successAnime 500ms ease;
+.aMessage {
+    top: 0;
+    left: -50px;
+    background-color:rgba(25, 86, 128) ;
+}
+
+.dMessage {
+    bottom: 75px;
+    left: -50px;
+    background-color: rgba(182, 34, 34);;
+}
+
+.doubleMessage {
+    position: absolute;
+    padding: 5px;
+    bottom: 200px;
+    left: -100px;
+    background-color: rgba(182, 34, 34);
+    animation: doubleAnime 500ms ease;
     animation-iteration-count: 1;    
     animation-fill-mode: forwards; 
-}
-
-.miss {
-    background-color: red;
-    animation: missAnime 500ms ease;
-    animation-iteration-count: 1;    
-    animation-fill-mode: forwards; 
-    /* transform: translateX(-100px); */
-}
-
-.missed {
-    left: -100px;
-}
-
-.messageD {
-    left: -100px;
 }
 
 .early {
-    left: -200px;
+    left: -150px;
 }
 
-.messageL {
-    left: 300;
-}
-
-@keyframes successAnime {
+@keyframes messageAnime {
     0% {
-        color: white;
         transform: translate(0,0px);
     }
     100% {
-        color: black;
         transform: translate(-20px, -10px);
     }
 }
 
-@keyframes missAnime {
+@keyframes doubleAnime {
     0% {
-        color: white;
         transform: translate(0,0px);
     }
     100% {
-        color: black;
-        transform: translate(-20px, -10px);
-    }
-}
-
-#canvasContainer {
-    /* border: 1px solid white; */
-    /* border-radius: 45%;    */
-    /* animation: rotating 15s linear infinite; */
-}
-
-Canvas {
-    /* animation: rotating 15s linear infinite; */
-    transform-origin: center;
-    border: 1px solid white;
-    border-radius: 42%;
-    display: inline-block;
-}
-
-@keyframes rotating {
-    0% {
-        transform: rotate(0);
-    }
-    100% {
-        transform: rotate(360deg);
+        transform: translate(-20px, 0px);
     }
 }

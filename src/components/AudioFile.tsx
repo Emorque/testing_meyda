@@ -9,11 +9,7 @@ export function AudioFile() {
     const [audioURL, setAudioURL] = useState<string | null>(null)
     const audioRefListening = useRef<HTMLAudioElement>(null);
     const audioRefSetting = useRef<HTMLAudioElement>(null);
-
-    // const aPillar = useRef<HTMLDivElement>(null);
-    // const dPillar = useRef<HTMLDivElement>(null);
-    const jPillar = useRef<HTMLDivElement>(null);
-    const lPillar = useRef<HTMLDivElement>(null);
+    const [stageBtn, setStageBtn] = useState<boolean>(false); 
 
     const gameContainer = useRef<HTMLDivElement>(null);
     const gameWrapper = useRef<HTMLDivElement>(null);
@@ -52,15 +48,11 @@ export function AudioFile() {
 
     const [aList, setAList] = useState<number[]>([]);
     const [dList, setDList] = useState<number[]>([]);
-    const [jList, setJList] = useState<number[]>([]);
-    const [lList, setLList] = useState<number[]>([]);
 
     const [amplitudeSpectrum, setAmplitudeSpectrum] = useState<Float32Array<ArrayBufferLike>>(new Float32Array(0));
 
     const [aActive, setAActive] = useState<boolean>(false);
     const [dActive, setDActive] = useState<boolean>(false);
-    // const [jActive, setJActive] = useState<boolean>(false);
-    // const [lActive, setLActive] = useState<boolean>(false);
 
     const [score, setScore] = useState<number>(0);
     const [hitCount, setHitCount] = useState<number>(0);
@@ -75,6 +67,13 @@ export function AudioFile() {
         if (!file) return;
         setAudioURL(URL.createObjectURL(file));
         setMusicSet(true);
+        setStageBtn(false);
+        setScore(0);
+        setHitCount(0);
+        setMissCount(0);
+        setNoteCount(0);
+        setAList([]);
+        setDList([]);
         updateContext();
     }
 
@@ -200,16 +199,15 @@ export function AudioFile() {
     }, [amplitudeSpectrum, aActive, dActive, time, dList, aList]);
 
     useEffect(() => {
-      console.log("AList", aList);
+      // console.log("AList", aList);
       if (aList.length > 0 && aList[0] + 0.15 < time/1000) {
         setScore(score => score - 1);
         setMissCount(count => count + 1);
         setAList(aList => aList.slice(1));
 
         const message = document.createElement('p');
-        message.classList.add("message")
-        message.classList.add("missed");
-        message.classList.add("miss");
+        message.classList.add("aMessage");
+        message.classList.add("message");
         message.textContent= "missed";
         if (gameWrapper.current) gameWrapper.current.appendChild(message);
         setTimeout(() => {
@@ -219,16 +217,15 @@ export function AudioFile() {
     }, [aList, time])
     
     useEffect(() => {
-      console.log("DList", dList);
+      // console.log("DList", dList);
       if (dList.length > 0 && dList[0] + 0.20 < time/1000) {
         setScore(score => score - 1);
         setMissCount(count => count + 1);
         setDList(dList => dList.slice(1));
 
         const message = document.createElement('p');
-        message.classList.add("message")
-        message.classList.add("missed");
-        message.classList.add("miss");
+        message.classList.add("dMessage");
+        message.classList.add("message");
         message.textContent= "missed";
         if (gameWrapper.current) gameWrapper.current.appendChild(message);
         setTimeout(() => {
@@ -237,72 +234,22 @@ export function AudioFile() {
       }
     }, [dList, time])
 
-    useEffect(() => {
-      console.log("JList", jList);
-      if (jList.length > 0 && jList[0] + 0.15 < time/1000) {
-        setScore(score => score - 1);
-        setMissCount(count => count + 1);
-        setJList(jList => jList.slice(1));
-
-        const message = document.createElement('p');
-        message.classList.add("message")
-        message.classList.add("messageJ");
-        message.classList.add("miss");
-        message.textContent= "missed";
-        if (jPillar.current) jPillar.current.appendChild(message);
-        setTimeout(() => {
-          if (jPillar.current) jPillar.current.removeChild(message);  
-        }, 500);
-      }
-    }, [jList, time])
-
-    useEffect(() => {
-      console.log("LList", lList);
-      if (lList.length > 0 && lList[0] + 0.15 < time/1000) {
-        setScore(score => score - 1);
-        setMissCount(count => count + 1);
-        setLList(lList => lList.slice(1));
-
-        const message = document.createElement('p');
-        message.classList.add("message")
-        message.classList.add("messageL");
-        message.classList.add("miss");
-        message.textContent= "missed";
-        if (lPillar.current) lPillar.current.appendChild(message);
-        setTimeout(() => {
-          if (lPillar.current) lPillar.current.removeChild(message);  
-        }, 500);
-      }
-    }, [lList, time])
 
     useEffect(() => {
       const handleKeyDown = (event: { key: string; }) => {
         if (event.key === 'a' || event.key === 'A' ) {
           console.log('A key pressed!');
           const message = document.createElement('p');
-          message.classList.add("message")
-          message.classList.add("messageA");
+          message.classList.add("message");
+          setABtn(true);
 
           if (rotated) {
+            message.classList.add("dMessage")
             if (dList.length === 0) {
-              console.log("ex1", dList, time)
-              console.log("missed")
-  
-              // message.classList.add("miss");
-              // message.textContent= "missed";
-              // if (gameWrapper.current) gameWrapper.current.appendChild(message);
-              // setTimeout(() => {
-              //   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-              // }, 500);
             }
             else {
-              if ((time/1000) < dList[0] - 0.25) {
-                // setScore(score => score - 1);
-                // setMissCount(count => count - 1);
-                console.log("ex2", dList, (time/1000))
-                console.log("early")
-  
-                message.classList.add("miss");
+              if ((time/1000) < dList[0] - 0.25) {  
+                // message.classList.add("miss");
                 message.textContent= "early";
                 message.classList.add("early");
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
@@ -316,8 +263,10 @@ export function AudioFile() {
                 setDList(dList => dList.slice(1));
                 console.log("ex3", dList, (time/1000))
                 console.log("hit")
-                message.classList.add("success");
+                // message.classList.add("success");
+                // message.classList.add("successD");
                 message.textContent= "perfect";
+                message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
@@ -329,8 +278,9 @@ export function AudioFile() {
                 setDList(dList => dList.slice(1));
                 console.log("ex3", dList, (time/1000))
                 console.log("hit")
-                message.classList.add("success");
+                message.classList.add("successD");
                 message.textContent= "success";
+                message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
@@ -340,6 +290,7 @@ export function AudioFile() {
           }
 
           else {
+            message.classList.add("aMessage")
             if (aList.length === 0) {
               console.log("ex1", aList, time)
               // setScore(score => score - 1);
@@ -360,7 +311,6 @@ export function AudioFile() {
                 console.log("ex2", aList, (time/1000))
                 console.log("early")
   
-                message.classList.add("miss");
                 message.textContent= "early";
                 message.classList.add("early");
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
@@ -378,6 +328,7 @@ export function AudioFile() {
                 
                 message.classList.add("success");
                 message.textContent= "perfect";
+                message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
@@ -394,6 +345,7 @@ export function AudioFile() {
                 
                 message.classList.add("success");
                 message.textContent= "success";
+                message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
@@ -401,73 +353,15 @@ export function AudioFile() {
               }
             }
           }
-
-          // if (aList.length === 0) {
-          //   console.log("ex1", aList, time)
-          //   setScore(score => score - 1);
-          //   console.log("missed")
-
-          //   message.classList.add("miss");
-          //   message.textContent= "missed";
-          //   if (aPillar.current) aPillar.current.appendChild(message);
-          //   setTimeout(() => {
-          //     if (aPillar.current) aPillar.current.removeChild(message);  
-          //   }, 500);
-          // }
-          // else {
-          //   if ((time/1000) < aList[0] - 0.25) {
-          //     setScore(score => score - 1);
-          //     console.log("ex2", aList, (time/1000))
-          //     console.log("early")
-
-          //     message.classList.add("miss");
-          //     message.textContent= "early";
-          //     if (aPillar.current) aPillar.current.appendChild(message);
-          //     setTimeout(() => {
-          //       if (aPillar.current) aPillar.current.removeChild(message);  
-          //     }, 500);
-          //   }
-
-          //   else if (aList[0] + 0.15 >= (time/1000) && (time/1000) > aList[0] - 0.15) {
-          //     setScore(score => score + 1);
-          //     setAList(aList => aList.slice(1));
-          //     console.log("ex3", aList, (time/1000))
-          //     console.log("perfect")
-              
-          //     message.classList.add("success");
-          //     message.textContent= "perfect";
-          //     if (aPillar.current) aPillar.current.appendChild(message);
-          //     setTimeout(() => {
-          //       if (aPillar.current) aPillar.current.removeChild(message);  
-          //     }, 500);
-          //   }
-
-
-          //   else if (aList[0] + 0.25 >= (time/1000) && (time/1000) > aList[0] - 0.25) {
-          //     setScore(score => score + 1);
-          //     setAList(aList => aList.slice(1));
-          //     console.log("ex3", aList, (time/1000))
-          //     console.log("hit")
-              
-          //     message.classList.add("success");
-          //     message.textContent= "success";
-          //     if (aPillar.current) aPillar.current.appendChild(message);
-          //     setTimeout(() => {
-          //       if (aPillar.current) aPillar.current.removeChild(message);  
-          //     }, 500);
-          //   }
-          // }
         }
 
         if (event.key === 'd' || event.key === 'D' ) {
-          console.log('D key pressed!');
-          const message = document.createElement('p');
-          message.classList.add("message")
-          message.classList.add("messageD");
+          setDBtn(true);
+
           if (dList.length === 0 || aList.length === 0) {
             setScore(score => score - 10);
-            console.log("missed")
-
+            const message = document.createElement('p');
+            message.classList.add("doubleMessage");
             message.classList.add("miss");
             message.textContent= "missed";
             if (gameWrapper.current) gameWrapper.current.appendChild(message);
@@ -481,137 +375,37 @@ export function AudioFile() {
               setHitCount(score => score + 2);
               setDList(dList => dList.slice(1));
               setAList(aList => aList.slice(1));
-              message.classList.add("success");
-              message.textContent= "perfect";
-              if (gameWrapper.current) gameWrapper.current.appendChild(message);
-              setTimeout(() => {
-                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-              }, 500);
-            }
-            // else if ((dList[0] + 0.25 >= (time/1000) && (time/1000) > dList[0] - 0.25) && (aList[0] + 0.25 >= (time/1000) && (time/1000) > aList[0] - 0.25) ) {
-            //   setScore(score => score + 2);
-            //   setDList(dList => dList.slice(1));
-            //   setAList(aList => aList.slice(1));
-            //   message.classList.add("success");
-            //   message.textContent= "success";
-            //   if (gameWrapper.current) gameWrapper.current.appendChild(message);
-            //   setTimeout(() => {
-            //     if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-            //   }, 500);
-            // }
-          }
-        }
-        
-        if (event.key === 'j' || event.key === 'J' ) {
-          console.log('J key pressed!');
-          const message = document.createElement('p');
-          message.classList.add("message")
-          message.classList.add("messageJ");
 
-          if (jList.length === 0) {
-            console.log("ex1", jList, time)
-            setScore(score => score - 1);
-            setMissCount(count => count - 1);
-            setHitCount(count => count + 1);
-            console.log("missed")
+              const messageA = document.createElement('p');
+              messageA.classList.add("message");
+              messageA.classList.add("aMessage")
+              messageA.classList.add("success");
+              messageA.style.backgroundColor = "green";
+              messageA.textContent= "perfect";
 
-            message.classList.add("miss");
-            message.textContent= "missed";
-            if (jPillar.current) jPillar.current.appendChild(message);
-            setTimeout(() => {
-              if (jPillar.current) jPillar.current.removeChild(message);  
-            }, 500);
-          }
-          else {
-            if ((time/1000) < jList[0] - 0.15) {
-              setScore(score => score - 1);
-              console.log("ex2", jList, (time/1000))
-              console.log("early")
+              const messageD = document.createElement('p');
+              messageD.classList.add("message");
+              messageD.classList.add("dMessage")
+              messageD.classList.add("success");
+              messageD.style.backgroundColor = "green";
+              messageD.textContent= "perfect";
 
-              message.classList.add("miss");
-              message.textContent= "early";
-              message.classList.add("early")
-              if (jPillar.current) jPillar.current.appendChild(message);
+              if (gameWrapper.current) {
+                gameWrapper.current.appendChild(messageA);
+                gameWrapper.current.appendChild(messageD);
+              }
               setTimeout(() => {
-                if (jPillar.current) jPillar.current.removeChild(message);  
-              }, 500);
-            }
-            else if (jList[0] + 0.07 >= (time/1000) && (time/1000) > jList[0] - 0.07) {
-              setScore(score => score + 1);
-              setJList(jList => jList.slice(1));
-              message.classList.add("success");
-              message.textContent= "perfect";
-              if (jPillar.current) jPillar.current.appendChild(message);
-              setTimeout(() => {
-                if (jPillar.current) jPillar.current.removeChild(message);  
-              }, 500);
-            }
-            else if (jList[0] + 0.15 >= (time/1000) && (time/1000) > jList[0] - 0.15) {
-              setScore(score => score + 1);
-              setJList(jList => jList.slice(1));
-              message.classList.add("success");
-              message.textContent= "success";
-              if (jPillar.current) jPillar.current.appendChild(message);
-              setTimeout(() => {
-                if (jPillar.current) jPillar.current.removeChild(message);  
+                if (gameWrapper.current) {
+                  gameWrapper.current.removeChild(messageA);  
+                  gameWrapper.current.removeChild(messageD);  
+                }
               }, 500);
             }
           }
         }
         
-        if (event.key === 'l' || event.key === 'L' ) {
-          console.log('L key pressed!');
-          const message = document.createElement('p');
-          message.classList.add("message")
-          message.classList.add("messageL");
-
-          if (lList.length === 0) {
-            console.log("ex1", lList, time)
-            setScore(score => score - 1);
-            console.log("missed")
-
-            message.classList.add("miss");
-            message.textContent= "missed";
-            if (lPillar.current) lPillar.current.appendChild(message);
-            setTimeout(() => {
-              if (lPillar.current) lPillar.current.removeChild(message);  
-            }, 500);
-          }
-          else {
-            if ((time/1000) < lList[0] - 0.15) {
-              setScore(score => score - 1);
-
-              message.classList.add("miss");
-              message.textContent= "early";
-              if (lPillar.current) lPillar.current.appendChild(message);
-              setTimeout(() => {
-                if (lPillar.current) lPillar.current.removeChild(message);  
-              }, 500);
-            }
-            else if (lList[0] + 0.07 >= (time/1000) && (time/1000) > lList[0] - 0.07) {
-              setScore(score => score + 1);
-              setLList(lList => lList.slice(1));
-              message.classList.add("success");
-              message.textContent= "perfect";
-              if (lPillar.current) lPillar.current.appendChild(message);
-              setTimeout(() => {
-                if (lPillar.current) lPillar.current.removeChild(message);  
-              }, 500);
-            }
-            else if (lList[0] + 0.15 >= (time/1000) && (time/1000) > lList[0] - 0.15) {
-              setScore(score => score + 1);
-              setLList(lList => lList.slice(1));
-              message.classList.add("success");
-              message.textContent= "success";
-              if (lPillar.current) lPillar.current.appendChild(message);
-              setTimeout(() => {
-                if (lPillar.current) lPillar.current.removeChild(message);  
-              }, 500);
-            }
-          }
-        }
-
         if (event.key === 'k' || event.key === "K") {
+          setKBtn(true);
           handleFlip()
         } 
       };
@@ -622,7 +416,28 @@ export function AudioFile() {
       return () => {
         document.removeEventListener('keydown', handleKeyDown);
       };
-    }, [aList, dList, jList, lList, time, rotated]);
+    }, [aList, dList, time, rotated]);
+
+    
+    useEffect(() => {
+      const handleKeyUp = (event: { key: string; }) => {
+        if (event.key === 'a' || event.key === 'A') {
+          setABtn(false);
+        }
+        if (event.key === 'd' || event.key === 'D') {
+          setDBtn(false);
+        }
+        if (event.key === 'k' || event.key === 'K') {
+          setKBtn(false);
+        }
+      }
+      document.addEventListener('keyup', handleKeyUp);
+  
+      // Cleanup the event listener on unmount
+      return () => {
+        document.removeEventListener('keyup', handleKeyUp);
+      };
+    }, []);
 
     const handleFlip = () => {
       console.log("test");
@@ -646,18 +461,42 @@ export function AudioFile() {
       transition: 'opacity 0.2s linear'
     }
 
+    const [aBtn, setABtn] = useState<boolean>(false);
+    const [dBtn, setDBtn] = useState<boolean>(false);
+    const [kBtn, setKBtn] = useState<boolean>(false); 
+    
+    const btnStyleA = {
+      backgroundColor: aBtn? "grey" : "black",
+      color: aBtn? "black" : "white",
+      padding: 5,
+    }
+    const btnStyleD = {
+      backgroundColor: dBtn? "grey" : "black",
+      color: dBtn? "black" : "white",
+      padding: 5,
+    }
+    const btnStyleK = {
+      backgroundColor: kBtn? "grey" : "black",
+      color: kBtn? "black" : "white",
+      padding: 5,
+    }
+    const activeCircle = {
+      backgroundColor: rotated? "rgba(182, 34, 34)" : "rgba(25, 86, 128)",
+      width: "fit-content",
+      color: "white",
+      padding: 5,
+    }
+
     const toggleMusic = () => {
-      const liiii = document.querySelectorAll('.curve');
+      const curves = document.querySelectorAll('.curve');
       if (audioRefListening.current && audioRefSetting.current) {
-        // if ()
-        // console.log("HI");
         if (audioRefListening.current.paused && audioRefSetting.current.paused) {
           audioRefListening.current.play();
           audioRefSetting.current.play();
           setStopwatchActive(true);
           setStPaused(false);
-          for (let i = 0; i < liiii.length; i++) {
-            (liiii[i] as HTMLParagraphElement).style.animationPlayState = "running";
+          for (let i = 0; i < curves.length; i++) {
+            (curves[i] as HTMLParagraphElement).style.animationPlayState = "running";
           }
         }
         else {
@@ -665,8 +504,8 @@ export function AudioFile() {
           audioRefSetting.current.pause();
           setStopwatchActive(false);
           setStPaused(true);
-          for (let i = 0; i < liiii.length; i++) {
-            (liiii[i] as HTMLParagraphElement).style.animationPlayState = "paused";
+          for (let i = 0; i < curves.length; i++) {
+            (curves[i] as HTMLParagraphElement).style.animationPlayState = "paused";
           }
         }
       }
@@ -678,6 +517,7 @@ export function AudioFile() {
         audioRefListening.current.pause();
         setStopwatchActive(true);
         setStPaused(false);
+        setStageBtn(true)
         setTimeout(() => {
           if (audioRefListening.current)  audioRefListening.current.play();
           setStageSet(true);
@@ -698,30 +538,22 @@ export function AudioFile() {
               <p>Enter your music file below and Presss &quot;Set Stage&quot;</p>
             </div>
             <input type="file" accept='audio/*' onChange={audioChange}/>
-            {/* <p>{level}</p>
-            <p>{score}</p> */}
-
-            {/* <p>{time/1000}</p> */}
 
             <audio src={audioURL ?? ""} controls={false} ref={audioRefListening} loop={false} />
             <audio src={audioURL ?? ""} controls={false} ref={audioRefSetting} loop={false} />
-            {musicSet && <button onClick={setMusicStage}>Set Stage</button>}
-
-            {/* <div id='gamecontainer'>
-              <div className='pilar' ref={aPillar}>hi</div>
-              <div className='pilar' ref={dPillar}>hi</div>
-              <div className='pilar' ref={jPillar}>hi</div>
-              <div className='pilar' ref={lPillar}>hi</div>
-            </div> */}
-            {/* <p>{score}</p> */}
+            {musicSet && <button onClick={setMusicStage} disabled={stageBtn}>Set Stage</button>}
+            <div style={activeCircle}> Active </div>
 
             <div ref={gameWrapper} style={{position: "relative"}}>
               <div id='gamecontainer-circle' ref={gameContainer}>
                 <div className='click-Area caA' style={aStyle} ref={aCircle}></div>
                 <div className='click-Area caD' style={dStyle} ref={dCircle}></div>
-                {/* <div className='click-Area caJ' ref={jCircle}></div>
-                <div className='click-Area caL' ref={lCircle}></div> */}
 
+              </div>
+              <div id='button-container'>
+                <div style={btnStyleA}>A</div>
+                <div style={btnStyleD}>D</div>
+                <div style={btnStyleK}>K</div>
               </div>
             </div>
             <div>
@@ -732,19 +564,6 @@ export function AudioFile() {
             </div>
             
             {stageSet && <button onClick={toggleMusic}>Play/Pause</button>}
-            
-
-            {/* <div id='canvasContainer' style={{height: 500, width: 500, position: "relative"}}>
-              <Canvas>
-                <ambientLight />
-                <TopRight/>
-                {bottomLeftInstances.map((index : number) => (
-                  <BottomLeft key={`bottomLeft-${index}`}/>
-                ))}
-                <BottomRight/>
-                <TopLeft/>
-              </Canvas>
-            </div> */}
         </>
     )
 }
