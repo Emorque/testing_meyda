@@ -162,16 +162,16 @@ export function AudioFile() {
     useEffect(() => {
       // Button states with a timeout for each key
       const buttonStates = [
-        { key: 'a', state: aActive, setState: setAActive, circle: aCircle, circleClass: "aCurve", setList : setAList, oppositeList: dList },
-        { key: 'd', state: dActive, setState: setDActive, circle: dCircle, circleClass: "dCurve", setList : setDList, oppositeList: aList },
-        { key: 's', state: sActive, setState: setSActive, circle: sCircle, circleClass: "wCurve", setList : setSList, oppositeList: aList },
+        { key: 'a', state: aActive, setState: setAActive, circle: aCircle, circleClass: "aCurve", setList : setAList},
+        { key: 'd', state: dActive, setState: setDActive, circle: dCircle, circleClass: "dCurve", setList : setDList},
+        { key: 's', state: sActive, setState: setSActive, circle: sCircle, circleClass: "wCurve", setList : setSList},
         
         // { key: 'j', state: aActive, setState: setAActive, circle: aCircle, circleClass: "aCurve", setList : setAList, oppositeList: dList },
         // { key: 'l', state: dActive, setState: setDActive, circle: dCircle, circleClass: "dCurve", setList : setDList, oppositeList: aList },
       ];
 
       // buttonStates.forEach(({ key, state, setState, pillar, pillarClass, setList }) => {
-      buttonStates.forEach(({ key, state, setState, circle, circleClass, setList, oppositeList }) => { 
+      buttonStates.forEach(({ key, state, setState, circle, circleClass, setList }) => { 
       // If the button state is already set, skip the update
         if (state) return;
         // if (oppositeList.length > 0 && (oppositeList[-1] + 0.30 >= ((time + 2000)/1000))) {
