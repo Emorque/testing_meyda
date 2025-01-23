@@ -1,22 +1,113 @@
+*{
+    box-sizing: border-box; /* Ensure borders don't add extra size */
+}
+
 #gamecontainer-circle {
     position: relative;
     width: 80vw;
     height: 80vw;
     max-width: 400px;
     max-height: 400px;
-    background-color: antiquewhite;
+    background-color: rgb(250, 238, 223);
+    z-index: 1;
+    border: 9px solid transparent;
     display: grid;
     border-radius: 50%;
-    transform: rotate(60deg);
+    transform: rotate(160deg);
 }
 
-@keyframes flip {
+#gamecontainer-holds {
+    position: relative;
+    width: 40vw;
+    height: 40vw;
+    max-width: 250px;
+    max-height: 250px;
+    background-color: rgb(250, 238, 223);
+    display: grid;
+    border-radius: 50%;
+    /* transform: rotate(60deg); */
+}
+
+.bar-container {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    width: 70px;
+    height: 220px;
+    /* background-color: red; */
+    border: 10px solid rgb(250, 238, 223);
+    box-sizing: border-box; /* Ensure borders don't add extra size */
+}
+
+.pulsing {
+    animation: pulsingAnime 1.2s linear;
+    animation-iteration-count: 1;    
+    animation-fill-mode: forwards; 
+}
+
+@keyframes pulsingAnime {
     0% {
-        transform: rotate(0deg);
+        border: 10px solid rgb(250, 238, 223);
+      }
+      41.67% {
+        /* 500ms */
+        border: 10px solid green;
+      }
+      58.33% {
+        /* 700ms */
+        border: 10px solid rgb(250, 238, 223);
+      }
+      83.33% {
+        /* 1000ms */
+        border: 10px solid green;
+        }
+      100% {
+        /* 1200ms */
+        border: 10px solid rgb(250, 238, 223);
     }
-    100% {
-        transform: rotate(180deg);
+}
+
+.heightChange {
+    animation: heightChangeAnime 2.5s linear;
+    animation-iteration-count: 1;    
+    animation-fill-mode: forwards; 
+}
+
+@keyframes heightChangeAnime {
+    0% {
+        height: 0px;
     }
+    40% {
+        height: 0px;
+    }
+    50% {
+        height: 0px;
+    }
+      60% {
+        /* 1500ms */
+        height: 100px
+    }
+    70% {
+        /* 1500ms */
+        height: 100px
+    }
+      80% {
+        /* 2000ms */
+        height: 200px
+      }
+      100% {
+        /* 2500ms */
+        height: 0px
+      }
+}
+
+.bar {
+    top:0;
+    width: 50px;
+    height: 0px;
+    background-color: green;
+    /* transition: height 0.25s ease */
+
 }
 
 .click-Area {
@@ -25,46 +116,149 @@
     height: 80vw;
     max-width: 400px;
     max-height: 400px;
-    border-left: 6px solid transparent;
-    border-top: 6px solid transparent;
+    border-left: 9px solid transparent;
+    border-top: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+
+    top: -9px;
+    bottom: -9px;
+    left: -9px;
+    right: -9px;
+
     border-radius: 50%;
     background-color: transparent;
+    box-sizing: border-box; /* Ensure borders don't add extra size */
+}
+
+.click-AreaHold {
+    position: absolute;
+    width: 40vw;
+    height: 40vw;
+    max-width: 250px;
+    max-height: 250px;
+    border-left: 12px solid rgba(182, 180, 34, 0.8);
+    border-top: 12px solid rgba(182, 180, 34, 0.8);
+    border-right: 12px solid rgba(182, 180, 34, 0.8);
+    border-bottom: 12px solid rgba(182, 180, 34, 0.8);
+    border-radius: 50%;
+    background-color: transparent;
+    box-sizing: border-box; /* Ensure borders don't add extra size */
 }
 
 .caA {
-    transform: rotate(135deg);
-    border-right: 6px solid rgba(25, 86, 128, 0.8);
-    border-bottom: 6px solid rgba(25, 86, 128, 0.404);
-}
-.caD {
-    transform: rotate(-45deg);
-    border-right: 6px solid rgb(182, 34, 34, 0.404);
-    border-bottom: 6px solid rgba(182, 34, 34, 0.80);
+    transform: rotate(45deg);
+    /* border-right: 6px solid rgba(25, 86, 128, 0.8); */
+    /* border-bottom: 6px solid rgba(25, 87, 128, 0.75); */
+    border-left: 9px solid rgba(25, 87, 128, 0.75);       
 }
 
+.caD {
+    transform: rotate(135deg);
+    /* border-right: 6px solid rgb(182, 34, 34, 0.404); */
+    border-left: 9px solid rgba(182, 34, 34, 0.75);
+}
+
+.caWhole {
+    position: absolute;
+    width: 80vw;
+    height: 80vw;
+    max-width: 400px;
+    max-height: 400px;
+    top: -9px;
+    left: -9px;
+    bottom: -9px;
+    right: -9px;
+
+    border-top: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    /* border-left: 9px solid rgba(140, 34, 182); */
+    background-color: transparent;
+    border-radius: 50%;
+    transform: rotate(90deg);
+    box-sizing: border-box; /* Ensure borders don't add extra size */
+}
+ 
 .curve {
     position: absolute;
     width: 80vw;
     height: 80vw;
     max-width: 400px;
     max-height: 400px;
-    border-right: 6px solid transparent;
-    border-left: 6px solid transparent;
-    border-top: 6px solid transparent;
+    border-right: 9px solid transparent;
+    border-left: 9px solid transparent;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    top: -9px;
+    bottom: -9px;
+    left: -9px;
+    right: -9px;
     border-radius: 50%;
     background-color: transparent;
-    animation: circleAnime 2s linear;
-    animation-iteration-count: 1;    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+}
 
+.curveHold {
+    position: absolute;
+    width: 40vw;
+    height: 40vw;
+    max-width: 250px;
+    max-height: 250px;
+    top: -12px;
+    bottom: -12px;
+    left: -12px;
+    right: -12px;
+    border-radius: 50%;
+    background-color: transparent;
 }
 
 .aCurve {
-    border-right: 6px solid rgba(25, 86, 128);
-    border-bottom: 6px solid transparent;
+    /* border-right: 6px solid rgba(25, 86, 128); */
+    border-left: 9px solid rgba(25, 86, 128);
+    animation: circleAnimeA 2s linear;
+    animation-iteration-count: 1;    
+    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
 }
 .dCurve {
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid rgba(182, 34, 34);
+    /* border-right: 6px solid transparent; */
+    border-left: 9px solid rgba(182, 34, 34);
+    animation: circleAnimeD 2s linear;
+    animation-iteration-count: 1;    
+    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+}
+
+.wholeCurve {
+    position: absolute;
+    width: 80vw;
+    height: 80vw;
+    max-width: 400px;
+    max-height: 400px;
+    border: 9px solid rgba(140, 34, 182); /* Solid black border */
+    border-top: 9px transparent;
+    clip-path: polygon(50% 0%, 50% 100%, 0% 100%); /* Clip to form a triangle */
+    border-radius: 50%;
+    background-color: transparent;
+}
+
+.sCurve {
+    /* border-right: 6px solid transparent; */
+    border-left: 12px solid rgb(182, 180, 34, 0.8);
+    border-bottom: 12px solid rgba(182, 180, 34, 0.8);
+    border-top: 12px solid rgb(182, 180, 34, 0.8);
+    border-right: 12px solid rgba(182, 180, 34, 0.8);
+    animation: circleAnimeS 2s linear;
+    animation-iteration-count: 1;    
+    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+}
+
+.wCurve {
+    border-right: 9px solid rgb(182, 180, 34, 0.8);
+    border-left: 9px solid rgb(182, 180, 34, 0.8);
+    border-top: 9px solid rgb(182, 180, 34, 0.8);
+    border-bottom: 9px solid rgb(182, 180, 34, 0.8);
+    animation: wholeAnimeS 2s linear;
+    animation-iteration-count: 1;    
+    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
 }
 
 #button-container {
@@ -74,12 +268,72 @@
     justify-content: space-between;
 }
 
-@keyframes circleAnime {
+@keyframes circleAnimeA {
     0% {
         scale: 0;
     }
+    90% {
+        border-left: 9px solid rgba(25, 86, 128, 0.8);
+    }
     100% {
-        scale: 0.95;
+        scale: 1;
+        border-left: 9px solid rgb(41, 161, 241);
+    }
+}
+
+@keyframes circleAnimeD {
+    0% {
+        scale: 0;
+    }
+    90% {
+        border-left: 9px solid rgba(182, 34, 34, 0.8);
+    }
+    100% {
+        scale: 1;
+        border-left: 9px solid rgb(252, 43, 43);
+    }
+}
+
+@keyframes circleAnimeS {
+    0% {
+        scale: 0;
+    }
+    90% {
+        border-top: 12px solid rgba(182, 180, 34, 0.8);
+        border-right: 12px solid rgba(182, 180, 34, 0.8);
+        border-left: 12px solid rgba(182, 180, 34, 0.8);
+        border-bottom: 12px solid rgba(182, 180, 34, 0.8);
+    }
+    100% {
+        scale: 1;
+        border-top: 12px solid rgb(252, 248, 45);
+        border-right: 12px solid rgb(252, 248, 45);
+        border-left: 12px solid rgb(252, 248, 45);
+        border-bottom: 12px solid rgb(252, 248, 45);
+    }
+}
+
+
+@keyframes wholeAnimeS {
+    0% {
+        scale: 0;
+    }
+    90% {
+        /* border-top: 9px solid rgba(140, 34, 182, 0.507);
+        border-right: 9px solid rgba(140, 34, 182, 0.507);
+        border-left: 9px solid rgba(140, 34, 182, 0.507);
+        border-bottom: 9px solid rgba(140, 34, 182, 0.507); */
+        border: 9px solid rgba(140, 34, 182, 0.8); /* Solid black border */
+        border-top: 9px transparent;
+    }
+    100% {
+        scale: 1;
+        /* border-top: 9px solid rgba(140, 34, 182);
+        border-right: 9px solid rgba(140, 34, 182);
+        border-left: 9px solid rgba(140, 34, 182);
+        border-bottom: 9px solid rgba(140, 34, 182); */
+        border: 9px solid rgba(140, 34, 182); /* Solid black border */
+        border-top: 9px transparent;
     }
 }
 
@@ -104,7 +358,19 @@
 .dMessage {
     bottom: 75px;
     left: -50px;
-    background-color: rgba(182, 34, 34);;
+    background-color: rgba(182, 34, 34);
+}
+
+.sMessage {
+    top: -50px;
+    left: 200px;
+    background-color: rgba(182, 180, 34);
+}
+
+.sMessageEarly {
+    top: -50px;
+    left: 100px;
+    background-color: rgba(182, 180, 34);
 }
 
 .doubleMessage {
