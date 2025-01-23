@@ -4,7 +4,6 @@ import Meyda, { MeydaFeaturesObject } from 'meyda';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import "./audiofile.css";
 import gsap from 'gsap';
-import { relative } from 'path';
 
 export function AudioFile() {    
     const [audioURL, setAudioURL] = useState<string | null>(null)
@@ -13,7 +12,6 @@ export function AudioFile() {
     const [stageBtn, setStageBtn] = useState<boolean>(false); 
 
     const gameContainer = useRef<HTMLDivElement>(null);
-    // const gameContainerHolds = useRef<HTMLDivElement>(null);
     const gameWrapper = useRef<HTMLDivElement>(null);
     const aCircle = useRef<HTMLDivElement>(null);
     const dCircle = useRef<HTMLDivElement>(null);
@@ -39,7 +37,12 @@ export function AudioFile() {
     const [dActive, setDActive] = useState<boolean>(false);
     const [sActive, setSActive] = useState<boolean>(false);
 
+    const [aHold, setAHold] = useState<boolean>(false);
+    const [dHold, setDHold] = useState<boolean>(false);
+    const [jHold, setJHold] = useState<boolean>(false);
+
     const [score, setScore] = useState<number>(0);
+    const [highScore, setHighScore] = useState<number>(0);
     const [hitCount, setHitCount] = useState<number>(0);
     const [missCount, setMissCount] = useState<number>(0);
     const [noteCount, setNoteCount] = useState<number>(0);
@@ -51,11 +54,25 @@ export function AudioFile() {
         const file = e.target.files?.[0];
         if (!file) return;
         setAudioURL(URL.createObjectURL(file));
+        // setAudioURL('https://9boushb4a7.ufs.sh/f/9Jv1QVILGRy4BnZDzY7GTJ0cX8hyuefiOLVSvntDKg5EZ1dl');
 
-        setMusicSet(true);
+        setTimeout(() => {
+          setMusicSet(true);
+        }, 500)
+
+        if (audioRefSetting.current) {
+          audioRefSetting.current.pause();
+          audioRefSetting.current.currentTime = 0;
+        }        
+        if (audioRefListening.current) {
+          audioRefListening.current.pause();
+          audioRefListening.current.currentTime = 0;
+        }
         setStageBtn(false);
+        setStageSet(false);
 
         setScore(0);
+        setHighScore(0);
         setHitCount(0);
         setMissCount(0);
         setNoteCount(0);
@@ -69,6 +86,9 @@ export function AudioFile() {
         
         document.querySelectorAll(".curveHold").forEach(e => e.remove());
         document.querySelectorAll(".curve").forEach(e => e.remove());
+        if (barRef.current) barRef.current.style.height = '0px';
+        if (barContainerRef.current) barContainerRef.current.style.border = '10px solid rgb(250, 238, 223)';
+
         updateContext();
     }
 
@@ -76,6 +96,7 @@ export function AudioFile() {
         const audioContext = new AudioContext;
 
         if (audioRefSetting.current) {
+            audioRefSetting.current.crossOrigin = 'anonymous' /* Needed for uploadthing audio src to be analyzed. Without this, the audio can only be heard*/
             const gainNode = audioContext.createGain();
             const source = audioContext.createMediaElementSource(audioRefSetting.current); 
             source.connect(gainNode);
@@ -109,8 +130,6 @@ export function AudioFile() {
       if (stopwatchActive && !stPaused) {
         intervalRef.current = setInterval(() => {
           setTime((time) => time + 10);
-          console.log(time);
-
         }, 10)}
       else {
         if (intervalRef.current) {
@@ -126,21 +145,6 @@ export function AudioFile() {
       }
       }, [stopwatchActive, stPaused]);
 
-    // const getAmplitudeRangeForKey = (key: string): number[] => {
-    //   switch (key) {
-    //     case 'a':
-    //       return [0, 1, 2, 3, 4, 5];
-    //     case 'd':
-    //       return [6, 7, 8, 9, 10, 11];
-    //     case 'j':
-    //       return [12, 13, 14, 15, 16, 17];
-    //     case 'l':
-    //       return [18, 19, 20, 21, 22, 23];
-    //     default:
-    //       return [];
-    //   }
-    // };
-    
     const getAmplitudeRangeForKey = (key: string): number[] => {
       switch (key) {
         case 'a':
@@ -157,9 +161,6 @@ export function AudioFile() {
     
     useEffect(() => {
       // Button states with a timeout for each key
-      let aSetThisFrame = false;
-      let dSetThisFrame = false;
-
       const buttonStates = [
         { key: 'a', state: aActive, setState: setAActive, circle: aCircle, circleClass: "aCurve", setList : setAList, oppositeList: dList },
         { key: 'd', state: dActive, setState: setDActive, circle: dCircle, circleClass: "dCurve", setList : setDList, oppositeList: aList },
@@ -179,82 +180,24 @@ export function AudioFile() {
         const spectrumRange = getAmplitudeRangeForKey(key);
         const avgAmplitude = spectrumRange.reduce((sum, idx) => sum + amplitudeSpectrum[idx], 0) / spectrumRange.length;
             
-        console.log(key, avgAmplitude)
+        // console.log(key, avgAmplitude)
         if (avgAmplitude > 1.5) {
           setState(true)
           setNoteCount(count => count + 1);
           setList(prevList => [...prevList, ((time + 2000) / 1000)]);
-          // if (key === 'a' || key === 'j') {
-          //   if (!aSetThisFrame) {
-          //     setState(true);
-          //     setNoteCount(count => count + 1);
-          //     setList(prevList => [...prevList, ((time + 2000) / 1000)]);
-          //     aSetThisFrame = true; // Mark that 'a' or 'j' was activated in this frame
-          //   }
-          //   else {
-          //     return
-          //   }
-          // } 
-          // else if (key === 'd' || key === 'l') {
-          //   if (!dSetThisFrame) {
-          //     setNoteCount(count => count + 1);
-          //     setState(true);
-          //     setList(prevList => [...prevList, ((time + 2000) / 1000)]);
-          //     dSetThisFrame = true; // Mark that 'd' or 'l' was activated in this frame
-          //   }
-          //   else {
-          //     return
-          //   }
-          // }
-          // else if (key === 'd' || key === 'l') return;
-
           if (circle.current) {
             
             // newEle.classList.add("curve")
             if (circle === sCircle) {
-              // newEle.classList.add("wholeCurve")
-              setTimeout(() => {
-                if (barContainerRef.current) {
-                  console.log("JHIIJIJIJI")
-                  barContainerRef.current.style.border = '10px solid green';
-                }
-              }, 500)
-              setTimeout(() => {
-                if (barContainerRef.current) {
-                  barContainerRef.current.style.border = '10px solid rgb(250, 238, 223)';
-                }
-              }, 700)
+              barContainerRef.current?.classList.add('pulsing');
+              barContainerRef.current?.addEventListener("animationend", () => {
+                barContainerRef.current?.classList.remove('pulsing');
+              })
 
-              setTimeout(() => {
-                if (barContainerRef.current) {
-                  console.log("JHIIJIJIJI")
-                  barContainerRef.current.style.border = '10px solid green';
-                }
-              }, 1000)
-              setTimeout(() => {
-                if (barContainerRef.current) {
-                  barContainerRef.current.style.border = '10px solid rgb(250, 238, 223)';
-                }
-              }, 1200)
-
-              setTimeout(() => {
-                if (barRef.current) {
-                  barRef.current.style.height = '100px';
-                }
-              }, 1500)
-
-              setTimeout(() => {
-                if (barRef.current) {
-                  barRef.current.style.height = '200px';
-                }
-              }, 2000)
-
-              setTimeout(() => {
-                if (barRef.current) {
-                  barRef.current.style.height = '0px';
-                }
-              }, 2500)
-              // if (barRef.current) barRef.current.style.height = "50px"
+              barRef.current?.classList.add("heightChange"); 
+              barRef.current?.addEventListener("animationend", () => {
+                barRef.current?.classList.remove('heightChange');
+              })
             }
             else {
               const newEle = document.createElement('p');
@@ -282,7 +225,6 @@ export function AudioFile() {
     }, [amplitudeSpectrum, aActive, dActive, time, dList, aList, sList, sActive]);
 
     useEffect(() => {
-      // console.log("AList", aList);
       if (aList.length > 0 && aList[0] + 0.15 < time/1000) {
         setScore(score => score - 1);
         setMissCount(count => count + 1);
@@ -300,7 +242,6 @@ export function AudioFile() {
     }, [aList, time])
     
     useEffect(() => {
-      // console.log("DList", dList);
       if (dList.length > 0 && dList[0] + 0.20 < time/1000) {
         setScore(score => score - 1);
         setMissCount(count => count + 1);
@@ -318,7 +259,6 @@ export function AudioFile() {
     }, [dList, time])
 
     useEffect(() => {
-      // console.log("DList", dList);
       if (sList.length > 0 && sList[0] + 0.40 < time/1000) {
         setScore(score => score - 1);
         setMissCount(count => count + 1);
@@ -339,7 +279,10 @@ export function AudioFile() {
     useEffect(() => {
       const handleKeyDown = (event: { key: string; }) => {
         if (event.key === 'a' || event.key === 'A' ) {
-          console.log('A key pressed!');
+          if (aHold) {
+            return;
+          }
+          setAHold(true);
           const message = document.createElement('p');
           message.classList.add("message");
           setABtn(true);
@@ -362,8 +305,6 @@ export function AudioFile() {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setDList(dList => dList.slice(1));
-                // message.classList.add("success");
-                // message.classList.add("successD");
                 message.textContent= "perfect";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
@@ -375,8 +316,6 @@ export function AudioFile() {
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setDList(dList => dList.slice(1));
-                console.log("ex3", dList, (time/1000))
-                console.log("hit")
                 message.classList.add("successD");
                 message.textContent= "success";
                 message.style.backgroundColor = "green";
@@ -391,25 +330,9 @@ export function AudioFile() {
           else {
             message.classList.add("aMessage")
             if (aList.length === 0) {
-              console.log("ex1", aList, time)
-              // setScore(score => score - 1);
-              // setMissCount(count => count - 1);
-              console.log("missed")
-  
-              // message.classList.add("miss");
-              // message.textContent= "missed";
-              // if (gameWrapper.current) gameWrapper.current.appendChild(message);
-              // setTimeout(() => {
-              //   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-              // }, 500);
             }
             else {
-              if ((time/1000) < aList[0] - 0.25) {
-                // setScore(score => score - 1);
-                // setMissCount(count => count - 1);
-                console.log("ex2", aList, (time/1000))
-                console.log("early")
-  
+              if ((time/1000) < aList[0] - 0.25) {  
                 message.textContent= "early";
                 message.classList.add("early");
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
@@ -422,9 +345,7 @@ export function AudioFile() {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setAList(aList => aList.slice(1));
-                console.log("ex3", aList, (time/1000))
-                console.log("perfect")
-                
+
                 message.classList.add("success");
                 message.textContent= "perfect";
                 message.style.backgroundColor = "green";
@@ -439,9 +360,7 @@ export function AudioFile() {
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setAList(aList => aList.slice(1));
-                console.log("ex3", aList, (time/1000))
-                console.log("hit")
-                
+
                 message.classList.add("success");
                 message.textContent= "success";
                 message.style.backgroundColor = "green";
@@ -454,20 +373,19 @@ export function AudioFile() {
           }
         }
 
-        if (event.key === 'k' || event.key === 'K' ) {
-          setDBtn(true);
+        if (event.key === 'j' || event.key === 'J' ) {
+          if (jHold) {
+            return;
+          }
+          setJHold(true);
+          setJBtn(true);
           const message = document.createElement('p');
           message.classList.add("message");
           // message.classList.add("sMessage");
           if (sList.length === 0) {
-            // message.textContent= "early";
-            // if (gameContainerHolds.current) gameContainerHolds.current.appendChild(message);
-            // setTimeout(() => {
-            //   if (gameContainerHolds.current) gameContainerHolds.current.removeChild(message);  
-            // }, 500);
           }
           else {
-            if ((time/1000) < sList[0] - 0.40) {  
+            if ((time/1000) < sList[0] - 0.20) {  
               message.textContent= "early";
               message.classList.add("sMessageEarly");
               if (gameWrapper.current) gameWrapper.current.appendChild(message);
@@ -475,7 +393,7 @@ export function AudioFile() {
                 if (gameWrapper.current) gameWrapper.current.removeChild(message);  
               }, 500);
             }
-            else if (sList[0] + 0.25 >= (time/1000) && (time/1000) > sList[0] - 0.25) {
+            else if (sList[0] + 0.10 >= (time/1000) && (time/1000) > sList[0] - 0.10) {
               setScore(score => score + 5);
               setHitCount(count => count + 1);
               setSList(sList => sList.slice(1));
@@ -488,7 +406,7 @@ export function AudioFile() {
                 if (gameWrapper.current) gameWrapper.current.removeChild(message);  
               }, 500);
             }
-            else if (sList[0] + 0.40 >= (time/1000) && (time/1000) > sList[0] - 0.40) {
+            else if (sList[0] + 0.20 >= (time/1000) && (time/1000) > sList[0] - 0.20) {
               setScore(score => score + 3);
               setHitCount(count => count + 1);
               setSList(sList => sList.slice(1));
@@ -503,8 +421,12 @@ export function AudioFile() {
           }
         }
 
-        if (event.key === 's' || event.key === 'S' ) {
-          setSBtn(true);
+        if (event.key === 'd' || event.key === 'D' ) {
+          if (dHold) {
+            return;
+          }
+          setDHold(true);
+          setDBtn(true);
 
           if (dList.length === 0 || aList.length === 0) {
             setScore(score => score - 10);
@@ -556,6 +478,12 @@ export function AudioFile() {
           setKBtn(true);
           handleFlip()
         } 
+        if (event.key === 'p' || event.key === "P") {
+          resetGame();
+        }
+        if (event.key === 'q' || event.key === "Q") {
+          toggleMusic();
+        }
       };
   
       document.addEventListener('keydown', handleKeyDown);
@@ -564,22 +492,25 @@ export function AudioFile() {
       return () => {
         document.removeEventListener('keydown', handleKeyDown);
       };
-    }, [aList, dList, time, rotated]);
+    }, [aList, dList, sList, time, rotated, dHold, aHold, jHold]);
 
     
     useEffect(() => {
       const handleKeyUp = (event: { key: string; }) => {
         if (event.key === 'a' || event.key === 'A') {
           setABtn(false);
+          setAHold(false);
         }
         if (event.key === 'd' || event.key === 'D') {
           setDBtn(false);
+          setDHold(false);
         }
         if (event.key === 'k' || event.key === 'K') {
           setKBtn(false);
         }
-        if (event.key === 's' || event.key === 'S') {
-          setSBtn(false);
+        if (event.key === 'j' || event.key === 'J') {
+          setJBtn(false);
+          setJHold(false);
         }
       }
       document.addEventListener('keyup', handleKeyUp);
@@ -590,8 +521,13 @@ export function AudioFile() {
       };
     }, []);
 
+    useEffect(() => {
+      if (score > highScore) {
+        setHighScore(score);  
+      }
+    }, [score, highScore]);
+
     const handleFlip = () => {
-      console.log("test");
       if (rotated) {
         gsap.to("#gamecontainer-circle", {rotate: "200deg"})
         setRotate(false);
@@ -600,6 +536,46 @@ export function AudioFile() {
         gsap.to("#gamecontainer-circle", {rotate: "160deg"})
         setRotate(true);
       }
+    }
+
+    const resetGame = () => {
+      if (!musicSet || !stageSet) {
+        return;
+      }
+      if (audioRefSetting.current) {
+        audioRefSetting.current.pause();
+        audioRefSetting.current.currentTime = 0;
+      }        
+      if (audioRefListening.current) {
+        audioRefListening.current.pause();
+        audioRefListening.current.currentTime = 0;
+      }
+      setStageBtn(false);
+      setStageSet(false);
+
+      setScore(0);
+      setHitCount(0);
+      setMissCount(0);
+      setNoteCount(0);
+
+      setAList([]);
+      setDList([]);
+
+      setStopwatchActive(false);
+      setStPaused(true);
+      setTime(0);
+      
+      document.querySelectorAll(".curveHold").forEach(e => e.remove());
+      document.querySelectorAll(".curve").forEach(e => e.remove());
+      if (barRef.current) {
+        barRef.current.classList.remove('heightChange');
+        barRef.current.style.height = '0px';
+      }
+      if (barContainerRef.current) {
+        barContainerRef.current.classList.remove('pulsing');
+        barContainerRef.current.style.border = '10px solid rgb(250, 238, 223)';
+      }
+      setMusicStage();
     }
 
     const aStyle = {
@@ -611,16 +587,11 @@ export function AudioFile() {
       opacity: rotated? "1" : "0.3",
       transition: 'opacity 0.2s linear'
     }
-    
-    const sStyle = {
-      // opacity: rotated? "1" : "1",
-      // transition: 'opacity 0.2s linear'
-    }
-
+  
     const [aBtn, setABtn] = useState<boolean>(false);
     const [dBtn, setDBtn] = useState<boolean>(false);
     const [kBtn, setKBtn] = useState<boolean>(false); 
-    const [sBtn, setSBtn] = useState<boolean>(false); 
+    const [jBtn, setJBtn] = useState<boolean>(false); 
     
     const btnStyleA = {
       backgroundColor: aBtn? "grey" : "black",
@@ -628,9 +599,9 @@ export function AudioFile() {
       padding: 5,
     }
 
-    const btnStyleS = {
-      backgroundColor: sBtn? "grey" : "black",
-      color: sBtn? "black" : "white",
+    const btnStyleJ = {
+      backgroundColor: jBtn? "grey" : "black",
+      color: jBtn? "black" : "white",
       padding: 5,
     }
     const btnStyleD = {
@@ -651,7 +622,10 @@ export function AudioFile() {
     }
 
     const toggleMusic = () => {
+      if (!stageSet) return;
       const curves = document.querySelectorAll('.curve');
+      const heightAnimation = document.querySelector('.heightChange');
+      const borderAnimation = document.querySelector('.pulsing');
       if (audioRefListening.current && audioRefSetting.current) {
         if (audioRefListening.current.paused && audioRefSetting.current.paused) {
           audioRefListening.current.play();
@@ -661,6 +635,8 @@ export function AudioFile() {
           for (let i = 0; i < curves.length; i++) {
             (curves[i] as HTMLParagraphElement).style.animationPlayState = "running";
           }
+          (heightAnimation as HTMLDivElement).style.animationPlayState = "running";
+          (borderAnimation as HTMLDivElement).style.animationPlayState = "running";
         }
         else {
           audioRefListening.current.pause();
@@ -670,6 +646,8 @@ export function AudioFile() {
           for (let i = 0; i < curves.length; i++) {
             (curves[i] as HTMLParagraphElement).style.animationPlayState = "paused";
           }
+          (heightAnimation as HTMLDivElement).style.animationPlayState = "paused";
+          (borderAnimation as HTMLDivElement).style.animationPlayState = "paused";
         }
       }
     }
@@ -694,15 +672,23 @@ export function AudioFile() {
             <div>
               <p>Press &quot;A&quot; when the curve is just about to hit the edge on the current &quot;Active Area&quot;</p>
               <br/>
-              <p>Press &quot;D&quot; when you want to hit both curves at once. <br/>Only works if one curve in each area are going to hit the edge near the same time</p>
+              <p>Press &quot;D&quot; when you want to hit both curves at once. <br/>Only works if both curves are touching</p>
               <br/>
-              <p>Press &quot;K&quot; to rotate the circle <br/> The section that is highlighted is the &quot;Active Area&quot;</p>
+              <p>Press &quot;K&quot; to rotate the circle <br/> The highlighted section becomes the &quot;Active Area&quot;</p>
+              <br/>
+              <p>Press &quot;J&quot; when the right bar reaches the top <br/> Follow the beat</p>
+              <br/>
+              <p>Press &quot;Q&quot; to Play/Pause</p>
+              <br/>
+              <p>Press &quot;P&quot; to reset the track</p>
+              <br/>
+              <button>Press Here to change keybinds</button>
               <br/>
               <p>Enter your music file below and Presss &quot;Set Stage&quot;</p>
             </div>
             <input type="file" accept='audio/*' onChange={audioChange}/>
 
-            <p>{time}</p>
+            {/* <p>{time}</p> */}
 
             <audio src={audioURL ?? ""} controls={false} ref={audioRefListening} loop={false} />
             <audio src={audioURL ?? ""} controls={false} ref={audioRefSetting} loop={false} />
@@ -715,7 +701,6 @@ export function AudioFile() {
                   <div className='caWhole' ref={sCircle}></div>
                   <div className='click-Area caA' style={aStyle} ref={aCircle}></div>
                   <div className='click-Area caD' style={dStyle} ref={dCircle}></div>
-                  {/* <div className='click-Area caS' style={sStyle} ref={sCircle}></div> */}
                 </div>
                 <div className='bar-container' ref={barContainerRef}>
                   <div className='bar' ref={barRef}></div>
@@ -729,12 +714,13 @@ export function AudioFile() {
               
               <div id='button-container'>
                 <div style={btnStyleA}>A</div>
-                <div style={btnStyleS}>S</div>
                 <div style={btnStyleD}>D</div>
+                <div style={btnStyleJ}>J</div>
                 <div style={btnStyleK}>K</div>
               </div>
             </div>
             <div>
+              <p>High Score: {highScore}</p>
               <p>Score: {score}</p>
               <p>Hit Count: {hitCount}</p>
               <p>Miss Count: {missCount}</p>
