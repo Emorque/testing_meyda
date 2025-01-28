@@ -265,7 +265,7 @@
     padding: 10px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 @keyframes circleAnimeA {
@@ -337,19 +337,18 @@
     }
 }
 
-.early {
+/* .early {
     left: -150px;
-}
+} */
 
 .message {
-    animation: messageAnime 500ms ease;
     animation-iteration-count: 1;    
     animation-fill-mode: forwards; 
     position: absolute;
     padding: 5px;
 }
 
-.aMessage {
+/* .aMessage {
     top: 0;
     left: -50px;
     background-color:rgba(25, 86, 128) ;
@@ -359,9 +358,42 @@
     bottom: 75px;
     left: -50px;
     background-color: rgba(182, 34, 34);
+} */
+
+.rightMessage {
+    animation: rightAnime 500ms ease;
+    bottom: 75px;
+    right: -50px;
+    background-color: rgba(25, 86, 128);
 }
 
-.sMessage {
+.earlyRight {
+    right: -125px;
+}
+
+.missedRight { 
+    right: -125px;
+    bottom: 125px;
+}
+
+
+.leftMessage {
+    animation: leftAnime 500ms ease;
+    bottom: 75px;
+    left: -50px;
+    background-color: rgba(182, 34, 34);
+}
+
+.earlyLeft {
+    left: -125px;
+}
+
+.missedLeft { 
+    left: -125px;
+    bottom: 125px;
+}
+
+/* .sMessage {
     top: -50px;
     left: 200px;
     background-color: rgba(182, 180, 34);
@@ -371,7 +403,7 @@
     top: -50px;
     left: 100px;
     background-color: rgba(182, 180, 34);
-}
+} */
 
 .doubleMessage {
     position: absolute;
@@ -384,11 +416,25 @@
     animation-fill-mode: forwards; 
 }
 
-.early {
-    left: -150px;
+@keyframes messageAnime {
+    0% {
+        transform: translate(0,0px);
+    }
+    100% {
+        transform: translate(-20px, -10px);
+    }
 }
 
-@keyframes messageAnime {
+@keyframes rightAnime {
+    0% {
+        transform: translate(0,0px);
+    }
+    100% {
+        transform: translate(20px, -10px);
+    }
+}
+
+@keyframes leftAnime {
     0% {
         transform: translate(0,0px);
     }
