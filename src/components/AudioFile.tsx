@@ -271,7 +271,7 @@ export function AudioFile() {
                 }, 500);
               }
               else if (rightBtnList[0] + 75 >= time && time > rightBtnList[0] - 75) {
-                const hitsound  = new Audio('/bass-dry.wav');
+                const hitsound  = new Audio('/public/hitsound.mp3');
                 hitsound.volume = 0.5
                 hitsound.play();
                 setScore(score => score + 5);
@@ -285,7 +285,7 @@ export function AudioFile() {
                 }, 500);
               }
               else if (rightBtnList[0] + 150 >= time && time > rightBtnList[0] - 150) {
-                const hitsound  = new Audio('/bass-dry.wav');
+                const hitsound  = new Audio('/public/hitsound.mp3');
                 hitsound.volume = 0.5
                 hitsound.play();
                 setScore(score => score + 3);
@@ -320,7 +320,7 @@ export function AudioFile() {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setLeftBtnList(leftList => leftList.slice(1));
-                const hitsound  = new Audio('/bass-dry.wav');
+                const hitsound  = new Audio('/public/hitsound.mp3');
                 hitsound.volume = 0.5
                 hitsound.play();
                 message.classList.add("success");
@@ -337,7 +337,7 @@ export function AudioFile() {
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setLeftBtnList(leftList => leftList.slice(1));
-                const hitsound  = new Audio('/bass-dry.wav');
+                const hitsound  = new Audio('/public/hitsound.mp3');
                 hitsound.volume = 0.5
                 hitsound.play();
                 message.classList.add("success");
