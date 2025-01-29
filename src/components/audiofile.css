@@ -215,14 +215,14 @@
 .aCurve {
     /* border-right: 6px solid rgba(25, 86, 128); */
     border-left: 9px solid rgba(25, 86, 128);
-    animation: circleAnimeA 2s linear;
+    /* animation: circleAnimeA 1s linear; */
     animation-iteration-count: 1;    
     animation-fill-mode: forwards; /* Keeps the final state after animation ends */
 }
 .dCurve {
     /* border-right: 6px solid transparent; */
     border-left: 9px solid rgba(182, 34, 34);
-    animation: circleAnimeD 2s linear;
+    /* animation: circleAnimeD 1s linear; */
     animation-iteration-count: 1;    
     animation-fill-mode: forwards; /* Keeps the final state after animation ends */
 }

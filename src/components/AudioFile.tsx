@@ -21,6 +21,8 @@ export function AudioFile() {
 
     const [rotated, setRotate] = useState<boolean>(true);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    // let scrollSpeed = 1000;
+    const [scrollSpeed, setScrollSpeed] = useState<number>(1000);
 
     // stopwatch
     const [stopwatchActive, setStopwatchActive] = useState<boolean>(false);
@@ -45,6 +47,18 @@ export function AudioFile() {
     const [b2Active, setB2Active] = useState<boolean>(false);
     // const [b3Active, setB3Active] = useState<boolean>(false);
     // const [b4Active, setB4Active] = useState<boolean>(false);
+
+    // Animations 
+    // const curveAnimation = [
+    //   { scale: "0"},
+    //   { scale: "1"}
+    // ]
+
+    // const animationTiming = {
+    //   duration: scrollSpeed,
+    //   iterations: 1,
+    // } 
+
 
     // Custom Map
     const [leftBtnActive, setLeftBtnActive] = useState<boolean>(false);
@@ -181,14 +195,14 @@ export function AudioFile() {
     useEffect(() => {
       // Button states with a timeout for each key
       const buttonStates = [
-        { key: 'band1', state: b1Active, setState: setB1Active, setBtnList: setLeftBtnList, circle: dCircle, curve: "dCurve"},
-        { key: 'band2', state: b2Active, setState: setB2Active, setBtnList: setRightBtnList, circle: aCircle, curve: "aCurve"},
-        { key: 'band3', state: b1Active, setState: setB1Active, setBtnList: setLeftBtnList, circle: dCircle, curve: "dCurve"},
-        { key: 'band4', state: b2Active, setState: setB2Active, setBtnList: setRightBtnList, circle: aCircle, curve: "aCurve"},
+        { key: 'band1', state: b1Active, setState: setB1Active, setBtnList: setLeftBtnList, circle: dCircle, curve: "dCurve", circleAnime: "circleAnimeD"},
+        { key: 'band2', state: b2Active, setState: setB2Active, setBtnList: setRightBtnList, circle: aCircle, curve: "aCurve", circleAnime: "circleAnimeA"},
+        { key: 'band3', state: b1Active, setState: setB1Active, setBtnList: setLeftBtnList, circle: dCircle, curve: "dCurve", circleAnime: "circleAnimeD"},
+        { key: 'band4', state: b2Active, setState: setB2Active, setBtnList: setRightBtnList, circle: aCircle, curve: "aCurve", circleAnime: "circleAnimeA"},
       ];
       let bands1_3 = false;
       let bands2_4 = false;
-      buttonStates.forEach(({ key, state, setState, setBtnList, circle, curve }) => { 
+      buttonStates.forEach(({ key, state, setState, setBtnList, circle, curve, circleAnime }) => { 
         if (state) return;
         if ((key === 'band1' || key === 'band3') && bands1_3) return;
         if ((key === 'band2' || key === 'band4') && bands2_4) return;
@@ -197,7 +211,7 @@ export function AudioFile() {
         const avgAmplitude = spectrumRange.reduce((sum, idx) => sum + amplitudeSpectrum[idx], 0) / spectrumRange.length;
         if (avgAmplitude > 1.5) {
           setState(true)
-          setBtnList(list => [...list, time + 2000])
+          setBtnList(list => [...list, time + scrollSpeed])
           setNoteCount(count => count + 1);
 
           if (circle.current) {
@@ -205,7 +219,9 @@ export function AudioFile() {
             newEle.classList.add(curve)
             newEle.classList.add("curve")
             newEle.textContent= ""
-            circle.current.appendChild(newEle);
+            circle.current.appendChild(newEle)
+            // newEle.animate(curveAnimation, animationTiming)
+            newEle.style.animation = `${circleAnime} ${scrollSpeed/1000}s linear`
             newEle.addEventListener("animationend", () => {
               circle.current?.removeChild(newEle);
             })
@@ -340,8 +356,8 @@ export function AudioFile() {
         if (event.key === 'h' || event.key === 'H') {
           if (beatBtnHold) return;
           setBeatBtnHold(true);
-          console.log("leftList", leftBtnList[0] - 2000);
-          console.log("rightList", rightBtnList[0] - 2000);
+          console.log("leftList", leftBtnList[0] - 1000);
+          console.log("rightList", rightBtnList[0] - 1000);
         }
 
         if (event.key === 'p' || event.key === "P") {
@@ -444,6 +460,8 @@ export function AudioFile() {
 
       setLeftList([]);
       setRightList([]);
+      setLeftBtnList([]);
+      setRightBtnList([]);
 
       setStopwatchActive(false);
       setStPaused(true);
@@ -554,7 +572,7 @@ export function AudioFile() {
         setTimeout(() => {
           if (audioRefListening.current)  audioRefListening.current.play();
           setStageSet(true);
-        }, 2000)
+        }, scrollSpeed)
       }
     }
 
@@ -618,7 +636,7 @@ export function AudioFile() {
           344660, 344930, 345880, 346180, 347040, 347310, 348220, 348500, 349380, 349670, 350570, 350860, 351760, 352050, 352890, 353200, 354060, 354330, 355220, 355520, 356390, 356690, 357570, 357870, 358760, 359060, 359940, 360250, 
           361150, 361440, 362280, 362590, 363190
         ];
-        const rBtnList = rList.map(num => num + 2000);
+        const rBtnList = rList.map(num => num + scrollSpeed);
 
         setRightList(rList);
         setRightBtnList(rBtnList);
@@ -648,20 +666,20 @@ export function AudioFile() {
           344160, 344390, 345260, 345570, 346480, 346750, 347630, 347920, 348810, 349100, 349980, 350240, 351170, 351470, 352350, 352620, 353510, 353790, 354640, 354930, 355820, 356100, 356990, 357280, 358170, 358440, 359340, 359660, 
           360550, 360850, 361720, 362010,  362880, 
         ]
-        const lBtnList = lList.map(num => num + 2000);
+        const lBtnList = lList.map(num => num + scrollSpeed);
         setLeftList(lList);
         setLeftBtnList(lBtnList);
         
         setTimeout(() => {
           setStopwatchActive(true);
           setStPaused(false);
-        }, 2000)
+        }, scrollSpeed)
 
         setTimeout(() => {
           if (audioRefListening.current) {
             audioRefListening.current.play();
           }  
-        }, 4000)
+        }, scrollSpeed * 2)
         
         document.querySelectorAll(".curveHold").forEach(e => e.remove());
         document.querySelectorAll(".curve").forEach(e => e.remove());
@@ -676,6 +694,8 @@ export function AudioFile() {
         newEle.classList.add("curve")
         newEle.textContent= ""
         aCircle.current?.appendChild(newEle);
+        // newEle.animate(curveAnimation, animationTiming);
+        newEle.style.animation = `circleAnimeA ${scrollSpeed/1000}s linear`
         newEle.addEventListener("animationend", () => {
           aCircle.current?.removeChild(newEle);
         })
@@ -691,6 +711,8 @@ export function AudioFile() {
         newEle.classList.add("curve")
         newEle.textContent= ""
         dCircle.current?.appendChild(newEle);
+        // newEle.animate(curveAnimation, animationTiming);
+        newEle.style.animation = `circleAnimeD ${scrollSpeed/1000}s linear`
         newEle.addEventListener("animationend", () => {
           dCircle.current?.removeChild(newEle);
         })
@@ -750,7 +772,7 @@ export function AudioFile() {
               <br/>
               <p>Press &quot;Q&quot; to Play/Pause</p>
               <br/>
-              <p>Press &quot;P&quot; to reset the track</p>
+              <p>Press &quot;P&quot; to reset the track. Press after applying new Scroll Speed</p>
               <br/>
               <p>Enter your music file below and Presss &quot;Set Stage&quot; <br/> Or Play a Custom made map</p>
             </div>
@@ -764,6 +786,16 @@ export function AudioFile() {
             <div style={{display: 'flex', gap: 20, flexDirection: 'column'}}>
               <input type="file" accept='audio/*' onChange={audioChange}/>
               {musicSet && <button onClick={setMusicStage} disabled={stageBtn}>Set Stage</button>}
+            </div>
+
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5}}>
+              <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
+                <button onClick={() => {setScrollSpeed(500)}}>500ms</button>
+                <button onClick={() => {setScrollSpeed(1000)}}>1000ms</button>
+                <button onClick={() => {setScrollSpeed(1500)}}>1500ms</button>
+                <button onClick={() => {setScrollSpeed(2000)}}>2000ms</button>
+              </div>
+              <p>Current Scroll Speed: {scrollSpeed / 1000}s</p>
             </div>
 
             <button onClick={customMap}>Play Custom Map</button>
