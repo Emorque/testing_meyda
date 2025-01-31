@@ -10,104 +10,27 @@
     max-height: 400px;
     background-color: rgb(250, 238, 223);
     z-index: 1;
-    border: 9px solid transparent;
+    border: 9px solid rgba(0, 0, 0, 0.253);
     display: grid;
     border-radius: 50%;
-    transform: rotate(160deg);
+    transform: rotate(180deg);
 }
 
-#gamecontainer-holds {
-    position: relative;
-    width: 40vw;
-    height: 40vw;
-    max-width: 250px;
-    max-height: 250px;
-    background-color: rgb(250, 238, 223);
-    display: grid;
+#scoreline {
+    position: absolute;
+    width: 80vw;
+    height: 80vw;
+    max-width: 400px;
+    max-height: 400px;
+    background-color: transparent;
+    border: 9px solid rgb(46, 46, 46);
+    transform: rotate(-45deg);
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 9px solid transparent;
+    /* border-bottom: 9px solid transparent; */
+    z-index: 5;
     border-radius: 50%;
-    /* transform: rotate(60deg); */
-}
-
-.bar-container {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    width: 70px;
-    height: 220px;
-    /* background-color: red; */
-    border: 10px solid rgb(250, 238, 223);
-    box-sizing: border-box; /* Ensure borders don't add extra size */
-}
-
-.pulsing {
-    animation: pulsingAnime 1.2s linear;
-    animation-iteration-count: 1;    
-    animation-fill-mode: forwards; 
-}
-
-@keyframes pulsingAnime {
-    0% {
-        border: 10px solid rgb(250, 238, 223);
-      }
-      41.67% {
-        /* 500ms */
-        border: 10px solid green;
-      }
-      58.33% {
-        /* 700ms */
-        border: 10px solid rgb(250, 238, 223);
-      }
-      83.33% {
-        /* 1000ms */
-        border: 10px solid green;
-        }
-      100% {
-        /* 1200ms */
-        border: 10px solid rgb(250, 238, 223);
-    }
-}
-
-.heightChange {
-    animation: heightChangeAnime 2.5s linear;
-    animation-iteration-count: 1;    
-    animation-fill-mode: forwards; 
-}
-
-@keyframes heightChangeAnime {
-    0% {
-        height: 0px;
-    }
-    40% {
-        height: 0px;
-    }
-    50% {
-        height: 0px;
-    }
-      60% {
-        /* 1500ms */
-        height: 100px
-    }
-    70% {
-        /* 1500ms */
-        height: 100px
-    }
-      80% {
-        /* 2000ms */
-        height: 200px
-      }
-      100% {
-        /* 2500ms */
-        height: 0px
-      }
-}
-
-.bar {
-    top:0;
-    width: 50px;
-    height: 0px;
-    background-color: green;
-    /* transition: height 0.25s ease */
-
 }
 
 .click-Area {
@@ -116,67 +39,52 @@
     height: 80vw;
     max-width: 400px;
     max-height: 400px;
-    border-left: 9px solid transparent;
-    border-top: 9px solid transparent;
-    border-right: 9px solid transparent;
-    border-bottom: 9px solid transparent;
-
+    background-color: transparent;
+    border: 9px solid transparent;
     top: -9px;
     bottom: -9px;
     left: -9px;
     right: -9px;
-
+    clip-path: polygon(50% 0, 100% 100%, 50% 100%);
     border-radius: 50%;
-    background-color: transparent;
     box-sizing: border-box; /* Ensure borders don't add extra size */
 }
 
-.click-AreaHold {
-    position: absolute;
-    width: 40vw;
-    height: 40vw;
-    max-width: 250px;
-    max-height: 250px;
-    border-left: 12px solid rgba(182, 180, 34, 0.8);
-    border-top: 12px solid rgba(182, 180, 34, 0.8);
-    border-right: 12px solid rgba(182, 180, 34, 0.8);
-    border-bottom: 12px solid rgba(182, 180, 34, 0.8);
-    border-radius: 50%;
-    background-color: transparent;
-    box-sizing: border-box; /* Ensure borders don't add extra size */
+.caOne {
+    transform: rotate(270deg);
+    border-bottom: 9px solid rgba(25, 87, 128, 0.75);
+    opacity: 0.3;      
 }
-
-.caA {
-    transform: rotate(45deg);
-    /* border-right: 6px solid rgba(25, 86, 128, 0.8); */
-    /* border-bottom: 6px solid rgba(25, 87, 128, 0.75); */
-    border-left: 9px solid rgba(25, 87, 128, 0.75);       
+.caTwo {
+    transform: rotate(225deg);
+    border-bottom: 9px solid rgba(182, 34, 34, 0.75);  
+    opacity: 0.3;            
 }
-
-.caD {
+.caThree {
+    transform: rotate(180deg);
+    border-bottom: 9px solid rgba(25, 87, 128, 0.75);
+    opacity: 0.3;
+}
+.caFour {
     transform: rotate(135deg);
-    /* border-right: 6px solid rgb(182, 34, 34, 0.404); */
-    border-left: 9px solid rgba(182, 34, 34, 0.75);
+    border-bottom: 9px solid rgba(182, 34, 34, 0.75);
+    opacity: 0.3;
 }
 
-.caWhole {
+.curve-section {
     position: absolute;
     width: 80vw;
     height: 80vw;
     max-width: 400px;
     max-height: 400px;
-    top: -9px;
-    left: -9px;
-    bottom: -9px;
-    right: -9px;
-
-    border-top: 9px solid transparent;
-    border-right: 9px solid transparent;
-    border-bottom: 9px solid transparent;
-    /* border-left: 9px solid rgba(140, 34, 182); */
     background-color: transparent;
+    border: 9px solid transparent;
+    top: -9px;
+    bottom: -9px;
+    left: -9px;
+    right: -9px;
     border-radius: 50%;
-    transform: rotate(90deg);
+    background-color: transparent;
     box-sizing: border-box; /* Ensure borders don't add extra size */
 }
  
@@ -186,111 +94,72 @@
     height: 80vw;
     max-width: 400px;
     max-height: 400px;
-    border-right: 9px solid transparent;
-    border-left: 9px solid transparent;
-    border-top: 9px solid transparent;
-    border-bottom: 9px solid transparent;
+    background-color: transparent;
+    border: 9px solid transparent;
+
     top: -9px;
     bottom: -9px;
     left: -9px;
     right: -9px;
+    clip-path: polygon(50% 0, 100% 100%, 50% 100%);
     border-radius: 50%;
-    background-color: transparent;
 }
 
-.curveHold {
-    position: absolute;
-    width: 40vw;
-    height: 40vw;
-    max-width: 250px;
-    max-height: 250px;
-    top: -12px;
-    bottom: -12px;
-    left: -12px;
-    right: -12px;
-    border-radius: 50%;
-    background-color: transparent;
-}
-
-.aCurve {
-    /* border-right: 6px solid rgba(25, 86, 128); */
-    border-left: 9px solid rgba(25, 86, 128);
-    /* animation: circleAnimeA 1s linear; */
+.curveOne {
+    transform: rotate(270deg);
     animation-iteration-count: 1;    
-    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+    animation-fill-mode: forwards;
+    border-bottom: 9px solid rgba(25, 87, 128, 0.75);       
 }
-.dCurve {
-    /* border-right: 6px solid transparent; */
-    border-left: 9px solid rgba(182, 34, 34);
-    /* animation: circleAnimeD 1s linear; */
+.curveTwo {
+    transform: rotate(225deg);
     animation-iteration-count: 1;    
-    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+    animation-fill-mode: forwards;
+    border-bottom: 9px solid rgba(182, 34, 34, 0.75);       
 }
-
-.wholeCurve {
-    position: absolute;
-    width: 80vw;
-    height: 80vw;
-    max-width: 400px;
-    max-height: 400px;
-    border: 9px solid rgba(140, 34, 182); /* Solid black border */
-    border-top: 9px transparent;
-    clip-path: polygon(50% 0%, 50% 100%, 0% 100%); /* Clip to form a triangle */
-    border-radius: 50%;
-    background-color: transparent;
-}
-
-.sCurve {
-    /* border-right: 6px solid transparent; */
-    border-left: 12px solid rgb(182, 180, 34, 0.8);
-    border-bottom: 12px solid rgba(182, 180, 34, 0.8);
-    border-top: 12px solid rgb(182, 180, 34, 0.8);
-    border-right: 12px solid rgba(182, 180, 34, 0.8);
-    animation: circleAnimeS 2s linear;
+.curveThree {
+    transform: rotate(180deg);
     animation-iteration-count: 1;    
-    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+    animation-fill-mode: forwards;
+    border-bottom: 9px solid rgba(25, 87, 128, 0.75);       
 }
-
-.wCurve {
-    border-right: 9px solid rgb(182, 180, 34, 0.8);
-    border-left: 9px solid rgb(182, 180, 34, 0.8);
-    border-top: 9px solid rgb(182, 180, 34, 0.8);
-    border-bottom: 9px solid rgb(182, 180, 34, 0.8);
-    animation: wholeAnimeS 2s linear;
+.curveFour {
+    transform: rotate(135deg);
     animation-iteration-count: 1;    
-    animation-fill-mode: forwards; /* Keeps the final state after animation ends */
+    animation-fill-mode: forwards;
+    border-bottom: 9px solid rgba(182, 34, 34, 0.75);       
 }
 
-#button-container {
+.button-container {
     padding: 10px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
 }
 
-@keyframes circleAnimeA {
+@keyframes blueCurveAnime {
     0% {
         scale: 0;
     }
     90% {
-        border-left: 9px solid rgba(25, 86, 128, 0.8);
+        border-bottom: 9px solid rgba(25, 86, 128, 0.8);
     }
     100% {
         scale: 1;
-        border-left: 9px solid rgb(41, 161, 241);
+        border-bottom: 9px solid rgb(41, 161, 241);
     }
 }
 
-@keyframes circleAnimeD {
+@keyframes redCurveAnime {
     0% {
         scale: 0;
     }
     90% {
-        border-left: 9px solid rgba(182, 34, 34, 0.8);
+        border-bottom: 9px solid rgba(182, 34, 34, 0.8);
     }
     100% {
         scale: 1;
-        border-left: 9px solid rgb(252, 43, 43);
+        border-bottom: 9px solid rgb(252, 43, 43);
     }
 }
 
@@ -313,52 +182,12 @@
     }
 }
 
-
-@keyframes wholeAnimeS {
-    0% {
-        scale: 0;
-    }
-    90% {
-        /* border-top: 9px solid rgba(140, 34, 182, 0.507);
-        border-right: 9px solid rgba(140, 34, 182, 0.507);
-        border-left: 9px solid rgba(140, 34, 182, 0.507);
-        border-bottom: 9px solid rgba(140, 34, 182, 0.507); */
-        border: 9px solid rgba(140, 34, 182, 0.8); /* Solid black border */
-        border-top: 9px transparent;
-    }
-    100% {
-        scale: 1;
-        /* border-top: 9px solid rgba(140, 34, 182);
-        border-right: 9px solid rgba(140, 34, 182);
-        border-left: 9px solid rgba(140, 34, 182);
-        border-bottom: 9px solid rgba(140, 34, 182); */
-        border: 9px solid rgba(140, 34, 182); /* Solid black border */
-        border-top: 9px transparent;
-    }
-}
-
-/* .early {
-    left: -150px;
-} */
-
 .message {
     animation-iteration-count: 1;    
     animation-fill-mode: forwards; 
     position: absolute;
     padding: 5px;
 }
-
-/* .aMessage {
-    top: 0;
-    left: -50px;
-    background-color:rgba(25, 86, 128) ;
-}
-
-.dMessage {
-    bottom: 75px;
-    left: -50px;
-    background-color: rgba(182, 34, 34);
-} */
 
 .rightMessage {
     animation: rightAnime 500ms ease;
@@ -393,38 +222,6 @@
     bottom: 125px;
 }
 
-/* .sMessage {
-    top: -50px;
-    left: 200px;
-    background-color: rgba(182, 180, 34);
-}
-
-.sMessageEarly {
-    top: -50px;
-    left: 100px;
-    background-color: rgba(182, 180, 34);
-} */
-
-.doubleMessage {
-    position: absolute;
-    padding: 5px;
-    bottom: 200px;
-    left: -100px;
-    background-color: rgba(182, 34, 34);
-    animation: doubleAnime 500ms ease;
-    animation-iteration-count: 1;    
-    animation-fill-mode: forwards; 
-}
-
-@keyframes messageAnime {
-    0% {
-        transform: translate(0,0px);
-    }
-    100% {
-        transform: translate(-20px, -10px);
-    }
-}
-
 @keyframes rightAnime {
     0% {
         transform: translate(0,0px);
@@ -440,14 +237,5 @@
     }
     100% {
         transform: translate(-20px, -10px);
-    }
-}
-
-@keyframes doubleAnime {
-    0% {
-        transform: translate(0,0px);
-    }
-    100% {
-        transform: translate(-20px, 0px);
     }
 }
