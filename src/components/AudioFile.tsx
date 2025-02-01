@@ -268,7 +268,7 @@ export function AudioFile() {
               }
 
               else if (firstBtnList[0] + 75 >= time && time > firstBtnList[0] - 75) {
-                const hitsound  = new Audio('/public/hitsound.mp3'); // Needed for github pages
+                const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
                 hitsound.volume = 0.5
                 hitsound.play();
@@ -284,7 +284,7 @@ export function AudioFile() {
               }
 
               else if (firstBtnList[0] + 150 >= time && time > firstBtnList[0] - 150) {
-                const hitsound  = new Audio('/public/hitsound.mp3');
+                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
                 hitsound.volume = 0.5
                 hitsound.play();
@@ -320,7 +320,7 @@ export function AudioFile() {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setThirdBtnList(list => list.slice(1));
-                const hitsound  = new Audio('/public/hitsound.mp3');
+                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
                 hitsound.volume = 0.5
                 hitsound.play();
@@ -338,7 +338,7 @@ export function AudioFile() {
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setThirdBtnList(list => list.slice(1));
-                const hitsound  = new Audio('/public/hitsound.mp3');
+                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
                 hitsound.volume = 0.5
                 hitsound.play();
@@ -376,7 +376,7 @@ export function AudioFile() {
                 }, 500);
               }
               else if (secondBtnList[0] + 75 >= time && time > secondBtnList[0] - 75) {
-                const hitsound  = new Audio('/public/hitsound.mp3');
+                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
                 hitsound.volume = 0.5
                 hitsound.play();
@@ -391,7 +391,7 @@ export function AudioFile() {
                 }, 500);
               }
               else if (secondBtnList[0] + 150 >= time && time > secondBtnList[0] - 150) {
-                const hitsound  = new Audio('/public/hitsound.mp3');
+                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local
                 hitsound.volume = 0.5
                 hitsound.play();
@@ -427,7 +427,7 @@ export function AudioFile() {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setFourthBtnList(list => list.slice(1));
-                const hitsound  = new Audio('/public/hitsound.mp3');
+                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
                 hitsound.volume = 0.5
                 hitsound.play();
@@ -445,7 +445,7 @@ export function AudioFile() {
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setFourthBtnList(list => list.slice(1));
-                const hitsound  = new Audio('/public/hitsound.mp3');
+                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
                 hitsound.volume = 0.5
                 hitsound.play();
