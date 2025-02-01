@@ -429,9 +429,6 @@ export function AudioFile() {
                 setFourthBtnList(list => list.slice(1));
                 const hitsound  = new Audio('/public/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-                setFourthBtnList(list => list.slice(1));
-                const hitsound  = new Audio('/public/hitsound.mp3');
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
                 hitsound.volume = 0.5
                 hitsound.play();
                 message.classList.add("success");
