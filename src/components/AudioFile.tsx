@@ -375,7 +375,6 @@ export function AudioFile() {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
                 }, 500);
               }
-
               else if (secondBtnList[0] + 75 >= time && time > secondBtnList[0] - 75) {
                 const hitsound  = new Audio('/public/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
@@ -391,10 +390,9 @@ export function AudioFile() {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
                 }, 500);
               }
-
               else if (secondBtnList[0] + 150 >= time && time > secondBtnList[0] - 150) {
                 const hitsound  = new Audio('/public/hitsound.mp3');
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local
                 hitsound.volume = 0.5
                 hitsound.play();
                 setScore(score => score + 3);
@@ -428,6 +426,9 @@ export function AudioFile() {
               else if (fourthBtnList[0] + 75 >= time && time > fourthBtnList[0] - 75) {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
+                setFourthBtnList(list => list.slice(1));
+                const hitsound  = new Audio('/public/hitsound.mp3');
+                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
                 setFourthBtnList(list => list.slice(1));
                 const hitsound  = new Audio('/public/hitsound.mp3');
                 // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
