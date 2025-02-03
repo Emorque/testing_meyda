@@ -31,6 +31,7 @@ export function AudioFile() {
     const [scrollSpeed, setScrollSpeed] = useState<number>(1000);
 
     const [usingCustomMap, setCustomMap] = useState<boolean>(false);
+    const [opacityEnabled, setOpacity] = useState<string>("On");
 
     // stopwatch
     const [stopwatchActive, setStopwatchActive] = useState<boolean>(false);
@@ -77,6 +78,12 @@ export function AudioFile() {
 
     const [fourthList, setFourthList] = useState<number[]>([]);
     const [fourthBtnList, setFourthBtnList] = useState<number[]>([]);
+
+    const [firstSpinList, setFirstSpinList] = useState<number[]>([]);
+    const [firstSpinBtnList, setFirstSpinBtnList] = useState<number[]>([]);
+
+    const [secondSpinList, setSecondSpinList] = useState<number[]>([]);
+    const [secondSpinBtnList, setSecondSpinBtnList] = useState<number[]>([]);
 
     const [toggleBtnHold, setToggleBtnHold] = useState<boolean>(false);
     const [resetBtnHold, setResetBtnHold] = useState<boolean>(false);
@@ -237,13 +244,91 @@ export function AudioFile() {
       const handleKeyDown = (event: { key: string; }) => {
         if (event.key === 'a' || event.key === 'A') {
           setLeftBtnActive(true);
+          if (leftBtnHold) return;
           setLeftBtnHold(true);
           moveLeft();
+          if (firstSpinBtnList.length === 0) {
+          }
+          else {
+            const message = document.createElement('p');
+            message.classList.add("message");
+            message.classList.add("leftMessage")
+            if (firstSpinBtnList[0] + 75 >= time && time > firstSpinBtnList[0] - 75) {
+              const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+              hitsound.volume = 0.5
+              hitsound.play();
+              setScore(score => score + 5);
+              setHitCount(count => count + 1);
+              setFirstSpinBtnList(list => list.slice(1));
+              message.textContent= "perfect Spin";
+              message.style.backgroundColor = "green";
+              if (gameWrapper.current) gameWrapper.current.appendChild(message);
+                setTimeout(() => {
+                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              }, 500);
+            }
+
+            else if (firstSpinBtnList[0] + 150 >= time && time > firstSpinBtnList[0] - 150) {
+              const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
+              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+              hitsound.volume = 0.5
+              hitsound.play();
+              setScore(score => score + 3);
+              setHitCount(count => count + 1);
+              setFirstSpinBtnList(list => list.slice(1));
+              message.textContent= "success Spin";
+              message.style.backgroundColor = "green";
+              if (gameWrapper.current) gameWrapper.current.appendChild(message);
+              setTimeout(() => {
+                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              }, 500);
+            }
+          }
         }
         if (event.key === 'd' || event.key === 'D') {
           setRightBtnActive(true);
+          if (rightBtnHold) return;
           setRightBtnHold(true);
           moveRight();
+          if (secondSpinBtnList.length === 0) {
+          }
+          else {
+            const message = document.createElement('p');
+            message.classList.add("message");
+            message.classList.add("rightMessage")
+            if (secondSpinBtnList[0] + 75 >= time && time > secondSpinBtnList[0] - 75) {
+              const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+              hitsound.volume = 0.5
+              hitsound.play();
+              setScore(score => score + 5);
+              setHitCount(count => count + 1);
+              setSecondSpinBtnList(list => list.slice(1));
+              message.textContent= "perfect Spin";
+              message.style.backgroundColor = "green";
+              if (gameWrapper.current) gameWrapper.current.appendChild(message);
+                setTimeout(() => {
+                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              }, 500);
+            }
+
+            else if (secondSpinBtnList[0] + 150 >= time && time > secondSpinBtnList[0] - 150) {
+              const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
+              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+              hitsound.volume = 0.5
+              hitsound.play();
+              setScore(score => score + 3);
+              setHitCount(count => count + 1);
+              setSecondSpinBtnList(list => list.slice(1));
+              message.textContent= "success Spin";
+              message.style.backgroundColor = "green";
+              if (gameWrapper.current) gameWrapper.current.appendChild(message);
+              setTimeout(() => {
+                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              }, 500);
+            }
+          }
         }
         if (event.key === 'j' || event.key === 'J') {
           setLeftActionBtn(true);
@@ -278,7 +363,7 @@ export function AudioFile() {
                 message.textContent= "perfect";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
-                setTimeout(() => {
+                  setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
                 }, 500);
               }
@@ -594,11 +679,11 @@ export function AudioFile() {
     }
 
     const firstSectionStyle = {
-      opacity: (direction === "Left")? "1": "0.3",      
+      opacity: ((direction === "Right") && (opacityEnabled === 'On'))? "0.60": "1",      
       transition: 'opacity 0.2s linear'
     }
     const secondSectionStyle = {
-      opacity: (direction === "Right")? "1": "0.3",
+      opacity: ((direction === "Left") && (opacityEnabled === 'On'))? "0.60": "1",  
       transition: 'opacity 0.2s linear'
     }
 
@@ -826,11 +911,22 @@ export function AudioFile() {
           360550, 360850, 361720, 362010,  362880 
         ]
 
+        const spinList1 = [
+          1500
+        ]
+
+        const spinList2 = [
+          1500
+        ]
+
         const list1Btn = lsit1.map(num => num + scrollSpeed);
         const list2Btn = lsit2.map(num => num + scrollSpeed);
         const list3Btn = lsit3.map(num => num + scrollSpeed);
         const list4Btn = lsit4.map(num => num + scrollSpeed);
 
+        const spinListBtn1 = spinList1.map(num => num + scrollSpeed);
+        const spinListBtn2 = spinList2.map(num => num + scrollSpeed);
+        
         setFirstList(lsit1);
         setSecondList(lsit2);
 
@@ -842,6 +938,12 @@ export function AudioFile() {
 
         setThirdBtnList(list3Btn);
         setFourthBtnList(list4Btn);
+
+        setFirstSpinList(spinList1);
+        setFirstSpinBtnList(spinListBtn1);
+        
+        setSecondSpinList(spinList2);
+        setSecondSpinBtnList(spinListBtn2);
         
         setTimeout(() => {
           setStopwatchActive(true);
@@ -925,6 +1027,40 @@ export function AudioFile() {
       }
     }, [time, fourthList])
 
+    // Creating the curves of the first Spin section
+    useEffect(() => {
+      if (time === firstSpinList[0]) {
+        setNoteCount(count => count + 1);
+        const newEle = document.createElement('p');
+        newEle.classList.add("leftSpinCurve")
+        newEle.classList.add("curve")
+        newEle.textContent= ""
+        firstSection.current?.appendChild(newEle);
+        newEle.style.animation = `spinCurveAnime ${scrollSpeed/1000}s linear`
+        newEle.addEventListener("animationend", () => {
+          firstSection.current?.removeChild(newEle);
+        })
+        setFirstSpinList(list => list.slice(1));
+      }
+    }, [time, firstSpinList])
+
+    // Creating the curves of the second Spin section
+    useEffect(() => {
+      if (time === secondSpinList[0]) {
+        setNoteCount(count => count + 1);
+        const newEle = document.createElement('p');
+        newEle.classList.add("rightSpinCurve")
+        newEle.classList.add("curve")
+        newEle.textContent= ""
+        secondSection.current?.appendChild(newEle);
+        newEle.style.animation = `spinCurveAnime ${scrollSpeed/1000}s linear`
+        newEle.addEventListener("animationend", () => {
+          secondSection.current?.removeChild(newEle);
+        })
+        setSecondSpinList(list => list.slice(1));
+      }
+    }, [time, secondSpinList])
+
     // Checks for first List Misses
     useEffect(() => {
       if (firstBtnList.length > 0 && firstBtnList[0] < time - 150) {
@@ -1005,7 +1141,54 @@ export function AudioFile() {
       }
     }, [fourthBtnList, time])
 
+    // Checks for first Spin List Misses
+    useEffect(() => {
+      if (firstSpinBtnList.length > 0 && firstSpinBtnList[0] < time - 150) {
+        if (score > 0) {
+          setScore(score => score - 1);
+        }
+        setMissCount(count => count + 1);
+        setFirstSpinBtnList(list => list.slice(1));
+        const message = document.createElement('p');
+        message.classList.add("message");
+        message.classList.add("leftMessage");
+        message.classList.add("missedLeft");
+        message.textContent= "missed";
+        if (gameWrapper.current) gameWrapper.current.appendChild(message);
+        setTimeout(() => {
+          if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+        }, 500);
+      }
+    }, [firstSpinBtnList, time])
 
+    // Checks for second Spin List Misses
+    useEffect(() => {
+      if (secondSpinBtnList.length > 0 && secondSpinBtnList[0] < time - 150) {
+        if (score > 0) {
+          setScore(score => score - 1);
+        }
+        setMissCount(count => count + 1);
+        setSecondSpinBtnList(list => list.slice(1));
+        const message = document.createElement('p');
+        message.classList.add("message");
+        message.classList.add("rightMessage");
+        message.classList.add("missedRight");
+        message.textContent= "missed";
+        if (gameWrapper.current) gameWrapper.current.appendChild(message);
+        setTimeout(() => {
+          if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+        }, 500);
+      }
+    }, [secondSpinBtnList, time])
+
+    const toggleOpacity = () => {
+      if (opacityEnabled === "On") {
+        setOpacity("Off")
+      } 
+      else {
+        setOpacity("On")
+      }
+    }
     return (
         <>
             <h1>Meyda Demo</h1>
@@ -1046,7 +1229,11 @@ export function AudioFile() {
               <p>Current Scroll Speed: {scrollSpeed / 1000}s</p>
             </div>
 
-            <button onClick={customMap}>Play Custom Map</button>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5}}>
+            <button style={{padding: 2}} onClick={toggleOpacity}>Opacity Change Set to {opacityEnabled}</button>
+            </div>
+
+            <button style={{padding: 2}} onClick={customMap}>Play Custom Map</button>
 
             <div style={currentArea}> {direction} </div>
 

@@ -130,6 +130,20 @@
     border-bottom: 9px solid rgba(182, 34, 34, 0.75);       
 }
 
+.leftSpinCurve {
+    transform: rotate(225deg);
+    clip-path: polygon(50% 0, 100% 100%, 0% 100%);
+    border-bottom: 9px solid rgba(104, 61, 81, 0.75);    
+    z-index: 10;     
+}
+
+.rightSpinCurve {
+    transform: rotate(135deg);
+    clip-path: polygon(50% 0, 100% 100%, 0% 100%);
+    border-bottom: 9px solid rgba(104, 61, 81, 0.75);    
+    z-index: 10;     
+}
+
 .button-container {
     padding: 10px;
     display: flex;
@@ -160,6 +174,19 @@
     100% {
         scale: 1;
         border-bottom: 9px solid rgb(252, 43, 43);
+    }
+}
+
+@keyframes spinCurveAnime {
+    0% {
+        scale: 0;
+    }
+    90% {
+        border-bottom: 9px solid rgba(104, 61, 81, 0.8);
+    }
+    100% {
+        scale: 1;
+        border-bottom: 9px solid rgba(104, 61, 81);
     }
 }
 
