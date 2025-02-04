@@ -1,7 +1,7 @@
 "use client";
 
 import Meyda, { MeydaFeaturesObject } from 'meyda';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, RefObject, useEffect, useRef, useState } from 'react';
 import "./audiofile.css";
 import gsap from 'gsap';
 
@@ -31,6 +31,7 @@ export function AudioFile() {
     const [scrollSpeed, setScrollSpeed] = useState<number>(1000);
 
     const [usingCustomMap, setCustomMap] = useState<boolean>(false);
+    const [opacityEnabled, setOpacity] = useState<string>("On");
 
     // stopwatch
     const [stopwatchActive, setStopwatchActive] = useState<boolean>(false);
@@ -77,6 +78,12 @@ export function AudioFile() {
 
     const [fourthList, setFourthList] = useState<number[]>([]);
     const [fourthBtnList, setFourthBtnList] = useState<number[]>([]);
+
+    const [firstSpinList, setFirstSpinList] = useState<number[]>([]);
+    const [firstSpinBtnList, setFirstSpinBtnList] = useState<number[]>([]);
+
+    const [secondSpinList, setSecondSpinList] = useState<number[]>([]);
+    const [secondSpinBtnList, setSecondSpinBtnList] = useState<number[]>([]);
 
     const [toggleBtnHold, setToggleBtnHold] = useState<boolean>(false);
     const [resetBtnHold, setResetBtnHold] = useState<boolean>(false);
@@ -237,13 +244,93 @@ export function AudioFile() {
       const handleKeyDown = (event: { key: string; }) => {
         if (event.key === 'a' || event.key === 'A') {
           setLeftBtnActive(true);
+          if (leftBtnHold) return;
           setLeftBtnHold(true);
+          if (direction === "Left") return
           moveLeft();
+          if (firstSpinBtnList.length === 0) {
+          }
+          else {
+            const message = document.createElement('p');
+            message.classList.add("message");
+            message.classList.add("leftMessage")
+            if (firstSpinBtnList[0] + 75 >= time && time > firstSpinBtnList[0] - 75) {
+              const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+              hitsound.volume = 0.5
+              hitsound.play();
+              setScore(score => score + 5);
+              setHitCount(count => count + 1);
+              setFirstSpinBtnList(list => list.slice(1));
+              message.textContent= "perfect Spin";
+              message.style.backgroundColor = "green";
+              if (gameWrapper.current) gameWrapper.current.appendChild(message);
+                setTimeout(() => {
+                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              }, 500);
+            }
+
+            else if (firstSpinBtnList[0] + 150 >= time && time > firstSpinBtnList[0] - 150) {
+              const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
+              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+              hitsound.volume = 0.5
+              hitsound.play();
+              setScore(score => score + 3);
+              setHitCount(count => count + 1);
+              setFirstSpinBtnList(list => list.slice(1));
+              message.textContent= "success Spin";
+              message.style.backgroundColor = "green";
+              if (gameWrapper.current) gameWrapper.current.appendChild(message);
+              setTimeout(() => {
+                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              }, 500);
+            }
+          }
         }
         if (event.key === 'd' || event.key === 'D') {
           setRightBtnActive(true);
+          if (rightBtnHold) return;
           setRightBtnHold(true);
+          if (direction === "Right") return
           moveRight();
+          if (secondSpinBtnList.length === 0) {
+          }
+          else {
+            const message = document.createElement('p');
+            message.classList.add("message");
+            message.classList.add("rightMessage")
+            if (secondSpinBtnList[0] + 75 >= time && time > secondSpinBtnList[0] - 75) {
+              const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+              hitsound.volume = 0.5
+              hitsound.play();
+              setScore(score => score + 5);
+              setHitCount(count => count + 1);
+              setSecondSpinBtnList(list => list.slice(1));
+              message.textContent= "perfect Spin";
+              message.style.backgroundColor = "green";
+              if (gameWrapper.current) gameWrapper.current.appendChild(message);
+                setTimeout(() => {
+                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              }, 500);
+            }
+
+            else if (secondSpinBtnList[0] + 150 >= time && time > secondSpinBtnList[0] - 150) {
+              const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
+              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+              hitsound.volume = 0.5
+              hitsound.play();
+              setScore(score => score + 3);
+              setHitCount(count => count + 1);
+              setSecondSpinBtnList(list => list.slice(1));
+              message.textContent= "success Spin";
+              message.style.backgroundColor = "green";
+              if (gameWrapper.current) gameWrapper.current.appendChild(message);
+              setTimeout(() => {
+                if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+              }, 500);
+            }
+          }
         }
         if (event.key === 'j' || event.key === 'J') {
           setLeftActionBtn(true);
@@ -278,7 +365,7 @@ export function AudioFile() {
                 message.textContent= "perfect";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
-                setTimeout(() => {
+                  setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
                 }, 500);
               }
@@ -594,11 +681,11 @@ export function AudioFile() {
     }
 
     const firstSectionStyle = {
-      opacity: (direction === "Left")? "1": "0.3",      
+      opacity: ((direction === "Right") && (opacityEnabled === 'On'))? "0.60": "1",      
       transition: 'opacity 0.2s linear'
     }
     const secondSectionStyle = {
-      opacity: (direction === "Right")? "1": "0.3",
+      opacity: ((direction === "Left") && (opacityEnabled === 'On'))? "0.60": "1",  
       transition: 'opacity 0.2s linear'
     }
 
@@ -733,57 +820,56 @@ export function AudioFile() {
         setFourthList([])
 
         const lsit1 = [
-          1430, 1740, 2070, 2420, 3690, 4040, 4370, 4690, 5030, 6240, 6580, 6880, 7190, 7500, 7820, 8130, 8450, 8750, 9060, 9390, 9710, 10050, 10370, 10670, 10940, 11260, 14120, 16660, 21290, 21940, 23230, 23860,  25060, 
-          40960, 41260, 42220, 42360, 42700, 43090, 43470, 43600, 43930,  49150, 49500, 49810, 50120, 50450, 50770, 51110, 51390, 51720, 52010, 52150, 52300, 52430, 52750, 53060, 53410, 53550, 53690, 54820, 54940, 57160, 57320, 57440, 
+          1430, 1740, 2070, 2420, 3690,  4370, 4690, 5030, 6240, 6580, 6880, 7190, 7500, 7820, 8130, 8450, 9060, 9390, 9710, 10050, 10370, 10670, 10940, 11260, 14120, 16660, 21290, 23230, 23860,  25060, 
+          42220, 42360, 42700, 43090, 43470, 43600, 43930, 49150, 49500, 49810, 50120, 50450, 50770, 51110, 51390, 51720, 52010, 52150, 52300, 52430, 52750, 53060, 53410, 53550, 53690, 54820, 57160, 57320, 57440, 
           65660, 66010, 66120, 66440, 66770, 67110, 68870, 69200, 69510, 69840, 69980, 70230, 70530, 70820, 71280, 71600, 71880, 72190, 80030, 82570, 83220, 84500, 85140, 
 
           //Post "sympathy line" - samurai cut
-          89690, 89830, 89990, 90660, 91090, 91230, 91480, 91910, 93150, 93450, 95000, 95370, 95540, 95890, 96230, 102830, 102990, 103570, 103730, 104060, 
-          129080, 129490, 129620, 129950, 130270, 132570, 132880, 133200, 135410, 135740, 136040, 136360, 136680, 137010, 137300, 
-          142270, 143270, 143630, 143790, 143980, 144160, 145150, 145470, 146110, 146750, 146900, 147310, 147650, 148460, 148650, 
-          151620, 151780, 151930, 153040, 154260, 154510,  155330, 157770, 160340, 161620, 162840, 164030,
+          89690, 89830, 89990, 90660, 91090, 91480, 91910, 93150, 93450, 95000, 95370, 95540, 95890, 102830, 102990, 103570, 103730, 
+          129490, 129620, 129950, 132880, 133200, 135410, 135740, 136040, 136360, 136680, 137010, 
+          142270, 143270, 143630, 143790, 143980, 144160, 145470, 146110, 146750, 146900, 147310, 147650, 148460, 148650, 
+          151620, 151780, 151930, 153040, 154260, 154510,  155330, 157770, 160340, 161620, 164030,
 
           //1:45 - 4:18,before basebal part
-          166810, 167090, 167370, 168940, 169230, 169550, 170830, 171130, 171790, 171960, 172350, 173250, 173390, 173710, 174390, 178270, 178680, 178820, 179500, 179620, 180620, 
-          198360, 198520, 198700, 200040, 200180, 200440, 200560, 201730, 201950, 202220, 202430, 203180, 203890, 204000,  204660, 204810, 205280, 205590, 207850, 208110, 208240, 208560, 208870, 209040, 209870, 210080, 210330, 211680, 
-          228090, 228230, 228390, 228540, 228680, 228950, 229100, 229240, 229380, 231530, 231650, 231920, 232050, 232210, 233310, 233810, 234260, 234550, 234670, 234950, 235060, 235370, 235480, 235730, 235860, 236030, 236810, 236940, 
-          249610, 249870, 249980, 250300, 250430, 250740, 250890, 251050, 251200, 251370, 251540, 252950, 253180, 
+          166810, 167090, 167370, 168940, 169230, 169550, 170830, 171130, 171960, 172350, 173250, 173390, 173710, 174390, 178270, 178680, 178820, 179500, 179620, 180620, 
+          198520, 198700, 200040, 200180, 200440, 200560, 201730, 202220, 202430, 203180, 203890, 204000,  204660, 204810, 205280, 205590, 207850, 208110, 208240, 208560, 208870, 209040, 209870, 210080, 210330, 211680, 
+          228090, 228390, 228540, 228680, 228950, 229100, 229240, 229380, 231530, 231650, 231920, 232050, 232210, 233310, 233810, 234260, 234550, 234670, 234950, 235060, 235370, 235480, 235730, 235860, 236030, 236810, 236940, 
+          249870, 249980, 250300, 250430, 250740, 250890, 251050, 251200, 251370, 251540, 253180, 
           
           //Last part
-          259840, 260770, 262260, 264180, 266110, 268010, 269360, 270840, 271130, 271270, 
-          280070, 280620, 281030, 281780, 282810, 282960, 283110, 283400, 283800, 284860, 285220, 285930, 286110, 286650, 287220, 287430, 288320, 289140, 289570, 291490, 291940, 292380, 292700, 294280, 294730, 297960, 298410, 298710, 
-          299030, 299150, 299520, 299910, 300310, 300500, 314740, 315070, 315220, 315480, 315880, 316230, 316370, 316690, 317110, 317580, 
+          259840, 260770, 262260, 264180, 266110, 268010, 269360, 270840, 271130, 271270, 280070, 
+          280620, 281030, 281780, 282810, 282960, 283110, 283400, 283800, 284860, 285220, 285930, 286110, 287220, 287430, 288320, 289140, 289570, 291490, 291940, 292380, 294280, 294730, 297960, 298410, 298710, 
+          299030, 299150, 299520, 299910, 300500, 314740, 315070, 315220, 315480, 316230, 316370, 316690, 317110, 317580, 
           
           352050, 352890, 353200, 354060, 354330, 355220, 355520, 356390, 356690, 357570, 357870, 358760, 359060, 359940, 360250, 
           361150, 361440, 362280, 362590, 363190
         ]
 
         const lsit2 = [
-          44390, 44900, 45010, 45390, 45500, 45960, 46070, 46510, 46620, 46920, 47560, 47910, 48240, 48560, 48860, 54020, 54370, 54510, 54660, 55240, 55550, 55930, 56040, 56370, 56680, 57020, 62220, 62380, 62530, 62820, 63150, 67300, 
+          44390, 44900, 45010, 45390, 45500, 45960, 46070, 46620, 46920, 47560, 47910, 48240, 48560, 48860, 54020, 54510, 54660, 55240, 55550, 55930, 56040, 56370, 56680, 57020, 62220, 62380, 62530, 62820,   
 
           //Post "sympathy line" - samurai cut
           92280, 92610, 92790, 93840, 94010, 94280, 94680, 103140, 103320, 104800, 105000, 105310, 105650, 107580, 107730, 108070, 108400, 109540, 109900, 110770, 
-          111140, 111450, 111760, 111900, 113040, 113180, 113350, 113520, 113670, 113860, 114020, 115020, 115330, 115780, 115900, 116220, 116580, 116940, 117170, 117340, 117470, 119620, 119810, 119980, 120120, 120500, 120800, 123250, 
+          111450, 111760, 111900, 113040, 113180, 113350, 113520, 113670, 113860, 114020, 115020, 115330, 115900, 116220, 116580, 116940, 117170, 117340, 117470, 119620, 119810, 119980, 120120, 120500, 120800, 123250, 
           130660, 131010, 131310, 131630, 131970, 132250, 133520, 133830, 134120, 134440, 134790, 135100, 137610, 137930, 138260, 138550,
-          142600, 142920, 144430, 144860,  145790, 146420, 146580, 147980, 148300, 148790, 
-          154920, 155080, 155550, 155780, 156440, 157110, 158370, 167710, 168060, 168370, 168710, 169890, 170050, 170330, 170650, 171430, 171610, 172730, 173080, 174230,  
+          142920, 144430, 144860,  145790, 146420, 146580, 147980, 148300, 148790, 
+          154920, 155550, 155780, 157110, 158370, 167710, 168060, 168370, 168710, 169890, 170050, 170330, 170650, 171610, 172730, 173080,  
         
           //1:45 - 4:18,before basebal part
-          177400, 177780, 178090, 178990, 179180, 179350, 179960, 180280, 181180, 182520, 182840, 183360, 183490, 184540, 184680, 185350, 185650, 186340, 186500, 187150, 188240, 188430, 189100, 189230, 191090, 
-          218530, 218930, 219200, 219320, 219600, 219720, 220010, 220140, 220390, 221320, 221560, 221700,  
-          227840, 229970, 230470, 230730, 230840, 231100, 231230, 232380, 232500, 232830, 236190, 236510, 236670, 237600, 238080, 238220, 240030, 240300, 240460, 240650, 242150, 242260, 242570, 242670, 243030, 243150, 243410, 244640, 
+          177400, 177780, 178090, 179180, 179350, 179960, 180280, 181180, 182520, 182840, 183360, 183490, 184680, 185350, 185650, 186340, 186500, 187150, 188240, 188430, 189100, 189230, 191090, 
+          218530, 218930, 219200, 219320, 219720, 220010, 220140, 220390, 221320, 221560, 221700,  
+          227840, 229970, 230470, 230730, 230840, 231100, 231230, 232380, 232500, 236190, 236510, 236670, 237600, 238080, 238220, 240030, 240300, 240460, 240650, 242150, 242260, 242570, 242670, 243030, 243150, 243410, 244640, 
           251930, 252250, 252500, 252690, 
           
           //Last part
           261790, 263690, 265620, 267540, 269230, 272830, 274300, 
           290370, 290870, 293180, 293880, 295090, 295560, 296250, 296600, 297010, 297130, 297500, 297800, 307080, 307540, 307990, 308270, 308590, 308720, 309140, 
-          335490, 335840, 336260, 336680, 337020, 337890, 338210, 338650, 339100, 339420, 340290, 340600, 341060, 341470, 341790, 342080, 342360, 342670, 342990, 343270, 343570, 343840,
-
+          335840, 336260, 336680, 337020, 337890, 338210, 338650, 339100, 339420, 340290, 340600, 341060, 341470, 341790, 342080, 342360, 342670, 342990, 343270, 343570, 
           344160, 344390, 345260, 345570, 346480, 346750, 347630, 347920, 348810, 349100, 349980, 350240, 351170, 351470, 352350, 352620, 353510, 353790, 354640, 354930
         ]
 
         const lsit3 = [
-          25290, 26090, 26440, 26760, 27590, 27880, 28190, 28510, 28830, 29150, 29520, 29860, 30200, 30550, 30850, 35440, 35880, 36210, 36530, 36880, 37170, 37510, 37830, 38150, 38450, 38780, 39080, 39380, 39700, 39840, 40300, 40620, 
+          25290, 26090, 26440, 26760, 27590, 27880, 28190, 28510, 28830, 29150, 29520, 29860, 30550, 30850, 35440, 35880, 36210, 36530, 36880, 37170, 37510, 37830, 38150, 38450, 38780, 39080, 39380, 39700, 39840, 40300, 40620, 
           57780, 58120, 58440, 58570, 58710, 58860, 59010, 59160, 59310, 59450, 59620, 59780, 59910, 60240, 60380, 60530, 60640, 61000, 61120, 61440, 61740, 62070, 63470, 63620, 63750, 64100, 64430, 64590, 64750, 64920, 65040, 65340,
            
           98110, 98260, 98600, 98950, 100490, 100830, 101020, 101370, 101680, 102430, 102630, 
@@ -791,39 +877,58 @@ export function AudioFile() {
           122730, 122890, 124790, 124970, 125140, 125310, 125490, 125630, 125980, 126330, 126760, 126910, 127070, 127230, 127400, 127560, 127720, 140430, 141370, 141650, 149280, 149430, 149800, 149930, 150840, 151170, 
 
           174540, 175580, 175740, 175850, 176640, 176840, 177030, 
-          180770, 181680, 182000, 182140, 183180, 183870, 184070, 184190, 185030, 185800, 185930, 186660, 187010, 187540, 187900, 188800, 189610, 189760, 190200, 190480, 190810, 192140, 192450, 192740, 193080, 194420, 196330, 196580, 
-          211940, 212070, 212400, 213720, 213900, 214020, 215100, 215370, 216550, 217540, 217850, 217990, 222760, 223010, 223130, 223410, 223520, 223830, 223960, 225190, 225300, 225480, 226130, 
-          237090, 238520, 238660, 238940, 239240, 239370, 239590, 239730, 239870, 241000, 241490, 241860, 243560, 243700, 243860, 243990, 244320, 245320, 245610, 245940, 246240, 246380, 246520, 247680, 247830, 248000, 253370, 253570,
+          181680, 182000, 182140, 183180, 183870, 184070, 184190, 185030, 185800, 185930, 186660, 187010, 187540, 187900, 188800, 189610, 189760, 190200, 190810, 192140, 192450, 192740, 193080, 194420, 196330, 196580, 
+          212070, 212400, 213720, 213900, 214020, 215100, 215370, 216550, 217540, 217850, 217990, 223010, 223130, 223410, 223520, 223830, 223960, 225190, 225300, 225480, 226130, 
+          238520, 238660, 238940, 239240, 239370, 239590, 239730, 239870, 241490, 241860, 243560, 243700, 243860, 243990, 244320, 245320, 245610, 245940, 246240, 246380, 246520, 247680, 247830, 248000, 253570,
 
           260290, 261230, 263220, 265160, 267060, 268980, 270210, 271780, 272330, 
           275170, 275340, 275500, 275780, 276080, 278310, 278510, 278740, 279020,
-          302300, 302760, 305200, 305610, 305900, 306240, 306620, 306760, 313470, 313840, 313960, 314300,  
-          317880, 318140, 318270, 318680, 319060, 322050, 322630, 322990, 323370, 323550, 323850, 324210, 326740, 327160, 327490, 329840, 331000, 331420, 
+          302760, 305200, 305610, 305900, 306240, 306620, 306760, 313470, 313840, 313960,  
+          317880, 318140, 318270, 318680, 319060, 322050, 322630, 322990, 323550, 323850, 324210, 326740, 327160, 327490, 329840, 331000,  
 
           344660, 344930, 345880, 346180, 347040, 347310, 348220, 348500, 349380, 349670, 350570, 350860, 351760, 
         ]
           
         
         const lsit4 = [
-          2740, 2900, 3060, 3210, 5310, 5460, 5610, 5760, 11640, 19200, 22600, 24500, 25680, 27050, 27380, 31170, 31510, 31850, 32180, 32480, 32790, 33100, 33410, 33740, 34030, 34340, 34670, 34980, 35260, 41610, 41910, 
+          2740, 2900, 3060, 3210,  5460, 5610, 5760, 19200, 22600, 24500, 25680, 27050, 27380, 31170, 31510,  32180, 32480, 32790, 33100, 33410, 33740, 34030, 34340, 34670, 34980, 35260, 41610,  
           67460, 67640, 67770, 67940, 68260, 68560, 73710, 74340, 74960, 75620, 76260, 77810, 78060, 78310, 78470, 78770, 79380, 82260, 82880, 83540, 83850, 84200, 84840, 85450, 85770, 86060, 90340, 90510, 
 
-          96630, 96790, 97290, 97710, 99380, 99530, 99830, 100160, 102070, 102230, 
-          123390, 123560, 123960, 124110, 124290, 124440, 124600, 127890, 128050, 128220, 128370, 128740,  
-          138900, 139210, 139520, 139820, 140120, 140750, 141510, 141840, 149140, 150220, 150520, 151470, 152360, 152730, 153360, 153690, 153850, 154070, 
+          96630,  97290, 97710, 99380, 99530, 99830, 100160, 102070, 102230, 
+          123560, 123960, 124110, 124290, 124440, 124600, 127890, 128050, 128220, 128370,   
+          139210, 139520, 139820, 140120, 140750, 141510, 141840, 149140, 150220, 150520, 151470, 152360, 153360, 153690, 153850, 154070, 
 
           174920, 175250, 176200, 176350, 176490, 
-          191460, 191820, 193370, 193690, 194010, 195890, 196180, 196720, 196840, 197110, 197230, 197420, 199760, 200890, 201040, 201230, 201440, 202680, 202880, 203640, 204250, 204370, 205040, 205980, 206240, 206500, 207480, 207720, 
+          191460, 191820, 193370, 193690, 194010, 195890, 196720, 196840, 197110, 197230, 197420, 199760, 200890, 201040, 201230, 201440, 202680, 202880, 203640, 204250, 204370, 205040, 205980, 206240, 206500, 207480,  
           210580, 210870, 211290, 211550, 212520, 212740, 213060, 215490, 215760, 215880, 216190, 216300, 222280, 224230, 224490, 226600, 226890, 227000, 227260, 227360, 227690, 
-          244990, 246820, 246970, 247230, 247380, 247540, 248220, 248360, 248640, 248910, 249150, 253910, 254160, 254370, 254640, 254890, 255040,
+          246820, 246970, 247230, 247380, 247540, 248220, 248360, 248640, 248910, 249150, 253910, 254160, 254370, 254640, 254890, 255040,
 
           262740, 264680, 266570, 268500, 269770, 273320, 277030,
           277290, 277420, 277680, 277990, 279920, 280270, 280800, 281360, 284710, 285020, 285560, 287960, 288810, 290080, 
           301080, 301410, 301550, 301970, 303440, 303870, 304260, 304380, 304730, 
-          309500, 309860, 310060, 310360, 310670, 310950, 311080, 311490, 311880, 312340, 313010, 319360, 319650, 320200, 320440, 320660, 321110, 321460, 321790, 324480, 325080, 326230, 331810, 332210, 332830, 333390, 333990, 334580, 
+          309860, 310060, 310360, 310670, 310950, 311080, 311490, 311880, 312340, 313010, 319360, 319650, 320440, 320660, 321110, 321460, 321790, 324480, 325080, 326230, 331810, 332210, 332830, 333390, 333990,  
 
-          355820, 356100, 356990, 357280, 358170, 358440, 359340, 359660, 
-          360550, 360850, 361720, 362010,  362880 
+          355820, 356100, 356990, 357280, 358170, 358440, 359340, 359660, 360550, 360850, 361720, 362010, 362880 
+        ]
+
+        const spinList1 = [
+          5310, 11640, 31850, 40960, 41910, 46510, 54370, 67300,
+
+          96790, 111140, 115780, 123390, 128740, 138900, 142600, 152730, 156440, 174230, 
+
+          180770, 190480, 196180, 207720, 211940, 222760, 237090, 241000, 244990, 253370, 
+
+          302300, 309500, 314300, 320200, 323370, 331420, 334580,
+        ]
+
+        const spinList2 = [
+          4040, 8750, 21940, 30200, 41260, 54940, 63150,
+
+          91230, 96230, 104060, 129080, 130270, 132570, 137300, 145150, 155080, 162840, 171430,
+          
+          171790, 178990, 184540, 198360, 201950, 219600, 228230, 232830, 249610, 252950, 
+
+          286650, 292700, 300310, 315880, 335490, 343840,
         ]
 
         const list1Btn = lsit1.map(num => num + scrollSpeed);
@@ -831,6 +936,9 @@ export function AudioFile() {
         const list3Btn = lsit3.map(num => num + scrollSpeed);
         const list4Btn = lsit4.map(num => num + scrollSpeed);
 
+        const spinListBtn1 = spinList1.map(num => num + scrollSpeed);
+        const spinListBtn2 = spinList2.map(num => num + scrollSpeed);
+        
         setFirstList(lsit1);
         setSecondList(lsit2);
 
@@ -842,6 +950,12 @@ export function AudioFile() {
 
         setThirdBtnList(list3Btn);
         setFourthBtnList(list4Btn);
+
+        setFirstSpinList(spinList1);
+        setFirstSpinBtnList(spinListBtn1);
+        
+        setSecondSpinList(spinList2);
+        setSecondSpinBtnList(spinListBtn2);
         
         setTimeout(() => {
           setStopwatchActive(true);
@@ -857,155 +971,94 @@ export function AudioFile() {
         document.querySelectorAll(".curve").forEach(e => e.remove());
     }
 
-    // Creating the curves of the first section
+    // Creating the curves for the notes
     useEffect(() => {
       if (time === firstList[0]) {
-        setNoteCount(count => count + 1);
-        const newEle = document.createElement('p');
-        newEle.classList.add("curveOne")
-        newEle.classList.add("curve")
-        newEle.textContent= ""
-        firstSection.current?.appendChild(newEle);
-        newEle.style.animation = `blueCurveAnime ${scrollSpeed/1000}s linear`
-        newEle.addEventListener("animationend", () => {
-          firstSection.current?.removeChild(newEle);
-        })
+        createCurve("curveOne", firstSection, "blueCurveAnime")
         setFirstList(list => list.slice(1));
       }
-    }, [time, firstList])
-
-    // Creating the curves of the second section
-    useEffect(() => {
-      if (time === secondList[0]) {
-        setNoteCount(count => count + 1);
-        const newEle = document.createElement('p');
-        newEle.classList.add("curveTwo")
-        newEle.classList.add("curve")
-        newEle.textContent= ""
-        firstSection.current?.appendChild(newEle);
-        newEle.style.animation = `redCurveAnime ${scrollSpeed/1000}s linear`
-        newEle.addEventListener("animationend", () => {
-          firstSection.current?.removeChild(newEle);
-        })
+      else if (time === secondList[0]) {
+        createCurve("curveTwo", firstSection, "redCurveAnime")
         setSecondList(list => list.slice(1));
       }
-    }, [time, secondList])
-
-    // Creating the curves of the third section
-    useEffect(() => {
-      if (time === thirdList[0]) {
-        setNoteCount(count => count + 1);
-        const newEle = document.createElement('p');
-        newEle.classList.add("curveThree")
-        newEle.classList.add("curve")
-        newEle.textContent= ""
-        secondSection.current?.appendChild(newEle);
-        newEle.style.animation = `blueCurveAnime ${scrollSpeed/1000}s linear`
-        newEle.addEventListener("animationend", () => {
-          secondSection.current?.removeChild(newEle);
-        })
+      else if (time === thirdList[0]) {
+        createCurve("curveThree", secondSection, "blueCurveAnime")
         setThirdList(list => list.slice(1));
       }
-    }, [time, thirdList])
-
-    // Creating the curves of the fourth section
-    useEffect(() => {
-      if (time === fourthList[0]) {
-        setNoteCount(count => count + 1);
-        const newEle = document.createElement('p');
-        newEle.classList.add("curveFour")
-        newEle.classList.add("curve")
-        newEle.textContent= ""
-        secondSection.current?.appendChild(newEle);
-        newEle.style.animation = `redCurveAnime ${scrollSpeed/1000}s linear`
-        newEle.addEventListener("animationend", () => {
-          secondSection.current?.removeChild(newEle);
-        })
+      else if (time === fourthList[0]) {
+        createCurve("curveFour", secondSection, "redCurveAnime")
         setFourthList(list => list.slice(1));
       }
-    }, [time, fourthList])
+      else if (time === firstSpinList[0]) {
+        createCurve("leftSpinCurve", firstSection, "spinCurveAnime")
+        setFirstSpinList(list => list.slice(1))
+      }
+      else if (time === secondSpinList[0]) {
+        createCurve("rightSpinCurve", secondSection, "spinCurveAnime")
+        setSecondSpinList(list => list.slice(1))
+      }
+    }, [time, firstList, secondList, thirdList, fourthList, firstSpinList, secondSpinList]);
 
-    // Checks for first List Misses
-    useEffect(() => {
-      if (firstBtnList.length > 0 && firstBtnList[0] < time - 150) {
-        if (score > 0) {
-          setScore(score => score - 1);
-        }
-        setMissCount(count => count + 1);
-        setFirstBtnList(list => list.slice(1));
-        const message = document.createElement('p');
-        message.classList.add("message");
-        message.classList.add("leftMessage");
-        message.classList.add("missedLeft");
-        message.textContent= "missed";
-        if (gameWrapper.current) gameWrapper.current.appendChild(message);
-        setTimeout(() => {
-          if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-        }, 500);
-      }
-    }, [firstBtnList, time])
-    
-    // Checks for second List Misses
-    useEffect(() => {
-      if (secondBtnList.length > 0 && secondBtnList[0] < time - 150) {
-        if (score > 0) {
-          setScore(score => score - 1);
-        }
-        setMissCount(count => count + 1);
-        setSecondBtnList(list => list.slice(1));
-        const message = document.createElement('p');
-        message.classList.add("message");
-        message.classList.add("leftMessage");
-        message.classList.add("missedLeft");
-        message.textContent= "missed";
-        if (gameWrapper.current) gameWrapper.current.appendChild(message);
-        setTimeout(() => {
-          if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-        }, 500);
-      }
-    }, [secondBtnList, time])
-    
-    // Checks for first List Misses
-    useEffect(() => {
-      if (thirdBtnList.length > 0 && thirdBtnList[0] < time - 150) {
-        if (score > 0) {
-          setScore(score => score - 1);
-        }
-        setMissCount(count => count + 1);
-        setThirdBtnList(list => list.slice(1));
-        const message = document.createElement('p');
-        message.classList.add("message");
-        message.classList.add("rightMessage");
-        message.classList.add("missedRight");
-        message.textContent= "missed";
-        if (gameWrapper.current) gameWrapper.current.appendChild(message);
-        setTimeout(() => {
-          if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-        }, 500);
-      }
-    }, [thirdBtnList, time])
-    
-    // Checks for first List Misses
-    useEffect(() => {
-      if (fourthBtnList.length > 0 && fourthBtnList[0] < time - 150) {
-        if (score > 0) {
-          setScore(score => score - 1);
-        }
-        setMissCount(count => count + 1);
-        setFourthBtnList(list => list.slice(1));
-        const message = document.createElement('p');
-        message.classList.add("message");
-        message.classList.add("rightMessage");
-        message.classList.add("missedRight");
-        message.textContent= "missed";
-        if (gameWrapper.current) gameWrapper.current.appendChild(message);
-        setTimeout(() => {
-          if (gameWrapper.current) gameWrapper.current.removeChild(message);  
-        }, 500);
-      }
-    }, [fourthBtnList, time])
+    const createCurve = (curveClass : string, section: RefObject<HTMLDivElement>, curveAnime: string) => {
+      setNoteCount(count => count + 1);
+      const newEle = document.createElement('p');
+      newEle.classList.add(curveClass)
+      newEle.classList.add("curve")
+      newEle.textContent= ""
+      section.current?.appendChild(newEle);
+      newEle.style.animation = `${curveAnime} ${scrollSpeed/1000}s linear`
+      newEle.addEventListener("animationend", () => {
+        section.current?.removeChild(newEle);
+      })
+    }
 
+    // Checking for missed notes
+    useEffect(() => {
+      handleMiss(firstBtnList, setFirstBtnList, "leftMessage");
+      handleMiss(secondBtnList, setSecondBtnList, "leftMessage");
+      handleMiss(thirdBtnList, setThirdBtnList, "rightMessage");
+      handleMiss(fourthBtnList, setFourthBtnList, "rightMessage");
+      handleMiss(firstSpinBtnList, setFirstSpinBtnList, "leftMessage");
+      handleMiss(secondSpinBtnList, setSecondSpinBtnList, "rightMessage");
+    }, [
+      firstBtnList, secondBtnList, thirdBtnList, fourthBtnList,
+      firstSpinBtnList, secondSpinBtnList, time
+    ]);
 
+    const handleMiss = (btnList: number[], setBtnList: (list: number[]) => void, direction: string) => {
+      if (btnList.length > 0 && btnList[0] < time - 150) {
+        if (score > 0) {
+          setScore(score => score - 1);
+        }
+        setMissCount(count => count + 1);
+        setBtnList(btnList.slice(1));
+
+        const message = document.createElement('p');
+        message.classList.add("message");
+        if (direction === "leftMessage") {
+          message.classList.add("leftMessage");
+          message.classList.add("missedLeft");  
+        }
+        else  {
+          message.classList.add("rightMessage");
+          message.classList.add("missedRight");  
+        }
+        message.textContent= "missed";
+        if (gameWrapper.current) gameWrapper.current.appendChild(message);
+        setTimeout(() => {
+          if (gameWrapper.current) gameWrapper.current.removeChild(message);  
+        }, 500);
+      }
+    }
+
+    const toggleOpacity = () => {
+      if (opacityEnabled === "On") {
+        setOpacity("Off")
+      } 
+      else {
+        setOpacity("On")
+      }
+    }
     return (
         <>
             <h1>Meyda Demo</h1>
@@ -1046,7 +1099,11 @@ export function AudioFile() {
               <p>Current Scroll Speed: {scrollSpeed / 1000}s</p>
             </div>
 
-            <button onClick={customMap}>Play Custom Map</button>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5}}>
+            <button style={{padding: 2}} onClick={toggleOpacity}>Opacity Change Set to {opacityEnabled}</button>
+            </div>
+
+            <button style={{padding: 2}} onClick={customMap}>Play Custom Map</button>
 
             <div style={currentArea}> {direction} </div>
 
