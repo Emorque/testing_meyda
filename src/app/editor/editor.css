@@ -1,0 +1,124 @@
+*{
+    box-sizing: border-box; /* Ensure borders don't add extra size */
+}
+
+#topbar-container {
+    position: relative;
+    transform: translateX(100px);
+}
+
+/* #topbar-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -10px;
+    height: 220px;
+    width: 10px;
+    background-color: rgba(0, 0, 255, 0.521);
+} */
+
+#bar {
+    /* position: absolute; */
+    position: relative;
+    background-color: transparent;
+    display: flex;
+    z-index: 10;
+    height: 122px;
+    width: fit-content;
+    border: 0.001px solid grey
+}
+
+.i-bar {
+    width:16px;
+    height: 120px;
+    content: "";
+
+    border-right: 0.01px solid grey;
+}
+/* 
+.i-bar:first-child {
+    background-color: blue;
+} */
+
+.i-bar:nth-child(16n + 1)::after {
+    position: absolute;
+    top:-5px;
+    content: "";
+    width: 16px;
+    background-color: yellow;
+    height: 5px;
+}
+
+#gameContainer {
+    width: 400px;
+    height: 500px;
+    background-color: transparent;
+    content: "";
+    overflow-y: hidden;
+    transform: scaleY(-1);
+    margin: 0 auto;
+    border-top: 10px solid blue;
+}
+
+.bar-vertical {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    width: fit-content;
+}
+
+.v-bar {
+    width:400px;
+    height: 16px;
+    content: "";
+    background-color: rgba(240, 248, 255, 0.096);
+    border-top: 0.01px solid grey;
+
+    /* background: linear-gradient(
+        to right, 
+        rgba(0, 0, 0, 0) 0px, 
+        rgba(0, 0, 0, 0) 99px, 
+        rgb(255, 255, 255) 100px, 
+        rgb(255, 255, 255) 100px,
+         rgba(0, 0, 0, 0) 100px, 
+         rgba(0, 0, 0, 0) 199px, 
+         rgb(255, 255, 255) 200px, 
+         rgb(255, 255, 255) 200px, 
+         rgba(0, 0, 0, 0) 200px, 
+         rgba(0, 0, 0, 0) 299px, 
+         rgb(255, 255, 255) 300px, 
+         rgb(255, 255, 255) 300px, 
+         rgba(0, 0, 0, 0) 300px, 
+         rgba(0, 0, 0, 0) 399px),
+
+        linear-gradient(to bottom, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%),
+        linear-gradient(to bottom, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%),
+        linear-gradient(to bottom, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%),
+        linear-gradient(to bottom, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%);
+
+    background-size:           
+        100% 100%,
+        99px, 100%,
+        99px, 100%,
+        99px, 100%,
+        99px, 100%;
+
+    background-position:
+        0 0,
+        0 0,
+        100px 0,
+        200px 0, 
+        300px 0; 
+    background-repeat: no-repeat; */
+}
+
+/* .v-bar:nth-child(16n + 1)::after {
+    position: absolute;
+    left: -5px;
+    content: "";
+    width: 5px;
+    background-color: yellow;
+    height: 16px;
+} */ 
+ /* wont work until because game-container has overflow-y hidden */

@@ -1144,6 +1144,8 @@ export function AudioFile() {
             {usingCustomMap && <button onClick={toggleMap}>Play/Pause</button>}
             
             {stageSet && <button onClick={toggleMusic}>Play/Pause</button>}
+
+            <a href='/editor' style={{backgroundColor: 'rgb(250, 238, 223)', color: 'black', padding: 5}}>Visit Editor</a>
         </>
     )
 }
