@@ -7,18 +7,7 @@
     transform: translateX(100px);
 }
 
-/* #topbar-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -10px;
-    height: 220px;
-    width: 10px;
-    background-color: rgba(0, 0, 255, 0.521);
-} */
-
 #bar {
-    /* position: absolute; */
     position: relative;
     background-color: transparent;
     display: flex;
@@ -35,10 +24,6 @@
 
     border-right: 0.01px solid grey;
 }
-/* 
-.i-bar:first-child {
-    background-color: blue;
-} */
 
 .i-bar:nth-child(16n + 1)::after {
     position: absolute;
@@ -54,26 +39,14 @@
     height: 500px;
     background-color: transparent;
     content: "";
-    overflow-y: hidden;
+    /* overflow-y: auto; */
     transform: scaleY(-1);
     margin: 0 auto;
     border-top: 10px solid blue;
-}
-
-.bar-vertical {
-    background-color: transparent;
-    display: flex;
-    flex-direction: column;
-    z-index: 10;
-    width: fit-content;
-}
-
+  }
+  
 .v-bar {
-    width:400px;
-    height: 16px;
-    content: "";
-    background-color: rgba(240, 248, 255, 0.096);
-    border-top: 0.01px solid grey;
+    border-top: 0.01px solid grey; 
 
     /* background: linear-gradient(
         to right, 
@@ -113,12 +86,7 @@
     background-repeat: no-repeat; */
 }
 
-/* .v-bar:nth-child(16n + 1)::after {
-    position: absolute;
-    left: -5px;
-    content: "";
-    width: 5px;
-    background-color: yellow;
-    height: 16px;
-} */ 
- /* wont work until because game-container has overflow-y hidden */
+.scrollbar {
+    scrollbar-color: grey transparent;
+    scrollbar-width: thin;
+}
