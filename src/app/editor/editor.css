@@ -82,7 +82,7 @@
 }
 
 .hideScrollbar {
-    scrollbar-color: transparent transparent;
+    scrollbar-color: rgba(128, 128, 128, 0.50) transparent;
     scrollbar-width:thin;
     /* margin-bottom: 100px; */
 }

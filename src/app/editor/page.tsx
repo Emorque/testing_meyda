@@ -11,6 +11,7 @@ const barGradient = "linear-gradient(rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 29px
 const gameGradient = "linear-gradient(to right, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 99px, rgba(255, 255, 255, 0.25) 100px, rgba(255, 255, 255, 0.25) 100px, rgba(0, 0, 0, 0) 100px, rgba(0, 0, 0, 0) 199px, rgba(255, 255, 255, 0.25) 200px, rgba(255, 255, 255, 0.25)200px, rgba(0, 0, 0, 0) 200px, rgba(0, 0, 0, 0) 299px, rgba(255, 255, 255, 0.25) 300px, rgba(255, 255, 255, 0.25) 300px, rgba(0, 0, 0, 0) 300px, rgba(0, 0, 0, 0) 399px) no-repeat scroll 0px 0px / 100% 100% padding-box border-box"
 const formatTime = (seconds: number) => [seconds / 60, seconds % 60, (seconds % 1) * 100].map((v) => `0${Math.floor(v)}`.slice(-2)).join(':')
 
+
 export default function Editor() {
   const [audioURL, setAudioURL] = useState<string>("")
   const [songLength, setSongLength] = useState<number>(0);    
@@ -32,13 +33,22 @@ export default function Editor() {
     dragToSeek: true,
     // plugins: useMemo(() => [Timeline.create()], []),
   })
+  // let hitsounds: { play: () => void; }[] = []
+  const hitsoundsRef = useRef<{ play: () => void; }[]>([]);
 
   const audioChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setAudioURL(URL.createObjectURL(file));
+    setAudioURL(URL.createObjectURL(file));    
+    let tempHitsounds: { play: () => void; }[] = []
+    for (let i = 0; i < 12; i++) {
+      // const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+      const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+      hitsound.volume = 1
+      tempHitsounds.push(hitsound);
+    } 
+    hitsoundsRef.current = tempHitsounds;
   }, []);
-
 
   const onPlayPause = useCallback(() => {
     wavesurfer && wavesurfer.playPause()
@@ -82,6 +92,21 @@ export default function Editor() {
     if (listRef.current) {
       listRef.current.scrollToItem(itemIndex, 'start');
     }
+    if (itemIndex){
+      const offset : number = (itemIndex % 3)
+      if (songNotes[0][itemIndex] === "S" || songNotes[0][itemIndex] === "T") {
+        hitsoundsRef.current[0 + 3*offset].play();
+      }
+      if (songNotes[1][itemIndex] === "S") {
+        hitsoundsRef.current[1 + 3*offset].play();
+      }
+      if (songNotes[2][itemIndex] === "S" || songNotes[2][itemIndex] === "T") {
+        hitsoundsRef.current[2 + 3*offset].play();
+      }
+      if (songNotes[3][itemIndex] === "S") {
+        hitsoundsRef.current[3 + 3*offset].play();
+      }
+    }
   }, [itemIndex]);
 
   useEffect(() => {
@@ -105,7 +130,11 @@ export default function Editor() {
   }, [isPlaying]);
 
   const changeNoteHor = (index: number, event: MouseEvent<HTMLParagraphElement>) => {
-    if (140 < event.clientY && event.clientY <= 170) { // First Bar
+    const mousePlacement = event.clientY - (document.getElementById('vBars-Container')?.getBoundingClientRect().top as number)
+    if (0 < mousePlacement && mousePlacement <= 30) { // First Bar
+      if (songNotes[2][index] === "S" || songNotes[2][index] === "T" || songNotes[3][index] === "S") {
+        return
+      }
       if (btn === "Turn Note") {
         setDoubleNote(0, 1, index)
       }
@@ -113,8 +142,10 @@ export default function Editor() {
         setNewNote(0, 1, index, "S");
       }
     }
-    else if (170 < event.clientY && event.clientY <= 200) { // Second Bar
-      console.log("bar2")
+    else if (0 < mousePlacement && mousePlacement <= 60) { // Second Bar
+      if (songNotes[2][index] === "S" || songNotes[2][index] === "T" || songNotes[3][index] === "S") {
+        return
+      }
       if (btn === "Turn Note") {
         setDoubleNote(0, 1, index)
       }
@@ -122,7 +153,10 @@ export default function Editor() {
         setNewNote(1, 0, index, "S");
       }
     }
-    else if (200 < event.clientY && event.clientY <= 230) { // Third Bar
+    else if (0 < mousePlacement && mousePlacement <= 90) { // Third Bar
+      if (songNotes[0][index] === "S" || songNotes[0][index] === "T" || songNotes[1][index] === "S") {
+        return
+      }
       if (btn === "Turn Note") {
         setDoubleNote(2, 3, index)
       }
@@ -130,8 +164,10 @@ export default function Editor() {
         setNewNote(2, 3, index, "S");
       }
     }
-    else if (230 < event.clientY && event.clientY <= 260) { // Fourth Bar
-      console.log("bar4")
+    else if (0 < mousePlacement && mousePlacement <= 120) { // Fourth Bar
+      if (songNotes[0][index] === "S" || songNotes[0][index] === "T" || songNotes[1][index] === "S") {
+        return
+      }
       if (btn === "Turn Note") {
         setDoubleNote(2, 3, index)
       }
@@ -145,6 +181,9 @@ export default function Editor() {
     const mousePlacement = event.clientX - (document.getElementById('gameContainer')?.getBoundingClientRect().left as number)
 
     if (0 < mousePlacement && mousePlacement <= 100) { // First Bar
+      if (songNotes[2][index] === "S" || songNotes[2][index] === "T" || songNotes[3][index] === "S") {
+        return
+      }
       if (btn === "Turn Note") {
         setDoubleNote(0, 1, index)
       }
@@ -153,7 +192,9 @@ export default function Editor() {
       }
     }
     else if (100 < mousePlacement && mousePlacement <= 200) { // Second Bar
-      console.log("bar2")
+      if (songNotes[2][index] === "S" || songNotes[2][index] === "T" || songNotes[3][index] === "S") {
+        return
+      }
       if (btn === "Turn Note") {
         setDoubleNote(0, 1, index)
       }
@@ -162,6 +203,9 @@ export default function Editor() {
       }
     }
     else if (200 < mousePlacement && mousePlacement <= 300) { // Third Bar
+      if (songNotes[0][index] === "S" || songNotes[0][index] === "T" || songNotes[1][index] === "S") {
+        return
+      }
       if (btn === "Turn Note") {
         setDoubleNote(2, 3, index)
       }
@@ -170,7 +214,9 @@ export default function Editor() {
       }
     }
     else if (300 < mousePlacement && mousePlacement <= 400) { // Fourth Bar
-      console.log("bar4")
+      if (songNotes[0][index] === "S" || songNotes[0][index] === "T" || songNotes[1][index] === "S") {
+        return
+      }
       if (btn === "Turn Note") {
         setDoubleNote(2, 3, index)
       }
@@ -305,30 +351,34 @@ export default function Editor() {
     }
   }
 
+  const roundNote = (note: number) => {
+    return Math.round(note / 10) * 10
+  }
+
   const exportMap = () => {
     console.log(songNotes)
     const exportedMap = []
     for (let i = 0; i < songNotes[0].length; i++) {
       if (songNotes[0][i] === "S") {
-        exportedMap.push([i * 0.0625, "FL", i])
+        exportedMap.push([roundNote(i * 62.5), "FL"])
       }
       else if (songNotes[0][i] === "T") {
-        exportedMap.push([i * 0.0625, "FT", i])
+        exportedMap.push([roundNote(i * 62.5), "FT"])
       }
       if (songNotes[1][i] === "S") {
-        exportedMap.push([i * 0.0625, "FR", i])
+        exportedMap.push([roundNote(i * 62.5), "FR"])
       }
       if (songNotes[2][i] === "S") {
-        exportedMap.push([i * 0.0625, "SL", i])
+        exportedMap.push([roundNote(i * 62.5), "SL"])
       }
       else if (songNotes[2][i] === "T") {
-        exportedMap.push([i * 0.0625, "ST", i])
+        exportedMap.push([roundNote(i * 62.5), "ST"])
       }
       if (songNotes[3][i] === "S") {
-        exportedMap.push([i * 0.0625, "SR", i])
+        exportedMap.push([roundNote(i * 62.5), "SR"])
       }
     }
-    console.log(exportedMap)
+    localStorage.setItem("customMap", JSON.stringify(exportedMap))
   }
   
   return (
@@ -349,7 +399,7 @@ export default function Editor() {
           <List
             ref={vListRef}
             className="hideScrollbar"
-            height={128} 
+            height={120} 
             itemCount={songLength} 
             itemSize={16} 
             layout="horizontal"
