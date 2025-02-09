@@ -1,0 +1,94 @@
+*{
+    box-sizing: border-box; /* Ensure borders don't add extra size */
+}
+
+#topbar-container {
+    width: 1200px;
+    position: relative;
+    margin: 0 auto;
+    transform: translateX(100px);
+}
+
+#vBars-Container{
+    width: 1000px;
+    height: 120px;
+    background-color: transparent;
+    content: "";
+    border: 0.01px solid grey;
+}
+
+.i-bar {
+    border-right: 0.01px solid rgba(255, 255, 255, 0.25);
+}
+
+/* .i-bar:nth-child(33){
+    border-right: 0.01px solid rgba(194, 61, 61, 0.952);
+} */
+
+#gameContainer {
+    width: 400px;
+    height: 500px;
+    background-color: transparent;
+    content: "";
+    transform: scaleY(-1);
+    margin: 0 auto;
+    border-top: 10px solid blue;
+  }
+  
+.v-bar {
+    border-top: 0.01px solid rgba(255, 255, 255, 0.25); 
+
+    /* background: linear-gradient(
+        to right, 
+        rgba(0, 0, 0, 0) 0px, 
+        rgba(0, 0, 0, 0) 99px, 
+        rgb(255, 255, 255) 100px, 
+        rgb(255, 255, 255) 100px,
+         rgba(0, 0, 0, 0) 100px, 
+         rgba(0, 0, 0, 0) 199px, 
+         rgb(255, 255, 255) 200px, 
+         rgb(255, 255, 255) 200px, 
+         rgba(0, 0, 0, 0) 200px, 
+         rgba(0, 0, 0, 0) 299px, 
+         rgb(255, 255, 255) 300px, 
+         rgb(255, 255, 255) 300px, 
+         rgba(0, 0, 0, 0) 300px, 
+         rgba(0, 0, 0, 0) 399px),
+
+        linear-gradient(to bottom, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%),
+        linear-gradient(to bottom, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%),
+        linear-gradient(to bottom, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%),
+        linear-gradient(to bottom, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%);
+
+    background-size:           
+        100% 100%,
+        99px, 100%,
+        99px, 100%,
+        99px, 100%,
+        99px, 100%;
+
+    background-position:
+        0 0,
+        0 0,
+        100px 0,
+        200px 0, 
+        300px 0; 
+    background-repeat: no-repeat; */
+}
+
+#waveform-Container {
+    scrollbar-color: rgba(128, 128, 128, 0.50) transparent;
+    scrollbar-width: thin;
+}
+
+.hideScrollbar {
+    scrollbar-color: rgba(128, 128, 128, 0.50) transparent;
+    scrollbar-width:thin;
+    /* margin-bottom: 100px; */
+}
+
+
+.scrollbar {
+    scrollbar-color: rgba(128, 128, 128, 0.50) transparent;
+    scrollbar-width: thin;
+}
