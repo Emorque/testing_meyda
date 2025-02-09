@@ -9,6 +9,7 @@ export function AudioFile() {
     const [audioURL, setAudioURL] = useState<string | null>(null)
     const audioRefListening = useRef<HTMLAudioElement>(null);
     const audioRefSetting = useRef<HTMLAudioElement>(null);
+    const editorAudioRef = useRef<HTMLAudioElement>(null);
     const [stageBtn, setStageBtn] = useState<boolean>(false); 
 
     const gameContainer = useRef<HTMLDivElement>(null);
@@ -31,6 +32,7 @@ export function AudioFile() {
     const [scrollSpeed, setScrollSpeed] = useState<number>(1000);
 
     const [usingCustomMap, setCustomMap] = useState<boolean>(false);
+    const [usingEditorMap, setEditorMap] = useState<boolean>(false);
     const [opacityEnabled, setOpacity] = useState<string>("On");
 
     // stopwatch
@@ -67,27 +69,141 @@ export function AudioFile() {
     const [rightActionBtnActive, setRightActionBtn] = useState<boolean>(false);
     const [rightActionBtnHold, setRightActionBtnHold] = useState<boolean>(false);
 
-    const [firstList, setFirstList] = useState<number[]>([]);
     const [firstBtnList, setFirstBtnList] = useState<number[]>([]);
-
-    const [secondList, setSecondList] = useState<number[]>([]);
     const [secondBtnList, setSecondBtnList] = useState<number[]>([]);
-
-    const [thirdList, setThirdList] = useState<number[]>([]);
     const [thirdBtnList, setThirdBtnList] = useState<number[]>([]);
-
-    const [fourthList, setFourthList] = useState<number[]>([]);
     const [fourthBtnList, setFourthBtnList] = useState<number[]>([]);
 
-    const [firstSpinList, setFirstSpinList] = useState<number[]>([]);
     const [firstSpinBtnList, setFirstSpinBtnList] = useState<number[]>([]);
-
-    const [secondSpinList, setSecondSpinList] = useState<number[]>([]);
     const [secondSpinBtnList, setSecondSpinBtnList] = useState<number[]>([]);
+
+    const [songNotes, setSongNotes] = useState<[number,string][]>([]);
 
     const [toggleBtnHold, setToggleBtnHold] = useState<boolean>(false);
     const [resetBtnHold, setResetBtnHold] = useState<boolean>(false);
 
+    const [firstHitsound, setFirstHitsound] = useState<number>(0);
+    const [secondHitsound, setSecondHitsound] = useState<number>(0);
+    const [thirdHitsound, setThirdHitsound] = useState<number>(0);
+    const [fourthHitsound, setFourthHitsound] = useState<number>(0);
+
+    const hitsoundsRef = useRef<{ play: () => void; }[]>([]);
+
+    // Editor Map
+    const [editorMapExists, setEditorMapExists] = useState<boolean>(false);
+    const [editorURL, setEditorURL] = useState<string | null>(null)
+    const [editorBtn, setEditorBtn] = useState<boolean>(false);
+    const [eMap, setEMap] = useState<[]>([])
+
+    const editorChange = (e: ChangeEvent<HTMLInputElement>) => { 
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setEditorURL(URL.createObjectURL(file));
+      setEditorBtn(true);
+    }
+
+    const playEditor = () => {
+      setCustomMap(false);
+      setEditorMap(true);
+      
+      if (audioRefSetting.current) {
+        audioRefSetting.current.pause();
+        audioRefSetting.current.currentTime = 0;
+      }        
+      if (audioRefListening.current) {
+        audioRefListening.current.pause();
+        audioRefListening.current.currentTime = 0;
+      }
+      if (editorAudioRef.current) {
+        editorAudioRef.current.pause();
+        editorAudioRef.current.currentTime = 0;
+      }
+
+      setStageBtn(false);
+      setStageSet(false);
+      setMusicSet(false);
+
+      setTime(0);
+      setStopwatchActive(false);
+      setStPaused(true);
+      setScore(0);
+      // setHighScore(0);
+      setHitCount(0);
+      setMissCount(0);
+      setNoteCount(0);
+
+      setFirstBtnList([])
+      setSecondBtnList([])
+      setThirdBtnList([])
+      setFourthBtnList([])
+
+      setSongNotes([])
+
+      let tempHitsounds: { play: () => void; }[] = []
+      for (let i = 0; i < 12; i++) {
+        // const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+        const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+        hitsound.volume = 1
+        tempHitsounds.push(hitsound);
+      } 
+      hitsoundsRef.current = tempHitsounds;
+
+      
+      const res = (eMap.sort((firstItem: [number,string], secondItem: [number,string]) => firstItem[0] - secondItem[0]))
+      setSongNotes(res)
+
+
+      let list1Btn = [];
+      let list2Btn = [];
+      let list3Btn = [];
+      let list4Btn = [];
+      let spinListBtn1 = [];
+      let spinListBtn2 = [];
+
+      for (let i = 0; i < res.length; i++) {
+        if (res[i][1] === "FL") {
+          list1Btn.push(res[i][0] + scrollSpeed)
+        }
+        else if (res[i][1] === "FR") {
+          list2Btn.push(res[i][0] + scrollSpeed)
+        }
+        else if (res[i][1] === "SL") {
+          list3Btn.push(res[i][0] + scrollSpeed)
+        }
+        else if (res[i][1] === "SR") {
+          list4Btn.push(res[i][0] + scrollSpeed)
+        }
+        else if (res[i][1] === "FT") {
+          spinListBtn1.push(res[i][0] + scrollSpeed)
+        }
+        else if (res[i][1] === "ST") {
+          spinListBtn2.push(res[i][0] + scrollSpeed)
+        }
+      }
+
+      setFirstBtnList(list1Btn);
+      setSecondBtnList(list2Btn);
+      setThirdBtnList(list3Btn);
+      setFourthBtnList(list4Btn);
+
+      setFirstSpinBtnList(spinListBtn1);
+      setSecondSpinBtnList(spinListBtn2);
+      
+      setTimeout(() => {
+        setStopwatchActive(true);
+        setStPaused(false);
+      }, scrollSpeed)
+
+      setTimeout(() => {
+        if (editorAudioRef.current) {
+          editorAudioRef.current.play();
+        }  
+      }, scrollSpeed * 2)
+      
+      document.querySelectorAll(".curve").forEach(e => e.remove());
+    }
+
+    
     const audioChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -114,22 +230,26 @@ export function AudioFile() {
         setHitCount(0);
         setMissCount(0);
         setNoteCount(0);
-
-        setFirstList([])
-        setSecondList([])
-        setThirdList([])
-        setFourthList([])
   
         setFirstBtnList([])
         setSecondBtnList([])
         setThirdBtnList([])
-        setFourthList([])
+        setFourthBtnList([])
 
         setStopwatchActive(false);
         setStPaused(true);
         setTime(0);
         
         document.querySelectorAll(".curve").forEach(e => e.remove());
+
+        let tempHitsounds: { play: () => void; }[] = []
+        for (let i = 0; i < 12; i++) {
+          // const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+          const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+          hitsound.volume = 1
+          tempHitsounds.push(hitsound);
+        } 
+        hitsoundsRef.current = tempHitsounds;
        
         updateContext();
     }
@@ -226,7 +346,6 @@ export function AudioFile() {
             newEle.classList.add("curve")
             newEle.textContent= ""
             circle.current.appendChild(newEle)
-            // newEle.animate(curveAnimation, animationTiming)
             newEle.style.animation = `${circleAnime} ${scrollSpeed/1000}s linear`
             newEle.addEventListener("animationend", () => {
               circle.current?.removeChild(newEle);
@@ -255,10 +374,9 @@ export function AudioFile() {
             message.classList.add("message");
             message.classList.add("leftMessage")
             if (firstSpinBtnList[0] + 75 >= time && time > firstSpinBtnList[0] - 75) {
-              const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
-              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-              hitsound.volume = 0.5
-              hitsound.play();
+              hitsoundsRef.current[firstHitsound].play()
+              setFirstHitsound(prev => (prev + 1) % 3)
+
               setScore(score => score + 5);
               setHitCount(count => count + 1);
               setFirstSpinBtnList(list => list.slice(1));
@@ -271,10 +389,9 @@ export function AudioFile() {
             }
 
             else if (firstSpinBtnList[0] + 150 >= time && time > firstSpinBtnList[0] - 150) {
-              const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
-              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-              hitsound.volume = 0.5
-              hitsound.play();
+              hitsoundsRef.current[firstHitsound].play()
+              setFirstHitsound(prev => (prev + 1) % 3)
+
               setScore(score => score + 3);
               setHitCount(count => count + 1);
               setFirstSpinBtnList(list => list.slice(1));
@@ -300,10 +417,9 @@ export function AudioFile() {
             message.classList.add("message");
             message.classList.add("rightMessage")
             if (secondSpinBtnList[0] + 75 >= time && time > secondSpinBtnList[0] - 75) {
-              const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
-              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-              hitsound.volume = 0.5
-              hitsound.play();
+              hitsoundsRef.current[thirdHitsound + 6].play()
+              setThirdHitsound(prev => (prev + 1) % 3)
+              
               setScore(score => score + 5);
               setHitCount(count => count + 1);
               setSecondSpinBtnList(list => list.slice(1));
@@ -316,10 +432,9 @@ export function AudioFile() {
             }
 
             else if (secondSpinBtnList[0] + 150 >= time && time > secondSpinBtnList[0] - 150) {
-              const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
-              // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-              hitsound.volume = 0.5
-              hitsound.play();
+              hitsoundsRef.current[thirdHitsound + 6].play()
+              setThirdHitsound(prev => (prev + 1) % 3)
+
               setScore(score => score + 3);
               setHitCount(count => count + 1);
               setSecondSpinBtnList(list => list.slice(1));
@@ -355,10 +470,9 @@ export function AudioFile() {
               }
 
               else if (firstBtnList[0] + 75 >= time && time > firstBtnList[0] - 75) {
-                const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-                hitsound.volume = 0.5
-                hitsound.play();
+                hitsoundsRef.current[firstHitsound].play()
+                setFirstHitsound(prev => (prev + 1) % 3)
+                
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setFirstBtnList(list => list.slice(1));
@@ -371,10 +485,9 @@ export function AudioFile() {
               }
 
               else if (firstBtnList[0] + 150 >= time && time > firstBtnList[0] - 150) {
-                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-                hitsound.volume = 0.5
-                hitsound.play();
+                hitsoundsRef.current[firstHitsound].play()
+                setFirstHitsound(prev => (prev + 1) % 3)
+
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setFirstBtnList(list => list.slice(1));
@@ -396,7 +509,6 @@ export function AudioFile() {
               if (time < thirdBtnList[0] - 150) {  
                 message.textContent= "early";
                 message.classList.add("earlyRight");
-                // console.log(leftBtnList[0]);
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
@@ -407,10 +519,10 @@ export function AudioFile() {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setThirdBtnList(list => list.slice(1));
-                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-                hitsound.volume = 0.5
-                hitsound.play();
+
+                hitsoundsRef.current[thirdHitsound + 6].play()
+                setThirdHitsound(prev => (prev + 1) % 3)
+
                 message.classList.add("success");
                 message.textContent= "perfect";
                 message.style.backgroundColor = "green";
@@ -425,10 +537,10 @@ export function AudioFile() {
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setThirdBtnList(list => list.slice(1));
-                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-                hitsound.volume = 0.5
-                hitsound.play();
+
+                hitsoundsRef.current[thirdHitsound + 6].play()
+                setThirdHitsound(prev => (prev + 1) % 3)
+
                 message.classList.add("success");
                 message.textContent= "success";
                 message.style.backgroundColor = "green";
@@ -463,10 +575,10 @@ export function AudioFile() {
                 }, 500);
               }
               else if (secondBtnList[0] + 75 >= time && time > secondBtnList[0] - 75) {
-                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-                hitsound.volume = 0.5
-                hitsound.play();
+
+                hitsoundsRef.current[secondHitsound + 3].play()
+                setSecondHitsound(prev => (prev + 1) % 3)
+
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setSecondBtnList(list => list.slice(1));
@@ -478,10 +590,10 @@ export function AudioFile() {
                 }, 500);
               }
               else if (secondBtnList[0] + 150 >= time && time > secondBtnList[0] - 150) {
-                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local
-                hitsound.volume = 0.5
-                hitsound.play();
+
+                hitsoundsRef.current[secondHitsound + 3].play()
+                setSecondHitsound(prev => (prev + 1) % 3)
+
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setSecondBtnList(list => list.slice(1));
@@ -503,7 +615,6 @@ export function AudioFile() {
               if (time < fourthBtnList[0] - 150) {  
                 message.textContent= "early";
                 message.classList.add("earlyRight");
-                // console.log(leftBtnList[0]);
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
@@ -514,10 +625,10 @@ export function AudioFile() {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setFourthBtnList(list => list.slice(1));
-                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-                hitsound.volume = 0.5
-                hitsound.play();
+                
+                hitsoundsRef.current[fourthHitsound + 9].play()
+                setFourthHitsound(prev => (prev + 1) % 3)
+
                 message.classList.add("success");
                 message.textContent= "perfect";
                 message.style.backgroundColor = "green";
@@ -532,10 +643,10 @@ export function AudioFile() {
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setFourthBtnList(list => list.slice(1));
-                const hitsound  = new Audio('/testing_meyda/hitsound.mp3');
-                // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
-                hitsound.volume = 0.5
-                hitsound.play();
+
+                hitsoundsRef.current[fourthHitsound + 9].play()
+                setFourthHitsound(prev => (prev + 1) % 3)
+
                 message.classList.add("success");
                 message.textContent= "success";
                 message.style.backgroundColor = "green";
@@ -564,6 +675,9 @@ export function AudioFile() {
           if (usingCustomMap) {
             customMap()
           }
+          else if (usingEditorMap) {
+            playEditor()
+          }
           else {
             resetGame();
           }
@@ -573,6 +687,9 @@ export function AudioFile() {
           setToggleBtnHold(true);
           if (usingCustomMap) {
             toggleMap();
+          }
+          else if (usingEditorMap) {
+            toggleEditor();
           }
           else {
             toggleMusic(); // Play/pause
@@ -661,15 +778,10 @@ export function AudioFile() {
       setMissCount(0);
       setNoteCount(0);
 
-      setFirstList([])
-      setSecondList([])
-      setThirdList([])
-      setFourthList([])
-
       setFirstBtnList([])
       setSecondBtnList([])
       setThirdBtnList([])
-      setFourthList([])
+      setFourthBtnList([])
 
       setStopwatchActive(false);
       setStPaused(true);
@@ -769,6 +881,28 @@ export function AudioFile() {
       }
     }
 
+    const toggleEditor = () => {
+      const curves = document.querySelectorAll('.curve');
+      if (editorAudioRef.current) {
+        if (editorAudioRef.current.paused) {
+          editorAudioRef.current.play();
+          setStopwatchActive(true);
+          setStPaused(false);
+          for (let i = 0; i < curves.length; i++) {
+            (curves[i] as HTMLParagraphElement).style.animationPlayState = "running";
+          }
+        }
+        else {
+          editorAudioRef.current.pause();
+          setStopwatchActive(false);
+          setStPaused(true);
+          for (let i = 0; i < curves.length; i++) {
+            (curves[i] as HTMLParagraphElement).style.animationPlayState = "paused";
+          }
+        }
+      }
+    }
+
     const setMusicStage = () => {
       if (audioRefListening.current && audioRefSetting.current) {
         audioRefSetting.current.play();
@@ -785,219 +919,375 @@ export function AudioFile() {
 
     const customMap = () => {
       setCustomMap(true);
-        setAudioURL('https://9boushb4a7.ufs.sh/f/9Jv1QVILGRy4BnZDzY7GTJ0cX8hyuefiOLVSvntDKg5EZ1dl');
-        
-        if (audioRefSetting.current) {
-          audioRefSetting.current.pause();
-          audioRefSetting.current.currentTime = 0;
-        }        
-        if (audioRefListening.current) {
-          audioRefListening.current.pause();
-          audioRefListening.current.currentTime = 0;
+      setEditorMap(false);
+      setAudioURL('https://9boushb4a7.ufs.sh/f/9Jv1QVILGRy4BnZDzY7GTJ0cX8hyuefiOLVSvntDKg5EZ1dl');
+      
+      if (audioRefSetting.current) {
+        audioRefSetting.current.pause();
+        audioRefSetting.current.currentTime = 0;
+      }        
+      if (audioRefListening.current) {
+        audioRefListening.current.pause();
+        audioRefListening.current.currentTime = 0;
+      }
+
+      setStageBtn(false);
+      setStageSet(false);
+      setMusicSet(false);
+
+      setTime(0);
+      setStopwatchActive(false);
+      setStPaused(true);
+      setScore(0);
+      // setHighScore(0);
+      setHitCount(0);
+      setMissCount(0);
+      setNoteCount(0);
+
+      setFirstBtnList([])
+      setSecondBtnList([])
+      setThirdBtnList([])
+      setFourthBtnList([])
+
+      setSongNotes([])
+
+      let tempHitsounds: { play: () => void; }[] = []
+      for (let i = 0; i < 12; i++) {
+        // const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+        const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+        hitsound.volume = 1
+        tempHitsounds.push(hitsound);
+      } 
+      hitsoundsRef.current = tempHitsounds;
+
+      const song: [number,string][] = [
+        [1430, "FL"], [1740, "FL"], [2070, "FL"], [2420, "FL"], [3690, "FL"], 
+        [4370, "FL"], [4690, "FL"], [5030, "FL"], [6240, "FL"], [6580, "FL"], 
+        [6880, "FL"], [7190, "FL"], [7500, "FL"], [7820, "FL"], [8130, "FL"], 
+        [8450, "FL"], [9060, "FL"], [9390, "FL"], [9710, "FL"], [10050, "FL"], 
+        [10370, "FL"], [10670, "FL"], [10940, "FL"], [11260, "FL"], [14120, "FL"], 
+        [16660, "FL"], [21290, "FL"], [23230, "FL"], [23860, "FL"], [25060, "FL"], 
+        [42220, "FL"], [42360, "FL"], [42700, "FL"], [43090, "FL"], [43470, "FL"], 
+        [43600, "FL"], [43930, "FL"], [49150, "FL"], [49500, "FL"], [49810, "FL"], 
+        [50120, "FL"], [50450, "FL"], [50770, "FL"], [51110, "FL"], [51390, "FL"], 
+        [51720, "FL"], [52010, "FL"], [52150, "FL"], [52300, "FL"], [52430, "FL"], 
+        [52750, "FL"], [53060, "FL"], [53410, "FL"], [53550, "FL"], [53690, "FL"], 
+        [54820, "FL"], [57160, "FL"], [57320, "FL"], [57440, "FL"], [65660, "FL"], 
+        [66010, "FL"], [66120, "FL"], [66440, "FL"], [66770, "FL"], [67110, "FL"], 
+        [68870, "FL"], [69200, "FL"], [69510, "FL"], [69840, "FL"], [69980, "FL"], 
+        [70230, "FL"], [70530, "FL"], [70820, "FL"], [71280, "FL"], [71600, "FL"], 
+        [71880, "FL"], [72190, "FL"], [80030, "FL"], [82570, "FL"], [83220, "FL"], 
+        [84500, "FL"], [85140, "FL"], [89690, "FL"], [89830, "FL"], [89990, "FL"], 
+        [90660, "FL"], [91090, "FL"],
+        [91480, "FL"], [91910, "FL"], [93150, "FL"], [93450, "FL"], [95000, "FL"],
+        [95370, "FL"], [95540, "FL"], [95890, "FL"], [102830, "FL"], [102990, "FL"],
+        [103570, "FL"], [103730, "FL"], [129490, "FL"], [129620, "FL"], [129950, "FL"],
+        [132880, "FL"], [133200, "FL"], [135410, "FL"], [135740, "FL"], [136040, "FL"],
+        [136360, "FL"], [136680, "FL"], [137010, "FL"], [142270, "FL"], [143270, "FL"],
+        [143630, "FL"], [143790, "FL"], [143980, "FL"], [144160, "FL"], [145470, "FL"],
+        [146110, "FL"], [146750, "FL"], [146900, "FL"], [147310, "FL"], [147650, "FL"],
+        [148460, "FL"], [148650, "FL"], [151620, "FL"], [151780, "FL"], [151930, "FL"],
+        [153040, "FL"], [154260, "FL"], [154510, "FL"], [155330, "FL"], [157770, "FL"],
+        [160340, "FL"], [161620, "FL"], [164030, "FL"], [166810, "FL"], [167090, "FL"], 
+        [167370, "FL"], [168940, "FL"], [169230, "FL"],
+        [169550, "FL"], [170830, "FL"], [171130, "FL"], [171960, "FL"], [172350, "FL"],
+        [173250, "FL"], [173390, "FL"], [173710, "FL"], [174390, "FL"], [178270, "FL"],
+        [178680, "FL"], [178820, "FL"], [179500, "FL"], [179620, "FL"], [180620, "FL"],
+        [198520, "FL"], [198700, "FL"], [200040, "FL"], [200180, "FL"], [200440, "FL"],
+        [200560, "FL"], [201730, "FL"], [202220, "FL"], [202430, "FL"], [203180, "FL"],
+        [203890, "FL"], [204000, "FL"], [204660, "FL"], [204810, "FL"], [205280, "FL"],
+        [205590, "FL"], [207850, "FL"], [208110, "FL"], [208240, "FL"], [208560, "FL"],
+        [208870, "FL"], [209040, "FL"], [209870, "FL"], [210080, "FL"], [210330, "FL"],
+        [211680, "FL"], [228090, "FL"], [228390, "FL"], [228540, "FL"], [228680, "FL"],
+        [228950, "FL"], [229100, "FL"], [229240, "FL"], [229380, "FL"], [231530, "FL"],
+        [231650, "FL"], [231920, "FL"], [232050, "FL"], [232210, "FL"], [233310, "FL"],
+        [233810, "FL"], [234260, "FL"], [234550, "FL"], [234670, "FL"], [234950, "FL"],
+        [235060, "FL"], [235370, "FL"], [235480, "FL"], [235730, "FL"], [235860, "FL"],
+        [236030, "FL"], [236810, "FL"], [236940, "FL"], [249870, "FL"], [249980, "FL"],
+        [250300, "FL"], [250430, "FL"], [250740, "FL"], [250890, "FL"], [251050, "FL"],
+        [251200, "FL"], [251370, "FL"], [251540, "FL"], [253180, "FL"], [259840, "FL"],
+        [260770, "FL"], [262260, "FL"], [264180, "FL"], [266110, "FL"],
+        [268010, "FL"], [269360, "FL"], [270840, "FL"], [271130, "FL"], [271270, "FL"],
+        [280070, "FL"], [280620, "FL"], [281030, "FL"], [281780, "FL"], [282810, "FL"],
+        [282960, "FL"], [283110, "FL"], [283400, "FL"], [283800, "FL"], [284860, "FL"],
+        [285220, "FL"], [285930, "FL"], [286110, "FL"], [287220, "FL"], [287430, "FL"],
+        [288320, "FL"], [289140, "FL"], [289570, "FL"], [291490, "FL"], [291940, "FL"],
+        [292380, "FL"], [294280, "FL"], [294730, "FL"], [297960, "FL"], [298410, "FL"],
+        [298710, "FL"], [299030, "FL"], [299150, "FL"], [299520, "FL"], [299910, "FL"],
+        [300500, "FL"], [314740, "FL"], [315070, "FL"], [315220, "FL"], [315480, "FL"],
+        [316230, "FL"], [316370, "FL"], [316690, "FL"], [317110, "FL"], [317580, "FL"], 
+        [352050, "FL"], [352890, "FL"], [353200, "FL"], [354060, "FL"], [354330, "FL"],
+        [355220, "FL"], [355520, "FL"], [356390, "FL"], [356690, "FL"], [357570, "FL"],
+        [357870, "FL"], [358760, "FL"], [359060, "FL"], [359940, "FL"], [360250, "FL"],
+        [361150, "FL"], [361440, "FL"], [362280, "FL"], [362590, "FL"], [363190, "FL"],
+
+
+
+        [44390, "FR"], [44900, "FR"], [45010, "FR"], [45390, "FR"], [45500, "FR"],
+        [45960, "FR"], [46070, "FR"], [46620, "FR"], [46920, "FR"], [47560, "FR"],
+        [47910, "FR"], [48240, "FR"], [48560, "FR"], [48860, "FR"], [54020, "FR"],
+        [54510, "FR"], [54660, "FR"], [55240, "FR"], [55550, "FR"], [55930, "FR"],
+        [56040, "FR"], [56370, "FR"], [56680, "FR"], [57020, "FR"], [62220, "FR"],
+        [62380, "FR"], [62530, "FR"], [62820, "FR"],   [92280, "FR"], [92610, "FR"], [92790, "FR"], [93840, "FR"], [94010, "FR"],
+        [94280, "FR"], [94680, "FR"], [103140, "FR"], [103320, "FR"], [104800, "FR"],
+        [105000, "FR"], [105310, "FR"], [105650, "FR"], [107580, "FR"], [107730, "FR"],
+        [108070, "FR"], [108400, "FR"], [109540, "FR"], [109900, "FR"], [110770, "FR"],
+        [111450, "FR"], [111760, "FR"], [111900, "FR"], [113040, "FR"], [113180, "FR"],
+        [113350, "FR"], [113520, "FR"], [113670, "FR"], [113860, "FR"], [114020, "FR"],
+        [115020, "FR"], [115330, "FR"], [115900, "FR"], [116220, "FR"], [116580, "FR"],
+        [116940, "FR"], [117170, "FR"], [117340, "FR"], [117470, "FR"], [119620, "FR"],
+        [119810, "FR"], [119980, "FR"], [120120, "FR"], [120500, "FR"], [120800, "FR"],
+        [123250, "FR"], [130660, "FR"], [131010, "FR"], [131310, "FR"], [131630, "FR"],
+        [131970, "FR"], [132250, "FR"], [133520, "FR"], [133830, "FR"], [134120, "FR"],
+        [134440, "FR"], [134790, "FR"], [135100, "FR"], [137610, "FR"], [137930, "FR"],
+        [138260, "FR"], [138550, "FR"], [142920, "FR"], [144430, "FR"], [144860, "FR"],
+        [145790, "FR"], [146420, "FR"], [146580, "FR"], [147980, "FR"], [148300, "FR"],
+        [148790, "FR"], [154920, "FR"], [155550, "FR"], [155780, "FR"], [157110, "FR"],
+        [158370, "FR"], [167710, "FR"], [168060, "FR"], [168370, "FR"], [168710, "FR"],
+        [169890, "FR"], [170050, "FR"], [170330, "FR"], [170650, "FR"], [171610, "FR"],
+        [172730, "FR"], [173080, "FR"], [177400, "FR"], [177780, "FR"], [178090, "FR"], [179180, "FR"], [179350, "FR"],
+        [179960, "FR"], [180280, "FR"], [181180, "FR"], [182520, "FR"], [182840, "FR"],
+        [183360, "FR"], [183490, "FR"], [184680, "FR"], [185350, "FR"], [185650, "FR"],
+        [186340, "FR"], [186500, "FR"], [187150, "FR"], [188240, "FR"], [188430, "FR"],
+        [189100, "FR"], [189230, "FR"], [191090, "FR"], [218530, "FR"], [218930, "FR"],
+        [219200, "FR"], [219320, "FR"], [219720, "FR"], [220010, "FR"], [220140, "FR"],
+        [220390, "FR"], [221320, "FR"], [221560, "FR"], [221700, "FR"], [227840, "FR"],
+        [229970, "FR"], [230470, "FR"], [230730, "FR"], [230840, "FR"], [231100, "FR"],
+        [231230, "FR"], [232380, "FR"], [232500, "FR"], [236190, "FR"], [236510, "FR"],
+        [236670, "FR"], [237600, "FR"], [238080, "FR"], [238220, "FR"], [240030, "FR"],
+        [240300, "FR"], [240460, "FR"], [240650, "FR"], [242150, "FR"], [242260, "FR"],
+        [242570, "FR"], [242670, "FR"], [243030, "FR"], [243150, "FR"], [243410, "FR"],
+        [244640, "FR"], [251930, "FR"], [252250, "FR"], [252500, "FR"], [252690, "FR"],   [261790, "FR"], [263690, "FR"], [265620, "FR"], [267540, "FR"], [269230, "FR"],
+        [272830, "FR"], [274300, "FR"], [290370, "FR"], [290870, "FR"], [293180, "FR"],
+        [293880, "FR"], [295090, "FR"], [295560, "FR"], [296250, "FR"], [296600, "FR"],
+        [297010, "FR"], [297130, "FR"], [297500, "FR"], [297800, "FR"], [307080, "FR"],
+        [307540, "FR"], [307990, "FR"], [308270, "FR"], [308590, "FR"], [308720, "FR"],
+        [309140, "FR"], [335840, "FR"], [336260, "FR"], [336680, "FR"], [337020, "FR"],
+        [337890, "FR"], [338210, "FR"], [338650, "FR"], [339100, "FR"], [339420, "FR"],
+        [340290, "FR"], [340600, "FR"], [341060, "FR"], [341470, "FR"], [341790, "FR"],
+        [342080, "FR"], [342360, "FR"], [342670, "FR"], [342990, "FR"], [343270, "FR"],
+        [343570, "FR"], [344160, "FR"], [344390, "FR"], [345260, "FR"], [345570, "FR"],
+        [346480, "FR"], [346750, "FR"], [347630, "FR"], [347920, "FR"], [348810, "FR"],
+        [349100, "FR"], [349980, "FR"], [350240, "FR"], [351170, "FR"], [351470, "FR"],
+        [352350, "FR"], [352620, "FR"], [353510, "FR"], [353790, "FR"], [354640, "FR"],
+        [354930, "FR"],
+
+
+
+        [25290, "SL"], [26090, "SL"], [26440, "SL"], [26760, "SL"], [27590, "SL"],
+        [27880, "SL"], [28190, "SL"], [28510, "SL"], [28830, "SL"], [29150, "SL"],
+        [29520, "SL"], [29860, "SL"], [30550, "SL"], [30850, "SL"], [35440, "SL"],
+        [35880, "SL"], [36210, "SL"], [36530, "SL"], [36880, "SL"], [37170, "SL"],
+        [37510, "SL"], [37830, "SL"], [38150, "SL"], [38450, "SL"], [38780, "SL"],
+        [39080, "SL"], [39380, "SL"], [39700, "SL"], [39840, "SL"], [40300, "SL"],
+        [40620, "SL"], [57780, "SL"], [58120, "SL"], [58440, "SL"], [58570, "SL"],
+        [58710, "SL"], [58860, "SL"], [59010, "SL"], [59160, "SL"], [59310, "SL"],
+        [59450, "SL"], [59620, "SL"], [59780, "SL"], [59910, "SL"], [60240, "SL"],
+        [60380, "SL"], [60530, "SL"], [60640, "SL"], [61000, "SL"], [61120, "SL"],
+        [61440, "SL"], [61740, "SL"], [62070, "SL"], [63470, "SL"], [63620, "SL"],
+        [63750, "SL"], [64100, "SL"], [64430, "SL"], [64590, "SL"], [64750, "SL"],
+        [64920, "SL"], [65040, "SL"], [65340, "SL"], [98110, "SL"], [98260, "SL"], [98600, "SL"], [98950, "SL"], [100490, "SL"],
+        [100830, "SL"], [101020, "SL"], [101370, "SL"], [101680, "SL"], [102430, "SL"],
+        [102630, "SL"], [104410, "SL"], [106010, "SL"], [106180, "SL"], [106400, "SL"],
+        [106610, "SL"], [106860, "SL"], [107200, "SL"], [108740, "SL"], [109020, "SL"],
+        [109200, "SL"], [110270, "SL"], [110400, "SL"], [112460, "SL"], [112620, "SL"],
+        [114240, "SL"], [114520, "SL"], [114660, "SL"], [117800, "SL"], [118120, "SL"],
+        [118510, "SL"], [118650, "SL"], [118960, "SL"], [119290, "SL"], [121260, "SL"],
+        [121610, "SL"], [122010, "SL"], [122420, "SL"], [122590, "SL"], [122730, "SL"],
+        [122890, "SL"], [124790, "SL"], [124970, "SL"], [125140, "SL"], [125310, "SL"],
+        [125490, "SL"], [125630, "SL"], [125980, "SL"], [126330, "SL"], [126760, "SL"],
+        [126910, "SL"], [127070, "SL"], [127230, "SL"], [127400, "SL"], [127560, "SL"],
+        [127720, "SL"], [140430, "SL"], [141370, "SL"], [141650, "SL"], [149280, "SL"],
+        [149430, "SL"], [149800, "SL"], [149930, "SL"], [150840, "SL"], [151170, "SL"],   [174540, "SL"], [175580, "SL"], [175740, "SL"], [175850, "SL"], [176640, "SL"],
+        [176840, "SL"], [177030, "SL"], [181680, "SL"], [182000, "SL"], [182140, "SL"],
+        [183180, "SL"], [183870, "SL"], [184070, "SL"], [184190, "SL"], [185030, "SL"],
+        [185800, "SL"], [185930, "SL"], [186660, "SL"], [187010, "SL"], [187540, "SL"],
+        [187900, "SL"], [188800, "SL"], [189610, "SL"], [189760, "SL"], [190200, "SL"],
+        [190810, "SL"], [192140, "SL"], [192450, "SL"], [192740, "SL"], [193080, "SL"],
+        [194420, "SL"], [196330, "SL"], [196580, "SL"], [212070, "SL"], [212400, "SL"],
+        [213720, "SL"], [213900, "SL"], [214020, "SL"], [215100, "SL"], [215370, "SL"],
+        [216550, "SL"], [217540, "SL"], [217850, "SL"], [217990, "SL"], [223010, "SL"],
+        [223130, "SL"], [223410, "SL"], [223520, "SL"], [223830, "SL"], [223960, "SL"],
+        [225190, "SL"], [225300, "SL"], [225480, "SL"], [226130, "SL"], [238520, "SL"],
+        [238660, "SL"], [238940, "SL"], [239240, "SL"], [239370, "SL"], [239590, "SL"],
+        [239730, "SL"], [239870, "SL"], [241490, "SL"], [241860, "SL"], [243560, "SL"],
+        [243700, "SL"], [243860, "SL"], [243990, "SL"], [244320, "SL"], [245320, "SL"],
+        [245610, "SL"], [245940, "SL"], [246240, "SL"], [246380, "SL"], [246520, "SL"],
+        [247680, "SL"], [247830, "SL"], [248000, "SL"], [253570, "SL"], [260290, "SL"], [261230, "SL"], [263220, "SL"], [265160, "SL"], [267060, "SL"],
+        [268980, "SL"], [270210, "SL"], [271780, "SL"], [272330, "SL"], [275170, "SL"],
+        [275340, "SL"], [275500, "SL"], [275780, "SL"], [276080, "SL"], [278310, "SL"],
+        [278510, "SL"], [278740, "SL"], [279020, "SL"], [302760, "SL"], [305200, "SL"],
+        [305610, "SL"], [305900, "SL"], [306240, "SL"], [306620, "SL"], [306760, "SL"],
+        [313470, "SL"], [313840, "SL"], [313960, "SL"], [317880, "SL"], [318140, "SL"],
+        [318270, "SL"], [318680, "SL"], [319060, "SL"], [322050, "SL"], [322630, "SL"],
+        [322990, "SL"], [323550, "SL"], [323850, "SL"], [324210, "SL"], [326740, "SL"],
+        [327160, "SL"], [327490, "SL"], [329840, "SL"], [331000, "SL"],
+        [344660, "SL"], [344930, "SL"], [345880, "SL"], [346180, "SL"], [347040, "SL"],
+        [347310, "SL"], [348220, "SL"], [348500, "SL"], [349380, "SL"], [349670, "SL"],
+        [350570, "SL"], [350860, "SL"], [351760, "SL"],
+
+
+
+
+
+        [2740, "SR"], [2900, "SR"], [3060, "SR"], [3210, "SR"], [5460, "SR"],
+        [5610, "SR"], [5760, "SR"], [19200, "SR"], [22600, "SR"], [24500, "SR"],
+        [25680, "SR"], [27050, "SR"], [27380, "SR"], [31170, "SR"], [31510, "SR"],
+        [32180, "SR"], [32480, "SR"], [32790, "SR"], [33100, "SR"], [33410, "SR"],
+        [33740, "SR"], [34030, "SR"], [34340, "SR"], [34670, "SR"], [34980, "SR"],
+        [35260, "SR"], [41610, "SR"], [67460, "SR"], [67640, "SR"], [67770, "SR"],
+        [67940, "SR"], [68260, "SR"], [68560, "SR"], [73710, "SR"], [74340, "SR"],
+        [74960, "SR"], [75620, "SR"], [76260, "SR"], [77810, "SR"], [78060, "SR"],
+        [78310, "SR"], [78470, "SR"], [78770, "SR"], [79380, "SR"], [82260, "SR"],
+        [82880, "SR"], [83540, "SR"], [83850, "SR"], [84200, "SR"], [84840, "SR"],
+        [85450, "SR"], [85770, "SR"], [86060, "SR"], [90340, "SR"], [90510, "SR"],  [96630, "SR"], [97290, "SR"], [97710, "SR"], [99380, "SR"], [99530, "SR"],
+        [99830, "SR"], [100160, "SR"], [102070, "SR"], [102230, "SR"], [123560, "SR"],
+        [123960, "SR"], [124110, "SR"], [124290, "SR"], [124440, "SR"], [124600, "SR"],
+        [127890, "SR"], [128050, "SR"], [128220, "SR"], [128370, "SR"], [139210, "SR"],
+        [139520, "SR"], [139820, "SR"], [140120, "SR"], [140750, "SR"], [141510, "SR"],
+        [141840, "SR"], [149140, "SR"], [150220, "SR"], [150520, "SR"], [151470, "SR"],
+        [152360, "SR"], [153360, "SR"], [153690, "SR"], [153850, "SR"], [154070, "SR"],   [174920, "SR"], [175250, "SR"], [176200, "SR"], [176350, "SR"], [176490, "SR"],
+        [191460, "SR"], [191820, "SR"], [193370, "SR"], [193690, "SR"], [194010, "SR"],
+        [195890, "SR"], [196720, "SR"], [196840, "SR"], [197110, "SR"], [197230, "SR"],
+        [197420, "SR"], [199760, "SR"], [200890, "SR"], [201040, "SR"], [201230, "SR"],
+        [201440, "SR"], [202680, "SR"], [202880, "SR"], [203640, "SR"], [204250, "SR"],
+        [204370, "SR"], [205040, "SR"], [205980, "SR"], [206240, "SR"], [206500, "SR"],
+        [207480, "SR"], [210580, "SR"], [210870, "SR"], [211290, "SR"], [211550, "SR"],
+        [212520, "SR"], [212740, "SR"], [213060, "SR"], [215490, "SR"], [215760, "SR"],
+        [215880, "SR"], [216190, "SR"], [216300, "SR"], [222280, "SR"], [224230, "SR"],
+        [224490, "SR"], [226600, "SR"], [226890, "SR"], [227000, "SR"], [227260, "SR"],
+        [227360, "SR"], [227690, "SR"], [246820, "SR"], [246970, "SR"], [247230, "SR"],
+        [247380, "SR"], [247540, "SR"], [248220, "SR"], [248360, "SR"], [248640, "SR"],
+        [248910, "SR"], [249150, "SR"], [253910, "SR"], [254160, "SR"], [254370, "SR"],
+        [254640, "SR"], [254890, "SR"], [255040, "SR"], [262740, "SR"], [264680, "SR"], [266570, "SR"], [268500, "SR"], [269770, "SR"],
+        [273320, "SR"], [277030, "SR"], [277290, "SR"], [277420, "SR"], [277680, "SR"],
+        [277990, "SR"], [279920, "SR"], [280270, "SR"], [280800, "SR"], [281360, "SR"],
+        [284710, "SR"], [285020, "SR"], [285560, "SR"], [287960, "SR"], [288810, "SR"],
+        [290080, "SR"], [301080, "SR"], [301410, "SR"], [301550, "SR"], [301970, "SR"],
+        [303440, "SR"], [303870, "SR"], [304260, "SR"], [304380, "SR"], [304730, "SR"],
+        [309860, "SR"], [310060, "SR"], [310360, "SR"], [310670, "SR"], [310950, "SR"],
+        [311080, "SR"], [311490, "SR"], [311880, "SR"], [312340, "SR"], [313010, "SR"],
+        [319360, "SR"], [319650, "SR"], [320440, "SR"], [320660, "SR"], [321110, "SR"],
+        [321460, "SR"], [321790, "SR"], [324480, "SR"], [325080, "SR"], [326230, "SR"],
+        [331810, "SR"], [332210, "SR"], [332830, "SR"], [333390, "SR"], [333990, "SR"],   [355820, "SR"], [356100, "SR"], [356990, "SR"], [357280, "SR"], [358170, "SR"],
+        [358440, "SR"], [359340, "SR"], [359660, "SR"], [360550, "SR"], [360850, "SR"],
+        [361720, "SR"], [362010, "SR"], [362880, "SR"],
+
+
+
+        [5310, "FT"], [11640, "FT"], [31850, "FT"], [40960, "FT"], [41910, "FT"],
+        [46510, "FT"], [54370, "FT"], [67300, "FT"], [96790, "FT"], [111140, "FT"], [115780, "FT"], [123390, "FT"], [128740, "FT"],
+        [138900, "FT"], [142600, "FT"], [152730, "FT"], [156440, "FT"], [174230, "FT"], [180770, "FT"], [190480, "FT"], [196180, "FT"], [207720, "FT"], [211940, "FT"],
+        [222760, "FT"], [237090, "FT"], [241000, "FT"], [244990, "FT"], [253370, "FT"],   [302300, "FT"], [309500, "FT"], [314300, "FT"], [320200, "FT"], [323370, "FT"], [331420, "FT"], [334580, "FT"],
+
+
+        [4040, "ST"], [8750, "ST"], [21940, "ST"], [30200, "ST"], [41260, "ST"], [54940, "ST"], [63150, "ST"], [91230, "ST"], [96230, "ST"], [104060, "ST"], [129080, "ST"], [130270, "ST"], [132570, "ST"], 
+        [137300, "ST"], [145150, "ST"], [155080, "ST"], [162840, "ST"], [171430, "ST"],  [171790, "ST"], [178990, "ST"], [184540, "ST"], [198360, "ST"], [201950, "ST"], 
+        [219600, "ST"], [228230, "ST"], [232830, "ST"], [249610, "ST"], [252950, "ST"],   [286650, "ST"], [292700, "ST"], [300310, "ST"], [315880, "ST"], [335490, "ST"], [343840, "ST"]
+      ]
+
+      const res = (song.sort((firstItem: [number,string], secondItem: [number,string]) => firstItem[0] - secondItem[0]))
+      setSongNotes(res)
+
+
+      let list1Btn = [];
+      let list2Btn = [];
+      let list3Btn = [];
+      let list4Btn = [];
+      let spinListBtn1 = [];
+      let spinListBtn2 = [];
+
+      console.log(songNotes)
+
+      for (let i = 0; i < res.length; i++) {
+        if (res[i][1] === "FL") {
+          list1Btn.push(res[i][0] + scrollSpeed)
         }
+        else if (res[i][1] === "FR") {
+          list2Btn.push(res[i][0] + scrollSpeed)
+        }
+        else if (res[i][1] === "SL") {
+          list3Btn.push(res[i][0] + scrollSpeed)
+        }
+        else if (res[i][1] === "SR") {
+          list4Btn.push(res[i][0] + scrollSpeed)
+        }
+        else if (res[i][1] === "FT") {
+          spinListBtn1.push(res[i][0] + scrollSpeed)
+        }
+        else if (res[i][1] === "ST") {
+          spinListBtn2.push(res[i][0] + scrollSpeed)
+        }
+      }
 
-        setStageBtn(false);
-        setStageSet(false);
-        setMusicSet(false);
+      setFirstBtnList(list1Btn);
+      setSecondBtnList(list2Btn);
+      setThirdBtnList(list3Btn);
+      setFourthBtnList(list4Btn);
 
-        setTime(0);
-        setStopwatchActive(false);
-        setStPaused(true);
-        setScore(0);
-        // setHighScore(0);
-        setHitCount(0);
-        setMissCount(0);
-        setNoteCount(0);
+      setFirstSpinBtnList(spinListBtn1);
+      setSecondSpinBtnList(spinListBtn2);
+      
+      setTimeout(() => {
+        setStopwatchActive(true);
+        setStPaused(false);
+      }, scrollSpeed)
 
-        setFirstList([])
-        setSecondList([])
-        setThirdList([])
-        setFourthList([])
-  
-        setFirstBtnList([])
-        setSecondBtnList([])
-        setThirdBtnList([])
-        setFourthList([])
-
-        const lsit1 = [
-          1430, 1740, 2070, 2420, 3690,  4370, 4690, 5030, 6240, 6580, 6880, 7190, 7500, 7820, 8130, 8450, 9060, 9390, 9710, 10050, 10370, 10670, 10940, 11260, 14120, 16660, 21290, 23230, 23860,  25060, 
-          42220, 42360, 42700, 43090, 43470, 43600, 43930, 49150, 49500, 49810, 50120, 50450, 50770, 51110, 51390, 51720, 52010, 52150, 52300, 52430, 52750, 53060, 53410, 53550, 53690, 54820, 57160, 57320, 57440, 
-          65660, 66010, 66120, 66440, 66770, 67110, 68870, 69200, 69510, 69840, 69980, 70230, 70530, 70820, 71280, 71600, 71880, 72190, 80030, 82570, 83220, 84500, 85140, 
-
-          //Post "sympathy line" - samurai cut
-          89690, 89830, 89990, 90660, 91090, 91480, 91910, 93150, 93450, 95000, 95370, 95540, 95890, 102830, 102990, 103570, 103730, 
-          129490, 129620, 129950, 132880, 133200, 135410, 135740, 136040, 136360, 136680, 137010, 
-          142270, 143270, 143630, 143790, 143980, 144160, 145470, 146110, 146750, 146900, 147310, 147650, 148460, 148650, 
-          151620, 151780, 151930, 153040, 154260, 154510,  155330, 157770, 160340, 161620, 164030,
-
-          //1:45 - 4:18,before basebal part
-          166810, 167090, 167370, 168940, 169230, 169550, 170830, 171130, 171960, 172350, 173250, 173390, 173710, 174390, 178270, 178680, 178820, 179500, 179620, 180620, 
-          198520, 198700, 200040, 200180, 200440, 200560, 201730, 202220, 202430, 203180, 203890, 204000,  204660, 204810, 205280, 205590, 207850, 208110, 208240, 208560, 208870, 209040, 209870, 210080, 210330, 211680, 
-          228090, 228390, 228540, 228680, 228950, 229100, 229240, 229380, 231530, 231650, 231920, 232050, 232210, 233310, 233810, 234260, 234550, 234670, 234950, 235060, 235370, 235480, 235730, 235860, 236030, 236810, 236940, 
-          249870, 249980, 250300, 250430, 250740, 250890, 251050, 251200, 251370, 251540, 253180, 
-          
-          //Last part
-          259840, 260770, 262260, 264180, 266110, 268010, 269360, 270840, 271130, 271270, 280070, 
-          280620, 281030, 281780, 282810, 282960, 283110, 283400, 283800, 284860, 285220, 285930, 286110, 287220, 287430, 288320, 289140, 289570, 291490, 291940, 292380, 294280, 294730, 297960, 298410, 298710, 
-          299030, 299150, 299520, 299910, 300500, 314740, 315070, 315220, 315480, 316230, 316370, 316690, 317110, 317580, 
-          
-          352050, 352890, 353200, 354060, 354330, 355220, 355520, 356390, 356690, 357570, 357870, 358760, 359060, 359940, 360250, 
-          361150, 361440, 362280, 362590, 363190
-        ]
-
-        const lsit2 = [
-          44390, 44900, 45010, 45390, 45500, 45960, 46070, 46620, 46920, 47560, 47910, 48240, 48560, 48860, 54020, 54510, 54660, 55240, 55550, 55930, 56040, 56370, 56680, 57020, 62220, 62380, 62530, 62820,   
-
-          //Post "sympathy line" - samurai cut
-          92280, 92610, 92790, 93840, 94010, 94280, 94680, 103140, 103320, 104800, 105000, 105310, 105650, 107580, 107730, 108070, 108400, 109540, 109900, 110770, 
-          111450, 111760, 111900, 113040, 113180, 113350, 113520, 113670, 113860, 114020, 115020, 115330, 115900, 116220, 116580, 116940, 117170, 117340, 117470, 119620, 119810, 119980, 120120, 120500, 120800, 123250, 
-          130660, 131010, 131310, 131630, 131970, 132250, 133520, 133830, 134120, 134440, 134790, 135100, 137610, 137930, 138260, 138550,
-          142920, 144430, 144860,  145790, 146420, 146580, 147980, 148300, 148790, 
-          154920, 155550, 155780, 157110, 158370, 167710, 168060, 168370, 168710, 169890, 170050, 170330, 170650, 171610, 172730, 173080,  
-        
-          //1:45 - 4:18,before basebal part
-          177400, 177780, 178090, 179180, 179350, 179960, 180280, 181180, 182520, 182840, 183360, 183490, 184680, 185350, 185650, 186340, 186500, 187150, 188240, 188430, 189100, 189230, 191090, 
-          218530, 218930, 219200, 219320, 219720, 220010, 220140, 220390, 221320, 221560, 221700,  
-          227840, 229970, 230470, 230730, 230840, 231100, 231230, 232380, 232500, 236190, 236510, 236670, 237600, 238080, 238220, 240030, 240300, 240460, 240650, 242150, 242260, 242570, 242670, 243030, 243150, 243410, 244640, 
-          251930, 252250, 252500, 252690, 
-          
-          //Last part
-          261790, 263690, 265620, 267540, 269230, 272830, 274300, 
-          290370, 290870, 293180, 293880, 295090, 295560, 296250, 296600, 297010, 297130, 297500, 297800, 307080, 307540, 307990, 308270, 308590, 308720, 309140, 
-          335840, 336260, 336680, 337020, 337890, 338210, 338650, 339100, 339420, 340290, 340600, 341060, 341470, 341790, 342080, 342360, 342670, 342990, 343270, 343570, 
-          344160, 344390, 345260, 345570, 346480, 346750, 347630, 347920, 348810, 349100, 349980, 350240, 351170, 351470, 352350, 352620, 353510, 353790, 354640, 354930
-        ]
-
-        const lsit3 = [
-          25290, 26090, 26440, 26760, 27590, 27880, 28190, 28510, 28830, 29150, 29520, 29860, 30550, 30850, 35440, 35880, 36210, 36530, 36880, 37170, 37510, 37830, 38150, 38450, 38780, 39080, 39380, 39700, 39840, 40300, 40620, 
-          57780, 58120, 58440, 58570, 58710, 58860, 59010, 59160, 59310, 59450, 59620, 59780, 59910, 60240, 60380, 60530, 60640, 61000, 61120, 61440, 61740, 62070, 63470, 63620, 63750, 64100, 64430, 64590, 64750, 64920, 65040, 65340,
-           
-          98110, 98260, 98600, 98950, 100490, 100830, 101020, 101370, 101680, 102430, 102630, 
-          104410, 106010, 106180, 106400, 106610, 106860, 107200, 108740, 109020, 109200, 110270, 110400, 112460, 112620, 114240, 114520, 114660, 117800, 118120, 118510, 118650, 118960, 119290, 121260, 121610, 122010, 122420, 122590, 
-          122730, 122890, 124790, 124970, 125140, 125310, 125490, 125630, 125980, 126330, 126760, 126910, 127070, 127230, 127400, 127560, 127720, 140430, 141370, 141650, 149280, 149430, 149800, 149930, 150840, 151170, 
-
-          174540, 175580, 175740, 175850, 176640, 176840, 177030, 
-          181680, 182000, 182140, 183180, 183870, 184070, 184190, 185030, 185800, 185930, 186660, 187010, 187540, 187900, 188800, 189610, 189760, 190200, 190810, 192140, 192450, 192740, 193080, 194420, 196330, 196580, 
-          212070, 212400, 213720, 213900, 214020, 215100, 215370, 216550, 217540, 217850, 217990, 223010, 223130, 223410, 223520, 223830, 223960, 225190, 225300, 225480, 226130, 
-          238520, 238660, 238940, 239240, 239370, 239590, 239730, 239870, 241490, 241860, 243560, 243700, 243860, 243990, 244320, 245320, 245610, 245940, 246240, 246380, 246520, 247680, 247830, 248000, 253570,
-
-          260290, 261230, 263220, 265160, 267060, 268980, 270210, 271780, 272330, 
-          275170, 275340, 275500, 275780, 276080, 278310, 278510, 278740, 279020,
-          302760, 305200, 305610, 305900, 306240, 306620, 306760, 313470, 313840, 313960,  
-          317880, 318140, 318270, 318680, 319060, 322050, 322630, 322990, 323550, 323850, 324210, 326740, 327160, 327490, 329840, 331000,  
-
-          344660, 344930, 345880, 346180, 347040, 347310, 348220, 348500, 349380, 349670, 350570, 350860, 351760, 
-        ]
-          
-        
-        const lsit4 = [
-          2740, 2900, 3060, 3210,  5460, 5610, 5760, 19200, 22600, 24500, 25680, 27050, 27380, 31170, 31510,  32180, 32480, 32790, 33100, 33410, 33740, 34030, 34340, 34670, 34980, 35260, 41610,  
-          67460, 67640, 67770, 67940, 68260, 68560, 73710, 74340, 74960, 75620, 76260, 77810, 78060, 78310, 78470, 78770, 79380, 82260, 82880, 83540, 83850, 84200, 84840, 85450, 85770, 86060, 90340, 90510, 
-
-          96630,  97290, 97710, 99380, 99530, 99830, 100160, 102070, 102230, 
-          123560, 123960, 124110, 124290, 124440, 124600, 127890, 128050, 128220, 128370,   
-          139210, 139520, 139820, 140120, 140750, 141510, 141840, 149140, 150220, 150520, 151470, 152360, 153360, 153690, 153850, 154070, 
-
-          174920, 175250, 176200, 176350, 176490, 
-          191460, 191820, 193370, 193690, 194010, 195890, 196720, 196840, 197110, 197230, 197420, 199760, 200890, 201040, 201230, 201440, 202680, 202880, 203640, 204250, 204370, 205040, 205980, 206240, 206500, 207480,  
-          210580, 210870, 211290, 211550, 212520, 212740, 213060, 215490, 215760, 215880, 216190, 216300, 222280, 224230, 224490, 226600, 226890, 227000, 227260, 227360, 227690, 
-          246820, 246970, 247230, 247380, 247540, 248220, 248360, 248640, 248910, 249150, 253910, 254160, 254370, 254640, 254890, 255040,
-
-          262740, 264680, 266570, 268500, 269770, 273320, 277030,
-          277290, 277420, 277680, 277990, 279920, 280270, 280800, 281360, 284710, 285020, 285560, 287960, 288810, 290080, 
-          301080, 301410, 301550, 301970, 303440, 303870, 304260, 304380, 304730, 
-          309860, 310060, 310360, 310670, 310950, 311080, 311490, 311880, 312340, 313010, 319360, 319650, 320440, 320660, 321110, 321460, 321790, 324480, 325080, 326230, 331810, 332210, 332830, 333390, 333990,  
-
-          355820, 356100, 356990, 357280, 358170, 358440, 359340, 359660, 360550, 360850, 361720, 362010, 362880 
-        ]
-
-        const spinList1 = [
-          5310, 11640, 31850, 40960, 41910, 46510, 54370, 67300,
-
-          96790, 111140, 115780, 123390, 128740, 138900, 142600, 152730, 156440, 174230, 
-
-          180770, 190480, 196180, 207720, 211940, 222760, 237090, 241000, 244990, 253370, 
-
-          302300, 309500, 314300, 320200, 323370, 331420, 334580,
-        ]
-
-        const spinList2 = [
-          4040, 8750, 21940, 30200, 41260, 54940, 63150,
-
-          91230, 96230, 104060, 129080, 130270, 132570, 137300, 145150, 155080, 162840, 171430,
-          
-          171790, 178990, 184540, 198360, 201950, 219600, 228230, 232830, 249610, 252950, 
-
-          286650, 292700, 300310, 315880, 335490, 343840,
-        ]
-
-        const list1Btn = lsit1.map(num => num + scrollSpeed);
-        const list2Btn = lsit2.map(num => num + scrollSpeed);
-        const list3Btn = lsit3.map(num => num + scrollSpeed);
-        const list4Btn = lsit4.map(num => num + scrollSpeed);
-
-        const spinListBtn1 = spinList1.map(num => num + scrollSpeed);
-        const spinListBtn2 = spinList2.map(num => num + scrollSpeed);
-        
-        setFirstList(lsit1);
-        setSecondList(lsit2);
-
-        setFirstBtnList(list1Btn);
-        setSecondBtnList(list2Btn);
-
-        setThirdList(lsit3);
-        setFourthList(lsit4);
-
-        setThirdBtnList(list3Btn);
-        setFourthBtnList(list4Btn);
-
-        setFirstSpinList(spinList1);
-        setFirstSpinBtnList(spinListBtn1);
-        
-        setSecondSpinList(spinList2);
-        setSecondSpinBtnList(spinListBtn2);
-        
-        setTimeout(() => {
-          setStopwatchActive(true);
-          setStPaused(false);
-        }, scrollSpeed)
-
-        setTimeout(() => {
-          if (audioRefListening.current) {
-            audioRefListening.current.play();
-          }  
-        }, scrollSpeed * 2)
-        
-        document.querySelectorAll(".curve").forEach(e => e.remove());
+      setTimeout(() => {
+        if (audioRefListening.current) {
+          audioRefListening.current.play();
+        }  
+      }, scrollSpeed * 2)
+      
+      document.querySelectorAll(".curve").forEach(e => e.remove());
     }
 
-    // Creating the curves for the notes
+    const editorMap = () => {
+      const mapString = localStorage.getItem('customMap')
+      let map; 
+      if (mapString) {
+        map = JSON.parse(mapString);
+        setEditorMapExists(true);
+        setEMap(map);
+      }
+      else {
+        alert("No Map Found.")
+      }
+    }
+
+    // Creating curves from new map format:
     useEffect(() => {
-      if (time === firstList[0]) {
-        createCurve("curveOne", firstSection, "blueCurveAnime")
-        setFirstList(list => list.slice(1));
-      }
-      else if (time === secondList[0]) {
-        createCurve("curveTwo", firstSection, "redCurveAnime")
-        setSecondList(list => list.slice(1));
-      }
-      else if (time === thirdList[0]) {
-        createCurve("curveThree", secondSection, "blueCurveAnime")
-        setThirdList(list => list.slice(1));
-      }
-      else if (time === fourthList[0]) {
-        createCurve("curveFour", secondSection, "redCurveAnime")
-        setFourthList(list => list.slice(1));
-      }
-      else if (time === firstSpinList[0]) {
-        createCurve("leftSpinCurve", firstSection, "spinCurveAnime")
-        setFirstSpinList(list => list.slice(1))
-      }
-      else if (time === secondSpinList[0]) {
-        createCurve("rightSpinCurve", secondSection, "spinCurveAnime")
-        setSecondSpinList(list => list.slice(1))
-      }
-    }, [time, firstList, secondList, thirdList, fourthList, firstSpinList, secondSpinList]);
+      if (songNotes[0] && time === songNotes[0][0]) {
+        if (songNotes[0][1] === "FL") {
+          createCurve("curveOne", firstSection, "blueCurveAnime")
+          setSongNotes(list => list.slice(1));
+        }
+        
+        if (songNotes[0][1] === "FR") {
+          createCurve("curveTwo", firstSection, "redCurveAnime")
+          setSongNotes(list => list.slice(1));
+        }
+
+        if (songNotes[0][1] === "SL") {
+          createCurve("curveThree", secondSection, "blueCurveAnime")
+          setSongNotes(list => list.slice(1));
+        }
+
+        if (songNotes[0][1] === "SR") {
+          createCurve("curveFour", secondSection, "redCurveAnime")
+          setSongNotes(list => list.slice(1));
+        }
+
+        if (songNotes[0][1] === "FT") {
+          createCurve("leftSpinCurve", firstSection, "spinCurveAnime")
+          setSongNotes(list => list.slice(1));
+        }
+        if (songNotes[0][1] === "ST") {
+          createCurve("rightSpinCurve", secondSection, "spinCurveAnime")
+          setSongNotes(list => list.slice(1));
+        }
+      }   
+    }, [time, songNotes])
 
     const createCurve = (curveClass : string, section: RefObject<HTMLDivElement>, curveAnime: string) => {
       setNoteCount(count => count + 1);
@@ -1103,8 +1393,26 @@ export function AudioFile() {
             <button style={{padding: 2}} onClick={toggleOpacity}>Opacity Change Set to {opacityEnabled}</button>
             </div>
 
-            <button style={{padding: 2}} onClick={customMap}>Play Custom Map</button>
+            <div style={{display: 'flex', flexDirection: 'column'}}>
+              <button style={{padding: 2}} onClick={customMap}>Play Custom Map</button>
+              <p>Dreams Don't Stop [Rhythm Doctor]</p>   
+            </div>
 
+            <div style={{display: 'flex', flexDirection: 'column'}}>
+              <button style={{padding: 2}} onClick={editorMap}>Play Your Editor Map</button>   
+              {editorMapExists &&
+              <>
+                <input type="file" accept='audio/*' onChange={editorChange}/>
+                <audio src={editorURL ?? ""} controls={false} ref={editorAudioRef} loop={false} />
+              </>
+              }
+              {editorBtn && 
+              <button style={{padding: 2}} onClick={playEditor}>Play Custom Map</button>
+              }
+            </div>
+
+            
+            
             <div style={currentArea}> {direction} </div>
 
             <div ref={gameWrapper} style={{position: "relative"}}>
