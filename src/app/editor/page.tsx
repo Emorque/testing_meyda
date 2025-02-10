@@ -17,13 +17,15 @@ export default function Editor() {
   const [songLength, setSongLength] = useState<number>(0);    
   const [btn, setBtn] = useState<string>("Single Note");
   const [songNotes, setSongNotes] = useState<string[][]>([]);
+  const [playBtnHold, setPlayBtnHold] = useState<boolean>(false);
 
   const waveformRef = useRef<HTMLDivElement>(null);
 
   const { wavesurfer, isReady, isPlaying, currentTime } = useWavesurfer({
     container: waveformRef,
     url: audioURL,
-    waveColor: 'purple',
+    waveColor: 'rgb(138, 138, 19)',
+    progressColor: 'rgb(58, 49, 49)',
     height: 100,
     autoCenter: true,
     autoScroll: true,
@@ -41,8 +43,8 @@ export default function Editor() {
     setAudioURL(URL.createObjectURL(file));    
     const tempHitsounds: { play: () => void; }[] = []
     for (let i = 0; i < 12; i++) {
-      // const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
-      const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+      const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+      // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
       hitsound.volume = 1
       tempHitsounds.push(hitsound);
     } 
@@ -112,6 +114,11 @@ export default function Editor() {
 
   useEffect(() => {
     const handleKeyDown = (event: { key: string; }) => {
+      if (event.key === 'q' || event.key === 'Q') {
+        if (playBtnHold) return
+        setPlayBtnHold(true)
+        onPlayPause();
+      }
       if (isPlaying) return; // If spamming keys while play, big lag spike as the rerenders hurt transformations
       if (event.key === 's' || event.key === 'S') {
         setBtn("Single Note")
@@ -120,7 +127,7 @@ export default function Editor() {
       if (event.key === 'k' || event.key === 'K') {
         // console.log(songNotes);
         setBtn("Turn Note");
-      }
+      }      
     }
     document.addEventListener('keydown', handleKeyDown);
 
@@ -128,7 +135,22 @@ export default function Editor() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isPlaying]);
+  }, [isPlaying, playBtnHold]);
+
+
+  useEffect(() => {
+    const handleKeyUp = (event: { key: string; }) => {
+      if (event.key === 'q' || event.key === 'Q') {
+        setPlayBtnHold(false)
+      }
+    }
+    document.addEventListener('keyup', handleKeyUp);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   const changeNoteHor = (index: number, event: MouseEvent<HTMLParagraphElement>) => {
     const mousePlacement = event.clientY - (document.getElementById('vBars-Container')?.getBoundingClientRect().top as number)
@@ -294,10 +316,10 @@ export default function Editor() {
     const gameBarStyle =(index: number) => {
 
     const verticalGradients = [
-      songNotes[0][index] === 'T' ? "linear-gradient(to bottom, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 99px 100% padding-box border-box" : songNotes[0][index] === 'S' ? "linear-gradient(to bottom, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 99px 100% padding-box border-box",
-      songNotes[1][index] === 'T' ? "linear-gradient(to bottom, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 100px 0px / 99px 100% padding-box border-box" : songNotes[1][index] === 'S' ? "linear-gradient(to bottom, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 100px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 100px 0px / 99px 100% padding-box border-box",
-      songNotes[2][index] === 'T' ? "linear-gradient(to bottom, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 200px 0px / 99px 100% padding-box border-box" : songNotes[2][index] === 'S' ? "linear-gradient(to bottom, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 200px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 200px 0px / 99px 100% padding-box border-box",
-      songNotes[3][index] === 'T' ? "linear-gradient(to bottom, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 300px 0px / 99px 100% padding-box border-box" : songNotes[3][index] === 'S' ? "linear-gradient(to bottom, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 300px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 300px 0px / 99px 100% padding-box border-box",
+      songNotes[0][index] === 'T' ? "linear-gradient(to bottom, rgb(104, 61, 81) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 99px 100% padding-box border-box" : songNotes[0][index] === 'S' ? "linear-gradient(to bottom, rgb(25, 87, 128) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 99px 100% padding-box border-box",
+      songNotes[1][index] === 'T' ? "linear-gradient(to bottom, rgb(104, 61, 81) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 100px 0px / 99px 100% padding-box border-box" : songNotes[1][index] === 'S' ? "linear-gradient(to bottom, rgb(182, 34, 34) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 100px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 100px 0px / 99px 100% padding-box border-box",
+      songNotes[2][index] === 'T' ? "linear-gradient(to bottom, rgb(104, 61, 81) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 200px 0px / 99px 100% padding-box border-box" : songNotes[2][index] === 'S' ? "linear-gradient(to bottom, rgb(25, 87, 128) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 200px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 200px 0px / 99px 100% padding-box border-box",
+      songNotes[3][index] === 'T' ? "linear-gradient(to bottom, rgb(104, 61, 81) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 300px 0px / 99px 100% padding-box border-box" : songNotes[3][index] === 'S' ? "linear-gradient(to bottom, rgb(182, 34, 34) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 300px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 300px 0px / 99px 100% padding-box border-box",
     ];
   
     const updatedBG = `${gameGradient}, ${verticalGradients.join(", ")}`;
@@ -321,10 +343,10 @@ export default function Editor() {
     const barStyle = (index: number) => {
       
       const horizontalGradients = [
-        songNotes[0][index] === 'T' ? "linear-gradient(to right, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 100% 29px padding-box border-box" : songNotes[0][index] === 'S' ? "linear-gradient(to right, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 100% 29px padding-box border-box",
-        songNotes[1][index] === 'T' ? "linear-gradient(to right, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 30px / 100% 29px padding-box border-box" : songNotes[1][index] === 'S' ? "linear-gradient(to right, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 30px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 30px / 100% 29px padding-box border-box",
-        songNotes[2][index] === 'T' ? "linear-gradient(to right, rgb(255, 0, 225) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 60px / 100% 29px padding-box border-box" : songNotes[2][index] === 'S' ? "linear-gradient(to right, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 60px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 60px / 100% 29px padding-box border-box",
-        songNotes[3][index] === 'T' ? "linear-gradient(to right, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 90px / 100% 29px padding-box border-box" : songNotes[3][index] === 'S' ? "linear-gradient(to right, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 90px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 90px / 100% 29px padding-box border-box",
+        songNotes[0][index] === 'T' ? "linear-gradient(to right, rgb(104, 61, 81) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 100% 29px padding-box border-box" : songNotes[0][index] === 'S' ? "linear-gradient(to right, rgb(25, 87, 128) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 100% 29px padding-box border-box",
+        songNotes[1][index] === 'T' ? "linear-gradient(to right, rgb(104, 61, 81) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 30px / 100% 29px padding-box border-box" : songNotes[1][index] === 'S' ? "linear-gradient(to right, rgb(182, 34, 34) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 30px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 30px / 100% 29px padding-box border-box",
+        songNotes[2][index] === 'T' ? "linear-gradient(to right, rgb(104, 61, 81) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 60px / 100% 29px padding-box border-box" : songNotes[2][index] === 'S' ? "linear-gradient(to right, rgb(25, 87, 128) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 60px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 60px / 100% 29px padding-box border-box",
+        songNotes[3][index] === 'T' ? "linear-gradient(to right, rgb(104, 61, 81) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 90px / 100% 29px padding-box border-box" : songNotes[3][index] === 'S' ? "linear-gradient(to right, rgb(182, 34, 34) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 90px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 90px / 100% 29px padding-box border-box",
       ];
     
       const updatedBG = `${barGradient}, ${horizontalGradients.join(", ")}`;
@@ -378,17 +400,16 @@ export default function Editor() {
       }
     }
     localStorage.setItem("customMap", JSON.stringify(exportedMap))
+    if (localStorage.getItem("customMap")) {
+      alert("Map saved locally")
+    }
   }
   
   return (
     <div>
-      <div style={{display: 'flex', gap: 20, flexDirection: 'column'}}>
+      <div style={{display: 'flex', gap: 20, flexDirection: 'column', alignItems: 'center', padding: 20}}>
           <input type="file" accept='audio/*' onChange={audioChange}/>
       </div>
-      <div id="editor-container">
-          <p>{songLength}</p>
-      </div>
-
 
       <div id="topbar-container">
         <div id="waveform-Container" ref={waveformRef}>
@@ -410,13 +431,7 @@ export default function Editor() {
         
       </div>
       <br/>
-      <div style={{ margin: '1em 0', display: 'flex', gap: '1em' }}>
-      <p>Current time: {formatTime(currentTime)}</p>
-      <button onClick={onPlayPause} style={{ minWidth: '5em' }}>
-        {isPlaying ? 'Pause' : 'Play'}
-      </button>
-      </div>
-      <p>Current Button: {btn}</p>
+      <br/>
       <div id="gameContainer" >
         <List
           ref={listRef}
@@ -430,15 +445,36 @@ export default function Editor() {
         </List>
       </div>
 
-      <div style={{display: 'flex', gap: 10}}>
-        <button onClick={() => {updatePBRate(0.25)}}>0.25</button>
-        <button onClick={() => {updatePBRate(0.50)}}>0.50</button>
-        <button onClick={() => {updatePBRate(0.75)}}>0.75</button>
-        <button onClick={() => {updatePBRate(1)}}>1</button>
-      </div>      
+      <div id="divWrapper">
+        <div className="divContainer">
+          <p>Current time:</p>
+          <p>{formatTime(currentTime)}</p>
+          <button onClick={onPlayPause} style={{ minWidth: '5em' }}>
+            {isPlaying ? 'Pause' : 'Play'}
+          </button>
+          <p>&quot;Q&quot; to Toggle</p>
+        </div>
+
+        <div className="divContainer">
+          <p>Current Button:</p>
+          <p>{btn}</p>
+          <p>&quot;S&quot; for a Single Note</p>
+          <p>&quot;K&quot; for a Turn Note</p>
+        </div>
+
+        <div className="divContainer">
+          <p>Set Playrate</p>
+          <button onClick={() => {updatePBRate(0.25)}}>0.25</button>
+          <button onClick={() => {updatePBRate(0.50)}}>0.50</button>
+          <button onClick={() => {updatePBRate(0.75)}}>0.75</button>
+          <button onClick={() => {updatePBRate(1)}}>1</button>
+        </div>
+      </div>
+
       <br/>
+      
       {isReady &&
-      <div style={{display: 'flex', gap: 10}}>
+      <div id="exportDiv">
         <button onClick={exportMap}>Export Map</button>
       </div>
       }
