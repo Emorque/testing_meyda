@@ -3,7 +3,7 @@
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useWavesurfer } from '@wavesurfer/react'
 import { FixedSizeList as List } from 'react-window';
-import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js'
+// import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js'
 
 import "./editor.css";
 
@@ -33,14 +33,13 @@ export default function Editor() {
     dragToSeek: true,
     // plugins: useMemo(() => [Timeline.create()], []),
   })
-  // let hitsounds: { play: () => void; }[] = []
   const hitsoundsRef = useRef<{ play: () => void; }[]>([]);
 
   const audioChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setAudioURL(URL.createObjectURL(file));    
-    let tempHitsounds: { play: () => void; }[] = []
+    const tempHitsounds: { play: () => void; }[] = []
     for (let i = 0; i < 12; i++) {
       // const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
       const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
@@ -51,7 +50,9 @@ export default function Editor() {
   }, []);
 
   const onPlayPause = useCallback(() => {
-    wavesurfer && wavesurfer.playPause()
+    if (wavesurfer) {
+      wavesurfer.playPause()
+    }
   }, [wavesurfer])
 
   useEffect(() => {
@@ -291,7 +292,6 @@ export default function Editor() {
 
   const HRows = ({ index, style }: { index: number, style: React.CSSProperties }) => {
     const gameBarStyle =(index: number) => {
-    let updatedBG: string;
 
     const verticalGradients = [
       songNotes[0][index] === 'T' ? "linear-gradient(to bottom, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 99px 100% padding-box border-box" : songNotes[0][index] === 'S' ? "linear-gradient(to bottom, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 99px 100% padding-box border-box",
@@ -300,7 +300,7 @@ export default function Editor() {
       songNotes[3][index] === 'T' ? "linear-gradient(to bottom, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 300px 0px / 99px 100% padding-box border-box" : songNotes[3][index] === 'S' ? "linear-gradient(to bottom, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 300px 0px / 99px 100% padding-box border-box" : "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 300px 0px / 99px 100% padding-box border-box",
     ];
   
-    updatedBG = `${gameGradient}, ${verticalGradients.join(", ")}`;
+    const updatedBG = `${gameGradient}, ${verticalGradients.join(", ")}`;
   
     return {
       background: updatedBG,
@@ -319,7 +319,6 @@ export default function Editor() {
 
   const VRow = ({ index, style }: { index: number, style: React.CSSProperties }) => {
     const barStyle = (index: number) => {
-      let updatedBG : string;
       
       const horizontalGradients = [
         songNotes[0][index] === 'T' ? "linear-gradient(to right, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 100% 29px padding-box border-box" : songNotes[0][index] === 'S' ? "linear-gradient(to right, rgb(255, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 0px / 100% 29px padding-box border-box",
@@ -328,7 +327,7 @@ export default function Editor() {
         songNotes[3][index] === 'T' ? "linear-gradient(to right, rgb(225, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 90px / 100% 29px padding-box border-box" : songNotes[3][index] === 'S' ? "linear-gradient(to right, rgb(0, 0, 255) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 90px / 100% 29px padding-box border-box" : "linear-gradient(to right, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%) no-repeat scroll 0px 90px / 100% 29px padding-box border-box",
       ];
     
-      updatedBG = `${barGradient}, ${horizontalGradients.join(", ")}`;
+      const updatedBG = `${barGradient}, ${horizontalGradients.join(", ")}`;
     
       return {
         background: updatedBG,
