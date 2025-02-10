@@ -1,6 +1,19 @@
-*{
-    box-sizing: border-box; /* Ensure borders don't add extra size */
+html,
+body,
+#root{
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
+
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+  
 
 #gamecontainer-circle {
     position: relative;
@@ -11,7 +24,6 @@
     background-color: rgb(250, 238, 223);
     z-index: 1;
     border: 9px solid rgba(0, 0, 0, 0.253);
-    display: grid;
     border-radius: 50%;
     transform: rotate(180deg);
 }
@@ -28,9 +40,9 @@
     border-left: 9px solid transparent;
     border-right: 9px solid transparent;
     border-top: 9px solid transparent;
-    /* border-bottom: 9px solid transparent; */
     z-index: 5;
     border-radius: 50%;
+    margin: 0 auto;
 }
 
 .click-Area {
@@ -265,4 +277,67 @@
     100% {
         transform: translate(-20px, -10px);
     }
+}
+
+button {
+    background-color: rgb(250, 238, 223);
+    border: 0;
+    padding: 5px;
+    color: black
+}
+
+#homepage {
+    position: relative;
+    z-index: 1;
+    /* width: 100%; */
+}
+
+#settingsDiv {
+    background-color: rgba(0, 0, 0, 0.377);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    font-weight: bold;
+}
+
+#gameWrapper {
+    padding-top: 10px;
+    /* background-color: red; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#settingsBtn {
+    position: absolute;
+    right: -20px;
+    top: 0;
+    z-index: 10;
+    background-color: transparent;
+    border: 0px;
+}
+
+#titleDiv {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    padding-top: 10px;
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+}
+
+#titleDiv div {
+    position: relative;
+    width: 50%;
+    margin: 0 auto;
+}
+
+#editorBtn {
+    padding: 2px;
+    width: 100%;
+    display: block;
 }

@@ -87,6 +87,9 @@ export function AudioFile() {
     const [thirdHitsound, setThirdHitsound] = useState<number>(0);
     const [fourthHitsound, setFourthHitsound] = useState<number>(0);
 
+    // Styling States
+    const [settingsDiv, setSettingsDiv] = useState<boolean>(false);
+
     const hitsoundsRef = useRef<{ play: () => void; }[]>([]);
 
     // Editor Map
@@ -139,10 +142,10 @@ export function AudioFile() {
 
       setSongNotes([])
 
-      let tempHitsounds: { play: () => void; }[] = []
+      const tempHitsounds: { play: () => void; }[] = []
       for (let i = 0; i < 12; i++) {
-        // const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
-        const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+        const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+        // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
         hitsound.volume = 1
         tempHitsounds.push(hitsound);
       } 
@@ -153,12 +156,12 @@ export function AudioFile() {
       setSongNotes(res)
 
 
-      let list1Btn = [];
-      let list2Btn = [];
-      let list3Btn = [];
-      let list4Btn = [];
-      let spinListBtn1 = [];
-      let spinListBtn2 = [];
+      const list1Btn = [];
+      const list2Btn = [];
+      const list3Btn = [];
+      const list4Btn = [];
+      const spinListBtn1 = [];
+      const spinListBtn2 = [];
 
       for (let i = 0; i < res.length; i++) {
         if (res[i][1] === "FL") {
@@ -242,10 +245,10 @@ export function AudioFile() {
         
         document.querySelectorAll(".curve").forEach(e => e.remove());
 
-        let tempHitsounds: { play: () => void; }[] = []
+        const tempHitsounds: { play: () => void; }[] = []
         for (let i = 0; i < 12; i++) {
-          // const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
-          const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+          const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+          // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
           hitsound.volume = 1
           tempHitsounds.push(hitsound);
         } 
@@ -380,7 +383,7 @@ export function AudioFile() {
               setScore(score => score + 5);
               setHitCount(count => count + 1);
               setFirstSpinBtnList(list => list.slice(1));
-              message.textContent= "perfect Spin";
+              message.textContent= "Perfect";
               message.style.backgroundColor = "green";
               if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -395,7 +398,7 @@ export function AudioFile() {
               setScore(score => score + 3);
               setHitCount(count => count + 1);
               setFirstSpinBtnList(list => list.slice(1));
-              message.textContent= "success Spin";
+              message.textContent= "Success";
               message.style.backgroundColor = "green";
               if (gameWrapper.current) gameWrapper.current.appendChild(message);
               setTimeout(() => {
@@ -423,7 +426,7 @@ export function AudioFile() {
               setScore(score => score + 5);
               setHitCount(count => count + 1);
               setSecondSpinBtnList(list => list.slice(1));
-              message.textContent= "perfect Spin";
+              message.textContent= "Perfect";
               message.style.backgroundColor = "green";
               if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -438,7 +441,7 @@ export function AudioFile() {
               setScore(score => score + 3);
               setHitCount(count => count + 1);
               setSecondSpinBtnList(list => list.slice(1));
-              message.textContent= "success Spin";
+              message.textContent= "Success";
               message.style.backgroundColor = "green";
               if (gameWrapper.current) gameWrapper.current.appendChild(message);
               setTimeout(() => {
@@ -462,7 +465,7 @@ export function AudioFile() {
             else {
               if (time < firstBtnList[0] - 150) {  
                 message.classList.add("earlyLeft");
-                message.textContent= "early";
+                message.textContent= "Early";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
@@ -476,7 +479,7 @@ export function AudioFile() {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setFirstBtnList(list => list.slice(1));
-                message.textContent= "perfect";
+                message.textContent= "Perfect";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                   setTimeout(() => {
@@ -491,7 +494,7 @@ export function AudioFile() {
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setFirstBtnList(list => list.slice(1));
-                message.textContent= "success";
+                message.textContent= "Success";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -507,7 +510,7 @@ export function AudioFile() {
             }
             else {
               if (time < thirdBtnList[0] - 150) {  
-                message.textContent= "early";
+                message.textContent= "Early";
                 message.classList.add("earlyRight");
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -524,7 +527,7 @@ export function AudioFile() {
                 setThirdHitsound(prev => (prev + 1) % 3)
 
                 message.classList.add("success");
-                message.textContent= "perfect";
+                message.textContent= "Perfect";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -542,7 +545,7 @@ export function AudioFile() {
                 setThirdHitsound(prev => (prev + 1) % 3)
 
                 message.classList.add("success");
-                message.textContent= "success";
+                message.textContent= "Success";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -568,7 +571,7 @@ export function AudioFile() {
             else {
               if (time < secondBtnList[0] - 150) {  
                 message.classList.add("earlyLeft");
-                message.textContent= "early";
+                message.textContent= "Early";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
                   if (gameWrapper.current) gameWrapper.current.removeChild(message);  
@@ -582,7 +585,7 @@ export function AudioFile() {
                 setScore(score => score + 5);
                 setHitCount(count => count + 1);
                 setSecondBtnList(list => list.slice(1));
-                message.textContent= "perfect";
+                message.textContent= "Perfect";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -597,7 +600,7 @@ export function AudioFile() {
                 setScore(score => score + 3);
                 setHitCount(count => count + 1);
                 setSecondBtnList(list => list.slice(1));
-                message.textContent= "success";
+                message.textContent= "Success";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -613,7 +616,7 @@ export function AudioFile() {
             }
             else {
               if (time < fourthBtnList[0] - 150) {  
-                message.textContent= "early";
+                message.textContent= "Early";
                 message.classList.add("earlyRight");
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -630,7 +633,7 @@ export function AudioFile() {
                 setFourthHitsound(prev => (prev + 1) % 3)
 
                 message.classList.add("success");
-                message.textContent= "perfect";
+                message.textContent= "Perfect";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -648,7 +651,7 @@ export function AudioFile() {
                 setFourthHitsound(prev => (prev + 1) % 3)
 
                 message.classList.add("success");
-                message.textContent= "success";
+                message.textContent= "Success";
                 message.style.backgroundColor = "green";
                 if (gameWrapper.current) gameWrapper.current.appendChild(message);
                 setTimeout(() => {
@@ -951,10 +954,10 @@ export function AudioFile() {
 
       setSongNotes([])
 
-      let tempHitsounds: { play: () => void; }[] = []
+      const tempHitsounds: { play: () => void; }[] = []
       for (let i = 0; i < 12; i++) {
-        // const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
-        const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
+        const hitsound  = new Audio('/testing_meyda/hitsound.mp3'); // Needed for github pages
+        // const hitsound  = new Audio('/hitsound.mp3'); // Needed for local 
         hitsound.volume = 1
         tempHitsounds.push(hitsound);
       } 
@@ -1190,12 +1193,12 @@ export function AudioFile() {
       setSongNotes(res)
 
 
-      let list1Btn = [];
-      let list2Btn = [];
-      let list3Btn = [];
-      let list4Btn = [];
-      let spinListBtn1 = [];
-      let spinListBtn2 = [];
+      const list1Btn = [];
+      const list2Btn = [];
+      const list3Btn = [];
+      const list4Btn = [];
+      const spinListBtn1 = [];
+      const spinListBtn2 = [];
 
       console.log(songNotes)
 
@@ -1349,111 +1352,141 @@ export function AudioFile() {
         setOpacity("On")
       }
     }
+
+    const homepageStyle = {
+      opacity: settingsDiv? 0.25: 1
+    }
+
     return (
         <>
-            <h1>Meyda Demo</h1>
-            <div>
-              <p>Press &quot;A&quot; to set the &quot;Active Area&quot; to Left</p>
-              <br/>
-              <p>Press &quot;D&quot; to set the &quot;Active Area&quot; to Right</p>
-              <br/>
-              <p>Press &quot;J&quot; to hit a Blue note reaching the edge of the current &quot;Active Area&quot;</p>
-              <br/>
-              <p>Press &quot;L&quot; to hit a Red note reaching the edge of the current &quot;Active Area&quot;</p>
-              <br/>
-              <p>Press &quot;Q&quot; to Play/Pause</p>
-              <br/>
-              <p>Press &quot;P&quot; to reset the track. Press after applying new Scroll Speed</p>
-              <br/>
-              <p>Enter your music file below and Presss &quot;Set Stage&quot; <br/> Or Play a Custom made map</p>
-            </div>
+          <div id='homepage'>
+            <div style={homepageStyle}>
+              <div style={{display: 'flex', flexDirection: 'column', gap: 15, paddingTop: 10, width: '50%', margin: '0 auto', alignItems: 'center'}}>
+                <h1>Meyda Demo</h1>
+                <p>Play a map from your own song, a custom made map, or your own map</p>
 
-            {/* <p>{time}</p> */}
+                <div>
+                  <p>Enter your Music File:</p>
+                  <div style={{display: 'flex', gap: 5, flexDirection: 'column'}}>
+                    <input type="file" accept='audio/*' onChange={audioChange}/>
+                    {musicSet && <button onClick={setMusicStage} disabled={stageBtn}>Set Stage</button>}
+                  </div>
+                </div>
+                
+                <div style={{display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'center'}}>
+                  <button style={{padding: 2, width: "100%"}} onClick={customMap}>Play Custom Map</button>
+                  <p>Dreams Don&apos;t Stop [Rhythm Doctor]</p>   
+                </div>
+
+                
+                <div style={{display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'center'}}>
+                  <button id='editorBtn' onClick={editorMap} style={{padding: 2, width: "100%"}}>Play Your Editor Map</button>
+                  {editorMapExists &&
+                  <>
+                    <input type="file" accept='audio/*' onChange={editorChange}/>
+                    <audio src={editorURL ?? ""} controls={false} ref={editorAudioRef} loop={false} />
+                  </>
+                  }
+                  {editorBtn && 
+                  <button style={{padding: 2, width: "100%"}} onClick={playEditor}>Play Custom Map</button>
+                  }
+                </div>
+              </div>
+
+
+              <div>
+              <div id='gameWrapper'>
+                <br/>
+                <div style={currentArea}> {direction} </div>
+                <div >
+                  <div ref={gameWrapper}  style={{display: 'flex', gap: 20, alignItems: 'flex-end', flexDirection: 'row', position: 'relative'}}>
+                    <div id='gamecontainer-circle' ref={gameContainer}>
+                      <div className='click-Area caOne' ref={circleOne}></div>
+                      <div className='click-Area caTwo' ref={circleTwo}></div>
+                      <div className='click-Area caThree' ref={circleThree}></div>
+                      <div className='click-Area caFour' ref={circleFour}></div>
+
+                      <div className='curve-section' style={firstSectionStyle} ref={firstSection}></div>
+                      <div className='curve-section' style={secondSectionStyle} ref={secondSection}></div>
+                    </div>
+                    <div id='scoreline' ref={scoreline}></div>
+                  </div>
+                  <div className='button-container'>
+                    <div style={leftBtnStyle}>A</div>
+                    <div style={rightBtnStyle}>D</div>
+                  </div>
+                  <div className='button-container'> 
+                    <div style={leftActionBtnStyle}>J</div>
+                    <div style={rightActionBtnStyle}>L</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
 
             <audio src={audioURL ?? ""} controls={false} ref={audioRefListening} loop={false} />
             <audio src={audioURL ?? ""} controls={false} ref={audioRefSetting} loop={false} />
             <audio src={audioURL ?? ""} controls={false} loop={false} />
 
-            <div style={{display: 'flex', gap: 20, flexDirection: 'column'}}>
-              <input type="file" accept='audio/*' onChange={audioChange}/>
-              {musicSet && <button onClick={setMusicStage} disabled={stageBtn}>Set Stage</button>}
-            </div>
+          </div>
 
-            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5}}>
-              <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
-                <button onClick={() => {setScrollSpeed(500)}}>500ms</button>
-                <button onClick={() => {setScrollSpeed(1000)}}>1000ms</button>
-                <button onClick={() => {setScrollSpeed(1500)}}>1500ms</button>
-                <button onClick={() => {setScrollSpeed(2000)}}>2000ms</button>
-              </div>
-              <p>Current Scroll Speed: {scrollSpeed / 1000}s</p>
-            </div>
+          <div style={{display: 'flex', flexDirection: 'column', gap: 5, textAlign: 'center', paddingTop: 10}}>
+            <p>High Score: {highScore}</p>
+            <p>Score: {score}</p>
+            <p>Hit Count: {hitCount}</p>
+            <p>Miss Count: {missCount}</p>
+            <p>Note Count: {noteCount}</p>
+          </div>
 
-            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5}}>
-            <button style={{padding: 2}} onClick={toggleOpacity}>Opacity Change Set to {opacityEnabled}</button>
+          <div id='titleDiv'>
+            <div>
+              <button onClick={() => {setSettingsDiv(!settingsDiv)}} id='settingsBtn'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#eaeaea" className="bi bi-gear-fill" viewBox="0 0 16 16">
+                  <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                </svg>
+              </button>
             </div>
-
-            <div style={{display: 'flex', flexDirection: 'column'}}>
-              <button style={{padding: 2}} onClick={customMap}>Play Custom Map</button>
-              <p>Dreams Don't Stop [Rhythm Doctor]</p>   
-            </div>
-
-            <div style={{display: 'flex', flexDirection: 'column'}}>
-              <button style={{padding: 2}} onClick={editorMap}>Play Your Editor Map</button>   
-              {editorMapExists &&
-              <>
-                <input type="file" accept='audio/*' onChange={editorChange}/>
-                <audio src={editorURL ?? ""} controls={false} ref={editorAudioRef} loop={false} />
-              </>
-              }
-              {editorBtn && 
-              <button style={{padding: 2}} onClick={playEditor}>Play Custom Map</button>
-              }
-            </div>
-
             
-            
-            <div style={currentArea}> {direction} </div>
+          </div>
 
-            <div ref={gameWrapper} style={{position: "relative"}}>
-              <div style={{display: 'flex', gap: 20, alignItems: 'flex-end', flexDirection: 'row', position: 'relative'}}>
-                <div id='scoreline' ref={scoreline}></div>
-                <div id='gamecontainer-circle' ref={gameContainer}>
-                  <div className='click-Area caOne' ref={circleOne}></div>
-                  <div className='click-Area caTwo' ref={circleTwo}></div>
-                  <div className='click-Area caThree' ref={circleThree}></div>
-                  <div className='click-Area caFour' ref={circleFour}></div>
-
-                  <div className='curve-section' style={firstSectionStyle} ref={firstSection}></div>
-                  <div className='curve-section' style={secondSectionStyle} ref={secondSection}></div>
+          {settingsDiv && 
+            <div id='settingsDiv'>
+              <div>
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, paddingTop: 30}}>
+                  <p>Press &quot;A&quot; to set the &quot;Active Area&quot; to Left</p>
+                  <br/>
+                  <p>Press &quot;D&quot; to set the &quot;Active Area&quot; to Right</p>
+                  <br/>
+                  <p>Press &quot;J&quot; to hit a Blue note reaching the edge of the current &quot;Active Area&quot;</p>
+                  <br/>
+                  <p>Press &quot;L&quot; to hit a Red note reaching the edge of the current &quot;Active Area&quot;</p>
+                  <br/>
+                  <p>Press &quot;Q&quot; to Play/Pause</p>
+                  <br/>
+                  <p>Press &quot;P&quot; to reset the track. Press after applying new Scroll Speed</p>
+                </div>
+                <br/>
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5}}>
+                  <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
+                    <button onClick={() => {setScrollSpeed(500)}}>500ms</button>
+                    <button onClick={() => {setScrollSpeed(1000)}}>1000ms</button>
+                    <button onClick={() => {setScrollSpeed(1500)}}>1500ms</button>
+                    <button onClick={() => {setScrollSpeed(2000)}}>2000ms</button>
+                  </div>
+                    <p>Current Scroll Speed: {scrollSpeed / 1000}s</p>
+                </div>
+                <br/>
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5}}>
+                  <button style={{padding: 2}} onClick={toggleOpacity}>Opacity Change Set to {opacityEnabled}</button>
                 </div>
               </div>
-              
-              <div className='button-container'>
-                <div style={leftBtnStyle}>A</div>
-                <div style={rightBtnStyle}>D</div>
-              </div>
-              <div className='button-container'> 
-                <div style={leftActionBtnStyle}>J</div>
-                <div style={rightActionBtnStyle}>L</div>
-
-              </div>
-
-              
             </div>
-            <div>
-              <p>High Score: {highScore}</p>
-              <p>Score: {score}</p>
-              <p>Hit Count: {hitCount}</p>
-              <p>Miss Count: {missCount}</p>
-              <p>Note Count: {noteCount}</p>
+            }
+
+            <div style={{display: 'flex', justifyContent: 'center', paddingTop: 20, paddingBottom: 20}}>
+              <a href='/editor' style={{backgroundColor: 'rgb(250, 238, 223)', color: 'black', padding: 5}}>Visit Editor</a>  
             </div>
-
-            {usingCustomMap && <button onClick={toggleMap}>Play/Pause</button>}
-            
-            {stageSet && <button onClick={toggleMusic}>Play/Pause</button>}
-
-            <a href='/editor' style={{backgroundColor: 'rgb(250, 238, 223)', color: 'black', padding: 5}}>Visit Editor</a>
-        </>
+        </div>
+    </>
     )
 }
