@@ -1452,10 +1452,10 @@ export function AudioFile() {
           {settingsDiv && 
             <div id='settingsDiv'>
               <div>
-                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, paddingTop: 30}}>
-                  <p>Press &quot;A&quot; to set the &quot;Active Area&quot; to Left</p>
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, paddingTop: 30, width: '80%', margin: '0 auto'}}>
+                  <p>Press &quot;A&quot; to set the &quot;Active Area&quot; to Left. Rotating will hit a Purple Note</p>
                   <br/>
-                  <p>Press &quot;D&quot; to set the &quot;Active Area&quot; to Right</p>
+                  <p>Press &quot;D&quot; to set the &quot;Active Area&quot; to Right. Rotating will hit a Purple Note</p>
                   <br/>
                   <p>Press &quot;J&quot; to hit a Blue note reaching the edge of the current &quot;Active Area&quot;</p>
                   <br/>
@@ -1463,7 +1463,7 @@ export function AudioFile() {
                   <br/>
                   <p>Press &quot;Q&quot; to Play/Pause</p>
                   <br/>
-                  <p>Press &quot;P&quot; to reset the track. Press after applying new Scroll Speed</p>
+                  <p>Press &quot;P&quot; to reset the track. Press after applying a new Scroll Speed</p>
                 </div>
                 <br/>
                 <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5}}>
@@ -1478,6 +1478,10 @@ export function AudioFile() {
                 <br/>
                 <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5}}>
                   <button style={{padding: 2}} onClick={toggleOpacity}>Opacity Change Set to {opacityEnabled}</button>
+                </div>
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, paddingTop: 30, width: '80%', margin: '0 auto'}}>
+                  <p>This project is a demo and a vertical slice of a project I am now working on now.</p>
+                  <p>I will link the final project once completed. For now, please enjoy the demo!</p>
                 </div>
               </div>
             </div>

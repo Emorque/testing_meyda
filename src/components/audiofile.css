@@ -283,7 +283,8 @@ button {
     background-color: rgb(250, 238, 223);
     border: 0;
     padding: 5px;
-    color: black
+    color: black;
+    cursor: pointer;
 }
 
 #homepage {
