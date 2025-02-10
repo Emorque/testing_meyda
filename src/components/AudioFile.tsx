@@ -1488,7 +1488,7 @@ export function AudioFile() {
             }
 
             <div style={{display: 'flex', justifyContent: 'center', paddingTop: 20, paddingBottom: 20}}>
-              <a href='/editor' style={{backgroundColor: 'rgb(250, 238, 223)', color: 'black', padding: 5}}>Visit Editor</a>  
+              <a href='/testing_meyda/editor' style={{backgroundColor: 'rgb(250, 238, 223)', color: 'black', padding: 5}}>Visit Editor</a>  
             </div>
         </div>
     </>

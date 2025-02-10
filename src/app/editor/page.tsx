@@ -377,7 +377,6 @@ export default function Editor() {
   }
 
   const exportMap = () => {
-    console.log(songNotes)
     const exportedMap = []
     for (let i = 0; i < songNotes[0].length; i++) {
       if (songNotes[0][i] === "S") {
